@@ -1,7 +1,7 @@
 import { defineStore } from 'pinia'
 import { ref, computed, shallowRef } from 'vue'
 import { api } from '@/services/api'
-import type { Metric, UserDashboard, UserDashboardCreate, UserDashboardUpdate } from '@/types/api'
+import type { Metric, DashboardView, DashboardCreate, DashboardUpdate } from '@/types/api'
 
 export interface ChartSeries {
   name: string
@@ -18,7 +18,7 @@ export const useDashboardStore = defineStore('dashboard', () => {
   const error = ref<string | null>(null)
 
   // User dashboards
-  const userDashboards = ref<UserDashboard[]>([])
+  const userDashboards = ref<DashboardView[]>([])
   const selectedDashboardId = shallowRef<number | null>(null)
   const dashboardsLoading = ref(false)
 
@@ -94,7 +94,7 @@ export const useDashboardStore = defineStore('dashboard', () => {
     start: string
     end: string
     kind: string
-    metricName?: string
+    metricName: string
     filters?: Record<string, string>
   }) {
     loading.value = true
@@ -125,7 +125,7 @@ export const useDashboardStore = defineStore('dashboard', () => {
     }
   }
 
-  async function createDashboard(data: UserDashboardCreate) {
+  async function createDashboard(data: DashboardCreate) {
     try {
       await api.createDashboard(data)
       await fetchDashboards()
@@ -135,7 +135,7 @@ export const useDashboardStore = defineStore('dashboard', () => {
     }
   }
 
-  async function updateDashboard(id: number, data: UserDashboardUpdate) {
+  async function updateDashboard(id: number, data: DashboardUpdate) {
     try {
       await api.updateDashboard(id, data)
       await fetchDashboards()
@@ -166,16 +166,6 @@ export const useDashboardStore = defineStore('dashboard', () => {
     }
   }
 
-  async function loadDashboardMetrics(dashboard: UserDashboard, start: string, end: string) {
-    await fetchMetrics({
-      start,
-      end,
-      kind: dashboard.collectorKind,
-      metricName: dashboard.metricName,
-      filters: dashboard.filters,
-    })
-  }
-
   return {
     metrics,
     collectors,
@@ -183,16 +173,15 @@ export const useDashboardStore = defineStore('dashboard', () => {
     error,
     series,
     availableLabelKeys,
-    fetchMetrics,
     userDashboards,
     selectedDashboardId,
     selectedDashboard,
     dashboardsLoading,
+    fetchMetrics,
     fetchDashboards,
     createDashboard,
     updateDashboard,
     removeDashboard,
     selectDashboard,
-    loadDashboardMetrics,
   }
 })

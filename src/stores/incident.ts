@@ -1,55 +1,39 @@
 import { defineStore } from 'pinia'
-import { ref, watch } from 'vue'
+import { ref } from 'vue'
 import { api } from '@/services/api'
-import { useAuthStore } from './auth'
-import type { AlertEvent, Incident } from '@/types/api'
+import type { NotificationEvent, IncidentView } from '@/types/api'
 
-export const useSSEStore = defineStore('sse', () => {
+export const useIncidentsStore = defineStore('sse', () => {
   const eventSource = ref<EventSource | null>(null)
   const connected = ref(false)
-  const incidents = ref<Incident[]>([])
-  
-  // Функция для добавления нового инцидента
-  const addIncident = (alertId: number, fired: boolean) => {
-    incidents.value.unshift({
-      id: Date.now(),
-      timestamp: new Date().toLocaleString(),
-      alertId,
-      fired,
-    })
-    
-    // Keep max 100 incidents in memory
-    if (incidents.value.length > 100) {
-      incidents.value = incidents.value.slice(0, 100)
-    }
-  }
-  
-  // Функция для очистки истории
-  const clearIncidents = () => {
-    incidents.value = []
+  const incidents = ref<IncidentView[]>([])
+
+  async function fetchIncidents() {
+    const data = await api.getIncidents()
+    incidents.value = data
   }
   
   // Подключение к SSE
-  const connect = () => {
+  function connect() {
     if (eventSource.value) {
       disconnect()
     }
     
-    eventSource.value = api.listenAlerts()
+    eventSource.value = api.listenIncidents()
     
     eventSource.value.onmessage = (event) => {
       try {
         if (typeof event.data == "string" && event.data == "OK") {
             return
         }
-        const data = JSON.parse(event.data) as AlertEvent
+        const data = JSON.parse(event.data) as NotificationEvent
         
-        if (typeof data.alertId !== 'number' || typeof data.fired !== 'boolean') {
+        if (typeof data.id !== 'number' || typeof data.fired !== 'boolean') {
           console.warn('Received invalid alert event data:', data)
           return
         }
         
-        addIncident(data.alertId, data.fired)
+        fetchIncidents()
       } catch (err) {
         console.error('Failed to parse SSE event:', event.data, err)
       }
@@ -67,7 +51,7 @@ export const useSSEStore = defineStore('sse', () => {
   }
   
   // Отключение от SSE
-  const disconnect = () => {
+  function disconnect() {
     eventSource.value?.close()
     eventSource.value = null
     connected.value = false
@@ -77,8 +61,8 @@ export const useSSEStore = defineStore('sse', () => {
   return {
     connected,
     incidents,
+    fetchIncidents,
     connect,
     disconnect,
-    clearIncidents,
   }
 })

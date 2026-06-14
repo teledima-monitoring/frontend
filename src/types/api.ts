@@ -44,6 +44,7 @@ export interface MetricsRequest {
   start: string
   end: string
   kind: string
+  metricName: string
   filters?: Record<string, string>
 }
 
@@ -64,22 +65,23 @@ export interface AlertConfigCreate {
   dataPeriod: number
   filters: Record<string, string>
   rules: AlertRule[]
+  assigneeId?: number
 }
 
-export interface AlertConfigView extends AlertConfigCreate {
+export interface AlertConfigView{
   id: number
-  fired: boolean
-  lastAlertRunDt: string
-}
-
-export interface AlertRun {
-  alertId: number
-  fired: boolean
+  name: string
+  collectorKind: string
+  dataPeriod: number
+  filters: Record<string, string>
+  rules: AlertRule[]
+  assigneeId?: number
+  assigneeName?: string
 }
 
 export type DashboardGroupBy = 'none' | 'collector' | string
 
-export interface UserDashboard {
+export interface DashboardView {
   id: number
   name: string
   collectorKind: string
@@ -88,17 +90,23 @@ export interface UserDashboard {
   groupBy: DashboardGroupBy
 }
 
-export type UserDashboardCreate = Omit<UserDashboard, 'id'>
-export type UserDashboardUpdate = Partial<UserDashboardCreate>
+export type DashboardCreate = Omit<DashboardView, 'id'>
+export type DashboardUpdate = Partial<DashboardCreate>
 
-export interface Incident {
+export interface IncidentView {
   id: number
-  timestamp: string
-  alertId: number
+  name: string
   fired: boolean
+  alertId: number
+  alertName: string
+  assigneeId?: number
+  assigneeName?: string
+  Comment?: string
+  createDt: Date
+  updateDt: Date
 }
 
-export interface AlertEvent {
-  alertId: number
+export interface NotificationEvent {
+  id: number
   fired: boolean
 }

@@ -10,8 +10,8 @@ const dashboardStore = useDashboardStore()
 const { series, loading, error, userDashboards, selectedDashboard, availableLabelKeys } =
   storeToRefs(dashboardStore)
 const {
+  fetchMetrics,
   selectDashboard,
-  loadDashboardMetrics,
   createDashboard,
   updateDashboard,
   removeDashboard,
@@ -64,11 +64,13 @@ async function handleFetch() {
     alert('Please select a dashboard first')
     return
   }
-  await loadDashboardMetrics(
-    selectedDashboard.value,
-    formatForApi(startTime.value),
-    formatForApi(endTime.value),
-  )
+  await fetchMetrics({
+    start: formatForApi(startTime.value),
+    end: formatForApi(endTime.value),
+    kind: selectedDashboard.value.collectorKind,
+    metricName: selectedDashboard.value.metricName,
+    filters: selectedDashboard.value.filters,
+  })
 }
 
 function handleSelect(id: number) {

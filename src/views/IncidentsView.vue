@@ -1,55 +1,84 @@
 <script setup lang="ts">
 import { onMounted, computed } from 'vue'
-import { useAlertsStore } from '@/stores/alerts'
-import { useSSEStore } from '@/stores/sse'
+import { useIncidentsStore } from '@/stores/incident'
 import { storeToRefs } from 'pinia'
 
-const alertsStore = useAlertsStore()
-const sseStore = useSSEStore()
-const { alerts: alertConfigs } = storeToRefs(alertsStore)
-const { connected, incidents } = storeToRefs(sseStore)
-const { clearIncidents } = sseStore
+const incidentsStore = useIncidentsStore()
+const { connect, disconnect, fetchIncidents } = incidentsStore
+const { connected, incidents } = storeToRefs(incidentsStore)
 
-const incidentsWithNames = computed(() => {
-  return incidents.value.map((incident) => {
-    const alertConfig = alertConfigs.value.find((a) => a.id === incident.alertId)
-    return {
-      ...incident,
-      alertName: alertConfig?.name ?? `Alert #${incident.alertId}`,
-    }
-  })
-})
+// Вычисляемые свойства для статистики
+const activeIncidents = computed(() => incidents.value.filter(i => i.fired))
+const closedIncidents = computed(() => incidents.value.filter(i => !i.fired))
 
-// Функция для ручного переподключения (если нужно)
+// Функция для ручного переподключения
 const reconnect = () => {
-  sseStore.disconnect()
-  sseStore.connect()
+  disconnect()
+  connect()
+}
+
+// Форматирование даты
+const formatDate = (dateString: Date | string): string => {
+  if (!dateString) return '—'
+  return new Date(dateString).toLocaleString('ru-RU', {
+    year: 'numeric',
+    month: '2-digit',
+    day: '2-digit',
+    hour: '2-digit',
+    minute: '2-digit',
+  })
 }
 
 onMounted(() => {
-  alertsStore.fetchAlerts()
+  fetchIncidents()
 })
 </script>
 
 <template>
   <div class="container-fluid">
-    <h3 class="mb-4">Incidents</h3>
-    <!-- Connection status and controls -->
-    <div class="card mb-4">
-      <div class="card-body d-flex justify-content-between align-items-center">
-        <div class="d-flex align-items-center gap-2">
-          <span :class="['badge', connected ? 'bg-success' : 'bg-danger']">
-            {{ connected ? 'Connected' : 'Disconnected' }}
-          </span>
-          <small class="text-muted">Listening via SSE to alert events</small>
+    <h3 class="mb-4">Incidents Management</h3>
+
+    <!-- SSE Connection Status -->
+    <div class="alert" :class="connected ? 'alert-success' : 'alert-warning'" role="alert">
+      <div class="d-flex justify-content-between align-items-center">
+        <span>
+          <i class="bi" :class="connected ? 'bi-check-circle-fill' : 'bi-exclamation-triangle-fill'"></i>
+          SSE Connection: {{ connected ? 'Connected' : 'Disconnected' }}
+        </span>
+        <button 
+          v-if="!connected" 
+          class="btn btn-sm btn-outline-primary" 
+          @click="reconnect"
+        >
+          Reconnect
+        </button>
+      </div>
+    </div>
+
+    <!-- Statistics Cards -->
+    <div class="row mb-4">
+      <div class="col-md-4">
+        <div class="card bg-primary text-white">
+          <div class="card-body">
+            <h5 class="card-title">Total Incidents</h5>
+            <p class="card-text display-6">{{ incidents.length }}</p>
+          </div>
         </div>
-        <div class="d-flex gap-2">
-          <button v-if="!connected" class="btn btn-sm btn-outline-secondary" @click="reconnect">
-            Reconnect
-          </button>
-          <button class="btn btn-sm btn-outline-danger" @click="clearIncidents">
-            Clear History
-          </button>
+      </div>
+      <div class="col-md-4">
+        <div class="card bg-danger text-white">
+          <div class="card-body">
+            <h5 class="card-title">Active</h5>
+            <p class="card-text display-6">{{ activeIncidents.length }}</p>
+          </div>
+        </div>
+      </div>
+      <div class="col-md-4">
+        <div class="card bg-success text-white">
+          <div class="card-body">
+            <h5 class="card-title">Closed</h5>
+            <p class="card-text display-6">{{ closedIncidents.length }}</p>
+          </div>
         </div>
       </div>
     </div>
@@ -57,28 +86,51 @@ onMounted(() => {
     <!-- Incidents Table -->
     <div class="card">
       <div class="card-header d-flex justify-content-between align-items-center">
-        <span>Event Log ({{ incidents.length }})</span>
+        <span>All Incidents ({{ incidents.length }})</span>
+        <button class="btn btn-sm btn-outline-secondary" @click="fetchIncidents">
+          <i class="bi bi-arrow-clockwise"></i> Refresh
+        </button>
       </div>
-      <div class="card-body p-0" style="max-height: 500px; overflow-y: auto">
-        <table class="table table-striped table-hover mb-0">
-          <thead class="sticky-top bg-white">
+      <div class="card-body p-0">
+        <div v-if="incidents.length === 0" class="text-center text-muted py-5">
+          <i class="bi bi-inbox display-4"></i>
+          <p class="mt-3">No incidents found</p>
+        </div>
+        <table v-else class="table table-striped table-hover mb-0">
+          <thead class="table-light">
             <tr>
-              <th>Time</th>
-              <th>Alert</th>
+              <th>ID</th>
               <th>Status</th>
+              <th>Name</th>
+              <th>Alert Name</th>
+              <th>Fired At</th>
+              <th>Updated At</th>
+              <th>Assignee</th>
+              <th>Comment</th>
             </tr>
           </thead>
           <tbody>
-            <tr v-if="incidentsWithNames.length === 0">
-              <td colspan="3" class="text-center text-muted py-4">No incidents yet</td>
-            </tr>
-            <tr v-for="incident in incidentsWithNames" :key="incident.id">
-              <td>{{ incident.timestamp }}</td>
-              <td>{{ incident.alertName }} (ID: {{ incident.alertId }})</td>
+            <tr 
+              v-for="incident in incidents" 
+              :key="incident.id"
+              :class="{ 'table-danger': incident.fired }"
+            >
+              <td>{{ incident.id }}</td>
               <td>
-                <span :class="incident.fired ? 'badge bg-danger' : 'badge bg-success'">
-                  {{ incident.fired ? '🚨 Triggered' : '✅ Cleared' }}
+                <span 
+                  class="badge" 
+                  :class="incident.fired ? 'bg-danger' : 'bg-success'"
+                >
+                  {{ incident.fired ? 'Active' : 'Closed' }}
                 </span>
+              </td>
+              <td>{{ incident.name }}</td>
+              <td>{{ incident.alertName }}</td>
+              <td>{{ formatDate(incident.createDt) }}</td>
+              <td>{{ formatDate(incident.updateDt) }}</td>
+              <td>{{ incident.assigneeName || '—' }}</td>
+              <td>
+                <small class="text-muted">{{ incident.Comment || '—' }}</small>
               </td>
             </tr>
           </tbody>
@@ -87,3 +139,9 @@ onMounted(() => {
     </div>
   </div>
 </template>
+
+<style scoped>
+.table-danger {
+  --bs-table-bg: rgba(220, 53, 69, 0.1);
+}
+</style>

@@ -6,9 +6,10 @@ import type {
   MetricsResponse,
   AlertConfigView,
   AlertConfigCreate,
-  UserDashboardCreate,
-  UserDashboard,
-  UserDashboardUpdate,
+  DashboardCreate,
+  DashboardView,
+  DashboardUpdate,
+  IncidentView,
 } from '@/types/api'
 
 const BASE_URL = 'http://localhost:1325/api'
@@ -34,7 +35,7 @@ async function request<T>(path: string, options: RequestInit = {}): Promise<T> {
     return response.json() as Promise<T>
   }
 
-  return response.text() as unknown as Promise<T>
+  return response.text() as Promise<T>
 }
 
 export const api = {
@@ -51,33 +52,30 @@ export const api = {
 
   // Metrics
   getMetrics: (data: MetricsRequest) =>
-    request<MetricsResponse>('/metrics', {
-      method: 'POST',
-      body: JSON.stringify(data),
-    }),
+    request<MetricsResponse>('/metrics', { method: 'POST', body: JSON.stringify(data)}),
 
   // Alerts
   getAlerts: () => request<Array<AlertConfigView>>('/alerts'),
 
   createAlert: (data: AlertConfigCreate) =>
-    request<unknown>('/alerts', { method: 'POST', body: JSON.stringify(data) }),
+    request<void>('/alerts', { method: 'POST', body: JSON.stringify(data) }),
 
   deleteAlert: (id: number) => request<void>(`/alerts/${id}`, { method: 'DELETE' }),
 
-  toggleAlert: (id: number, fired: boolean) =>
-    request<unknown>(`/alerts/${id}/toggle`, { method: 'POST', body: JSON.stringify({ fired }) }),
-
-  // SSE for alerts
-  listenAlerts: (): EventSource => new EventSource(`${BASE_URL}/alerts/listen`),
-
   // Dashboards
-  getDashboards: () => request<Array<UserDashboard>>('/dashboards'),
+  getDashboards: () => request<Array<DashboardView>>('/dashboards'),
 
-  createDashboard: (data: UserDashboardCreate) =>
-    request<UserDashboard>('/dashboards', { method: 'POST', body: JSON.stringify(data) }),
+  createDashboard: (data: DashboardCreate) =>
+    request<void>('/dashboards', { method: 'POST', body: JSON.stringify(data) }),
 
-  updateDashboard: (id: number, data: UserDashboardUpdate) =>
-    request<unknown>(`/dashboards/${id}`, { method: 'PUT', body: JSON.stringify(data) }),
+  updateDashboard: (id: number, data: DashboardUpdate) =>
+    request<void>(`/dashboards/${id}`, { method: 'PUT', body: JSON.stringify(data) }),
 
   deleteDashboard: (id: number) => request<void>(`/dashboards/${id}`, { method: 'DELETE' }),
+
+  // Incidents
+  getIncidents: () => request<Array<IncidentView>>('/incidents'),
+  
+  // SSE for incidents
+  listenIncidents: (): EventSource => new EventSource(`${BASE_URL}/incidents/listen`),
 }

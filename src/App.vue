@@ -5,15 +5,15 @@
 <script setup lang="ts">
 import AppLayout from '@/components/AppLayout.vue'
 import { watch } from 'vue'
-import { useSSEStore } from '@/stores/sse'
+import { useIncidentsStore } from '@/stores/incident'
 import { useAuthStore } from './stores/auth'
 import { storeToRefs } from 'pinia'
 
 const authStore = useAuthStore()
-const sseStore = useSSEStore()
-const { connect, disconnect } = sseStore
+const incidentsStore = useIncidentsStore()
+const { connect, disconnect } = incidentsStore
 
-const { connected } = storeToRefs(sseStore)
+const { connected } = storeToRefs(incidentsStore)
 const { isLoggedIn } = storeToRefs(authStore)
 
 // Следим за состоянием авторизации

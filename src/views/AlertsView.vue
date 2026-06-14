@@ -48,8 +48,7 @@ async function handleCreate(data: AlertConfigCreate) {
               <th>Collector Kind</th>
               <th>Period (s)</th>
               <th>Rules</th>
-              <th>Status</th>
-              <th>Last Run</th>
+              <th>Assignee (Default)</th>
               <th class="text-end">Actions</th>
             </tr>
           </thead>
@@ -69,12 +68,7 @@ async function handleCreate(data: AlertConfigCreate) {
                   </li>
                 </ul>
               </td>
-              <td>
-                <span :class="alert.fired ? 'badge bg-danger' : 'badge bg-success'">
-                  {{ alert.fired ? 'Fired' : 'OK' }}
-                </span>
-              </td>
-              <td>{{ alert.lastAlertRunDt || '—' }}</td>
+              <td>{{ alert.assigneeName || '—' }}</td>
               <td class="text-end">
                 <button class="btn btn-outline-danger btn-sm" @click="deleteAlert(alert.id)">
                   Delete
