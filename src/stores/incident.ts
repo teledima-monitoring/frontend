@@ -12,19 +12,18 @@ export const useIncidentsStore = defineStore('sse', () => {
     const data = await api.getIncidents()
     incidents.value = data
   }
-  
+
   // Подключение к SSE
   function connect() {
     if (eventSource.value) {
       disconnect()
     }
-    
     eventSource.value = api.listenIncidents()
-    
+
     eventSource.value.onmessage = (event) => {
       try {
         if (typeof event.data == "string" && event.data == "OK") {
-            return
+          return
         }
         const data = JSON.parse(event.data) as NotificationEvent
         
@@ -38,18 +37,18 @@ export const useIncidentsStore = defineStore('sse', () => {
         console.error('Failed to parse SSE event:', event.data, err)
       }
     }
-    
+
     eventSource.value.onopen = () => {
       connected.value = true
       console.log('SSE connection established')
     }
-    
+
     eventSource.value.onerror = () => {
       connected.value = false
       console.error('SSE connection error')
     }
   }
-  
+
   // Отключение от SSE
   function disconnect() {
     eventSource.value?.close()
@@ -57,12 +56,24 @@ export const useIncidentsStore = defineStore('sse', () => {
     connected.value = false
     console.log('SSE connection closed')
   }
-  
+
+  // Экспорт инцидентов в CSV
+  async function exportIncidents() {
+    try {
+      await api.exportIncidentsCSV()
+      console.log('Incidents exported successfully')
+    } catch (error) {
+      console.error('Failed to export incidents:', error)
+      throw error
+    }
+  }
+
   return {
     connected,
     incidents,
     fetchIncidents,
     connect,
     disconnect,
+    exportIncidents,
   }
 })

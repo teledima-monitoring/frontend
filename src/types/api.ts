@@ -65,7 +65,6 @@ export interface AlertConfigCreate {
   dataPeriod: number
   filters: Record<string, string>
   rules: AlertRule[]
-  assigneeId?: number
 }
 
 export interface AlertConfigView{
@@ -75,8 +74,6 @@ export interface AlertConfigView{
   dataPeriod: number
   filters: Record<string, string>
   rules: AlertRule[]
-  assigneeId?: number
-  assigneeName?: string
 }
 
 export type DashboardGroupBy = 'none' | 'collector' | string
@@ -99,9 +96,8 @@ export interface IncidentView {
   fired: boolean
   alertId: number
   alertName: string
-  assigneeId?: number
-  assigneeName?: string
-  Comment?: string
+  taskId?: number
+  taskKey?: string
   createDt: Date
   updateDt: Date
 }

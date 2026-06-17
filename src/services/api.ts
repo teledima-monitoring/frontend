@@ -78,4 +78,44 @@ export const api = {
   
   // SSE for incidents
   listenIncidents: (): EventSource => new EventSource(`${BASE_URL}/incidents/listen`),
+
+  // Export incidents to CSV
+  exportIncidentsCSV: async (): Promise<void> => {
+    const response = await fetch(`${BASE_URL}/incidents/export`, {
+      method: 'GET',
+      headers: {
+        'Accept': 'text/csv',
+      },
+      credentials: 'include',
+    })
+
+    if (!response.ok) {
+      throw new Error(`Export failed: ${response.statusText}`)
+    }
+
+    // Получаем blob с CSV данными
+    const blob = await response.blob()
+
+    // Извлекаем имя файла из заголовка Content-Disposition
+    let filename = `incidents_${new Date().toISOString().split('T')[0]}.csv`
+    const contentDisposition = response.headers.get('Content-Disposition')
+    if (contentDisposition) {
+      const filenameMatch = contentDisposition.match(/filename=([^;]+)/)
+      if (filenameMatch && filenameMatch[1]) {
+        filename = filenameMatch[1].trim()
+      }
+    }
+
+    // Создаем ссылку для скачивания
+    const url = window.URL.createObjectURL(blob)
+    const a = document.createElement('a')
+    a.href = url
+    a.download = filename
+    document.body.appendChild(a)
+    a.click()
+
+    // Очистка
+    window.URL.revokeObjectURL(url)
+    document.body.removeChild(a)
+  },
 }

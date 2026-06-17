@@ -4,18 +4,12 @@ import { useIncidentsStore } from '@/stores/incident'
 import { storeToRefs } from 'pinia'
 
 const incidentsStore = useIncidentsStore()
-const { connect, disconnect, fetchIncidents } = incidentsStore
-const { connected, incidents } = storeToRefs(incidentsStore)
+const { fetchIncidents, exportIncidents } = incidentsStore
+const { incidents } = storeToRefs(incidentsStore)
 
 // Вычисляемые свойства для статистики
 const activeIncidents = computed(() => incidents.value.filter(i => i.fired))
 const closedIncidents = computed(() => incidents.value.filter(i => !i.fired))
-
-// Функция для ручного переподключения
-const reconnect = () => {
-  disconnect()
-  connect()
-}
 
 // Форматирование даты
 const formatDate = (dateString: Date | string): string => {
@@ -37,23 +31,6 @@ onMounted(() => {
 <template>
   <div class="container-fluid">
     <h3 class="mb-4">Incidents Management</h3>
-
-    <!-- SSE Connection Status -->
-    <div class="alert" :class="connected ? 'alert-success' : 'alert-warning'" role="alert">
-      <div class="d-flex justify-content-between align-items-center">
-        <span>
-          <i class="bi" :class="connected ? 'bi-check-circle-fill' : 'bi-exclamation-triangle-fill'"></i>
-          SSE Connection: {{ connected ? 'Connected' : 'Disconnected' }}
-        </span>
-        <button 
-          v-if="!connected" 
-          class="btn btn-sm btn-outline-primary" 
-          @click="reconnect"
-        >
-          Reconnect
-        </button>
-      </div>
-    </div>
 
     <!-- Statistics Cards -->
     <div class="row mb-4">
@@ -87,9 +64,14 @@ onMounted(() => {
     <div class="card">
       <div class="card-header d-flex justify-content-between align-items-center">
         <span>All Incidents ({{ incidents.length }})</span>
-        <button class="btn btn-sm btn-outline-secondary" @click="fetchIncidents">
-          <i class="bi bi-arrow-clockwise"></i> Refresh
-        </button>
+        <div>
+          <button class="btn btn-sm btn-outline-success me-2" @click="exportIncidents">
+            <i class="bi bi-download"></i> Export CSV
+          </button>
+          <button class="btn btn-sm btn-outline-secondary" @click="fetchIncidents">
+            <i class="bi bi-arrow-clockwise"></i> Refresh
+          </button>
+        </div>
       </div>
       <div class="card-body p-0">
         <div v-if="incidents.length === 0" class="text-center text-muted py-5">
@@ -128,10 +110,8 @@ onMounted(() => {
               <td>{{ incident.alertName }}</td>
               <td>{{ formatDate(incident.createDt) }}</td>
               <td>{{ formatDate(incident.updateDt) }}</td>
-              <td>{{ incident.assigneeName || '—' }}</td>
-              <td>
-                <small class="text-muted">{{ incident.Comment || '—' }}</small>
-              </td>
+              # TODO: make link to /tasks/:id
+              <td>{{ incident.taskKey || '—' }}</td>
             </tr>
           </tbody>
         </table>
