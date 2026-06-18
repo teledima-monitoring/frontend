@@ -1,15 +1,14 @@
 import { defineStore } from 'pinia'
-import { ref, computed } from 'vue'
+import { ref, shallowRef, computed } from 'vue'
 import { api } from '@/services/api'
-import { UserRole, type LoginRequest, type SignUpRequest } from '@/types/api'
+import { UserRole, type LoginRequest, type MeResponse, type SignUpRequest } from '@/types/api'
 
 export const useAuthStore = defineStore('auth', () => {
-  const username = ref('')
-  const role = ref(UserRole.Guest)
-  const loading = ref(false)
-  const error = ref<string | null>(null)
+  const user = ref<MeResponse>({ id: 0, login: '', role: UserRole.Guest })
+  const loading = shallowRef(false)
+  const error = shallowRef<string | null>(null)
 
-  const isLoggedIn = computed(() => role.value != UserRole.Guest)
+  const isLoggedIn = computed(() => user.value?.role != UserRole.Guest)
 
   async function login(data: LoginRequest) {
     loading.value = true
@@ -39,28 +38,19 @@ export const useAuthStore = defineStore('auth', () => {
   }
 
   async function fetchMe() {
-    try {
-      const me = await api.me()
-      username.value = me.login
-      role.value = me.role
-    } catch {
-      username.value = ''
-      role.value = UserRole.Guest
-    }
+    user.value = await api.me()
   }
 
   async function logout() {
-    try {
-      await api.logout()
-    } finally {
-      username.value = ''
-      role.value = UserRole.Guest
-    }
+    await api.logout()
+
+    user.value.id = 0
+    user.value.login = ''
+    user.value.role = UserRole.Guest
   }
 
   return {
-    username,
-    role,
+    user,
     loading,
     error,
     isLoggedIn,

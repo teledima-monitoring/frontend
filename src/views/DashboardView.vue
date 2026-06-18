@@ -5,6 +5,7 @@ import { storeToRefs } from 'pinia'
 import MetricChart from '@/components/MetricChart.vue'
 import DashboardList from '@/components/dashboard/DashboardList.vue'
 import DashboardForm from '@/components/dashboard/DashboardForm.vue'
+import { formatDate } from '@/utils/format'
 
 const dashboardStore = useDashboardStore()
 const { series, loading, error, userDashboards, selectedDashboard, availableLabelKeys } =
@@ -25,29 +26,18 @@ const editingId = ref<number | null>(null)
 
 // Computed для двусторонней связи
 const startTimeInput = computed({
-  get: () => formatForInput(startTime.value),
+  get: () => formatDate(startTime.value),
   set: (value: string) => {
     startTime.value = parseFromInput(value)
   },
 })
 
 const endTimeInput = computed({
-  get: () => formatForInput(endTime.value),
+  get: () => formatDate(endTime.value),
   set: (value: string) => {
     endTime.value = parseFromInput(value)
   },
 })
-
-// Форматирование для datetime-local input (локальное время)
-function formatForInput(date: Date): string {
-  const pad = (n: number) => String(n).padStart(2, '0')
-  const year = date.getFullYear()
-  const month = pad(date.getMonth() + 1)
-  const day = pad(date.getDate())
-  const hours = pad(date.getHours())
-  const minutes = pad(date.getMinutes())
-  return `${year}-${month}-${day}T${hours}:${minutes}`
-}
 
 // Форматирование для API (ISO 8601 / UTC)
 function formatForApi(date: Date): string {

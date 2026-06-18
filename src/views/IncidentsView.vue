@@ -1,26 +1,29 @@
 <script setup lang="ts">
-import { onMounted, computed } from 'vue'
-import { useIncidentsStore } from '@/stores/incident'
+import { onMounted, shallowRef, computed, useTemplateRef } from 'vue'
 import { storeToRefs } from 'pinia'
+import { useIncidentsStore } from '@/stores/incident'
+import TaskAssignDialog from '@/components/tasks/TaskAssignDialog.vue'
+import { formatDate } from '@/utils/format'
+
+const selectedIncidentId = shallowRef<number>(-1)
 
 const incidentsStore = useIncidentsStore()
 const { fetchIncidents, exportIncidents } = incidentsStore
 const { incidents } = storeToRefs(incidentsStore)
 
-// Вычисляемые свойства для статистики
-const activeIncidents = computed(() => incidents.value.filter(i => i.fired))
-const closedIncidents = computed(() => incidents.value.filter(i => !i.fired))
+const taskDialogRef = useTemplateRef<typeof TaskAssignDialog>('taskDialogRef')
 
-// Форматирование даты
-const formatDate = (dateString: Date | string): string => {
-  if (!dateString) return '—'
-  return new Date(dateString).toLocaleString('ru-RU', {
-    year: 'numeric',
-    month: '2-digit',
-    day: '2-digit',
-    hour: '2-digit',
-    minute: '2-digit',
-  })
+// Вычисляемые свойства для статистики
+const activeIncidents = computed(() => incidents.value.filter((i) => i.fired))
+const closedIncidents = computed(() => incidents.value.filter((i) => !i.fired))
+
+async function openAssignDialog(incidentId: number) {
+  selectedIncidentId.value = incidentId
+  await taskDialogRef.value?.openDialog()
+}
+
+async function handleTaskAssigned() {
+  await fetchIncidents()
 }
 
 onMounted(() => {
@@ -81,42 +84,59 @@ onMounted(() => {
         <table v-else class="table table-striped table-hover mb-0">
           <thead class="table-light">
             <tr>
-              <th>ID</th>
-              <th>Status</th>
-              <th>Name</th>
+              <th>Key</th>
               <th>Alert Name</th>
-              <th>Fired At</th>
+              <th>Fired</th>
+              <th>Created At</th>
               <th>Updated At</th>
-              <th>Assignee</th>
-              <th>Comment</th>
+              <th>Task</th>
+              <th>Actions</th>
             </tr>
           </thead>
           <tbody>
-            <tr 
-              v-for="incident in incidents" 
+            <tr
+              v-for="incident in incidents"
               :key="incident.id"
               :class="{ 'table-danger': incident.fired }"
             >
-              <td>{{ incident.id }}</td>
+              <td>{{ incident.key }}</td>
+              <td>{{ incident.alertName }}</td>
               <td>
-                <span 
-                  class="badge" 
-                  :class="incident.fired ? 'bg-danger' : 'bg-success'"
-                >
+                <span class="badge" :class="incident.fired ? 'bg-danger' : 'bg-success'">
                   {{ incident.fired ? 'Active' : 'Closed' }}
                 </span>
               </td>
-              <td>{{ incident.name }}</td>
-              <td>{{ incident.alertName }}</td>
               <td>{{ formatDate(incident.createDt) }}</td>
               <td>{{ formatDate(incident.updateDt) }}</td>
-              # TODO: make link to /tasks/:id
-              <td>{{ incident.taskKey || '—' }}</td>
+              <td>
+                <router-link
+                  v-if="incident.taskId"
+                  :to="{ name: 'TaskDetail', params: { id: incident.taskId } }"
+                >
+                  {{ incident.taskKey || '-' }}
+                </router-link>
+                <span v-else class="text-muted">—</span>
+              </td>
+              <td>
+                <button
+                  class="btn btn-sm btn-outline-primary"
+                  @click="openAssignDialog(incident.id)"
+                >
+                  <i class="bi bi-link-45deg"></i> Assign Task
+                </button>
+              </td>
             </tr>
           </tbody>
         </table>
       </div>
     </div>
+
+    <!-- Task Assignment Dialog -->
+    <TaskAssignDialog
+      ref="taskDialogRef"
+      :incident-id="selectedIncidentId"
+      @assigned="handleTaskAssigned"
+    />
   </div>
 </template>
 

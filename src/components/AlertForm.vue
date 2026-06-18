@@ -1,10 +1,12 @@
 <script setup lang="ts">
 import type { AlertRule } from '@/types/api'
+import { Constraint } from '@/types/api'
 import { ref, computed } from 'vue'
 
 const props = defineProps<{
   initialName?: string
   initialKind?: string
+  getConstraintName: (constraint: Constraint) => string
 }>()
 
 const emit = defineEmits<{
@@ -27,17 +29,13 @@ const filterValue = ref('')
 const filters = ref<Record<string, string>>({})
 
 const field = ref('')
-const constraint = ref(3)
+const constraint = ref(Constraint.Equal)
 const ruleValue = ref(0)
 const rules = ref<AlertRule[]>([])
 
-const constraintNames: Record<number, string> = {
-  1: '<',
-  2: '≤',
-  3: '=',
-  4: '>',
-  5: '≥',
-}
+const constraintValues = Object.keys(Constraint)
+  .filter((key) => !isNaN(Number(key)))
+  .map((k) => Number(k))
 
 function addFilter() {
   if (filterKey.value) {
@@ -140,8 +138,8 @@ function handleSubmit() {
             class="form-select form-select-sm"
             style="width: 80px"
           >
-            <option v-for="(label, val) in constraintNames" :key="val" :value="Number(val)">
-              {{ label }}
+            <option v-for="c in constraintValues" :key="c" :value="c">
+              {{ getConstraintName(c) }}
             </option>
           </select>
         </div>
@@ -165,7 +163,7 @@ function handleSubmit() {
           class="list-group-item d-flex justify-content-between align-items-center"
         >
           <span>
-            <strong>{{ rule.field }}</strong> {{ constraintNames[rule.constraint] }}
+            <strong>{{ rule.field }}</strong> {{ getConstraintName(rule.constraint) }}
             <strong>{{ rule.value }}</strong>
           </span>
           <button type="button" class="btn btn-outline-danger btn-sm" @click="removeRule(idx)">

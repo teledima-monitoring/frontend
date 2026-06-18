@@ -24,7 +24,7 @@ async function handleCreate(data: AlertConfigCreate) {
     <div class="card mb-4">
       <div class="card-header">Create New Alert</div>
       <div class="card-body">
-        <AlertForm @submit="handleCreate" />
+        <AlertForm @submit="handleCreate" :get-constraint-name="getConstraintName" />
       </div>
     </div>
 
@@ -48,7 +48,6 @@ async function handleCreate(data: AlertConfigCreate) {
               <th>Collector Kind</th>
               <th>Period (s)</th>
               <th>Rules</th>
-              <th>Assignee (Default)</th>
               <th class="text-end">Actions</th>
             </tr>
           </thead>
@@ -68,7 +67,6 @@ async function handleCreate(data: AlertConfigCreate) {
                   </li>
                 </ul>
               </td>
-              <td>{{ alert.assigneeName || '—' }}</td>
               <td class="text-end">
                 <button class="btn btn-outline-danger btn-sm" @click="deleteAlert(alert.id)">
                   Delete

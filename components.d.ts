@@ -19,5 +19,7 @@ declare module 'vue' {
     MetricChart: typeof import('./src/components/MetricChart.vue')['default']
     RouterLink: typeof import('vue-router')['RouterLink']
     RouterView: typeof import('vue-router')['RouterView']
+    TaskAssignDialog: typeof import('./src/components/tasks/TaskAssignDialog.vue')['default']
+    TaskListView: typeof import('./src/components/tasks/TaskListView.vue')['default']
   }
 }

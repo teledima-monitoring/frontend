@@ -37,9 +37,9 @@ async function request<T>(path: string, options: RequestInit = {}): Promise<T> {
   // For responses with no body (e.g., logout returning plain text or empty)
   const contentType = response.headers.get('content-type')
   if (contentType && contentType.includes('application/json')) {
-    return response.json() as Promise<T>
+    return <Promise<T>>response.json()
   }
-  return response.text() as Promise<T>
+  return <Promise<T>>response.text()
 }
 
 export const api = {
@@ -125,4 +125,4 @@ export const api = {
   getTaskById: (id: number) => request<TaskView>(`/tasks/${id}`),
   updateTask: (id: number, data: TaskUpdate) =>
     request<void>(`/tasks/${id}`, { method: 'PUT', body: JSON.stringify(data) }),
-};
+}

@@ -12,6 +12,12 @@ export enum Constraint {
   GreaterEqual = 5,
 }
 
+export enum TaskStatus {
+  Open = 1,
+  InProgress = 2,
+  Closed = 3,
+}
+
 // --- Auth Types ---
 export interface LoginRequest {
   login: string
@@ -24,6 +30,7 @@ export interface SignUpRequest {
 }
 
 export interface MeResponse {
+  id: number
   login: string
   role: UserRole
 }
@@ -103,7 +110,7 @@ export type DashboardUpdate = Partial<DashboardCreate>
 // --- Incidents Types ---
 export interface IncidentView {
   id: number
-  name: string
+  key: string
   fired: boolean
   alertId: number
   alertName: string
@@ -135,17 +142,18 @@ export interface TaskUpdate {
   assigneeId?: number
   description?: string
   name?: string
-  status?: number
+  status?: TaskStatus
 }
 
 export interface TaskView {
+  id: number
+  key: string
+  name: string
+  description: string
+  status: TaskStatus
   assigneeId: number
   authorId: number
-  createDt: string
-  description: string
-  id: number
-  incidentId: number
-  name: string
-  status: number
-  updateDt: string
+  incidentsId: Array<number>
+  createDt: Date
+  updateDt: Date
 }

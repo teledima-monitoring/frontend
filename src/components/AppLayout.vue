@@ -5,7 +5,7 @@ import { storeToRefs } from 'pinia'
 import { useRoute, useRouter } from 'vue-router'
 
 const authStore = useAuthStore()
-const { isLoggedIn, username, role } = storeToRefs(authStore)
+const { isLoggedIn, user } = storeToRefs(authStore)
 const { logout } = authStore
 const route = useRoute()
 const router = useRouter()
@@ -63,10 +63,20 @@ const handleLogout = async () => {
                 Incidents
               </router-link>
             </li>
+            <li class="nav-item">
+              <router-link
+                class="nav-link"
+                :class="{ active: route.path.startsWith('/tasks') }"
+                to="/tasks"
+              >
+                <i class="fas fa-tasks me-1"></i>
+                Tasks
+              </router-link>
+            </li>
           </ul>
           <div class="d-flex align-items-center gap-2 text-white">
             <i class="fas fa-user me-1"></i>
-            <span>{{ username }} ({{ UserRole[role] }})</span>
+            <span>{{ user.login }} ({{ UserRole[user.role] }})</span>
             <button class="btn btn-outline-light btn-sm" @click="handleLogout">
               <i class="fas fa-sign-out-alt me-1"></i>
               Logout

@@ -1,6 +1,7 @@
 import { defineStore } from 'pinia'
 import { ref, computed } from 'vue'
 import { api } from '@/services/api'
+import { Constraint } from '@/types/api'
 import type { AlertConfigCreate, AlertConfigView } from '@/types/api'
 
 export const useAlertsStore = defineStore('alerts', () => {
@@ -8,20 +9,13 @@ export const useAlertsStore = defineStore('alerts', () => {
   const loading = ref(false)
   const error = ref<string | null>(null)
 
-  const constraintNames: Record<number, string> = {
-    0: '<',
-    1: '≤',
-    2: '=',
-    3: '>',
-    4: '≥',
+  const constraintNames: Record<Constraint, string> = {
+    [Constraint.Less]: '<',
+    [Constraint.LessEqual]: '≤',
+    [Constraint.Equal]: '=',
+    [Constraint.Greater]: '>',
+    [Constraint.GreaterEqual]: '≥',
   }
-
-  const constraintOptions = computed(() => {
-    return Object.entries(constraintNames).map(([value, name]) => ({
-      value: Number(value),
-      label: name,
-    }))
-  })
 
   async function fetchAlerts() {
     loading.value = true
@@ -62,7 +56,7 @@ export const useAlertsStore = defineStore('alerts', () => {
     }
   }
 
-  function getConstraintName(constraint: number): string {
+  function getConstraintName(constraint: Constraint): string {
     return constraintNames[constraint] ?? '?'
   }
 
@@ -70,7 +64,6 @@ export const useAlertsStore = defineStore('alerts', () => {
     alerts,
     loading,
     error,
-    constraintOptions,
     fetchAlerts,
     createAlert,
     deleteAlert,

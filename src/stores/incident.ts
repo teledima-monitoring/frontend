@@ -3,7 +3,7 @@ import { ref } from 'vue'
 import { api } from '@/services/api'
 import type { NotificationEvent, IncidentView } from '@/types/api'
 
-export const useIncidentsStore = defineStore('sse', () => {
+export const useIncidentsStore = defineStore('incidenents', () => {
   const eventSource = ref<EventSource | null>(null)
   const connected = ref(false)
   const incidents = ref<IncidentView[]>([])
@@ -22,16 +22,16 @@ export const useIncidentsStore = defineStore('sse', () => {
 
     eventSource.value.onmessage = (event) => {
       try {
-        if (typeof event.data == "string" && event.data == "OK") {
+        if (typeof event.data == 'string' && event.data == 'OK') {
           return
         }
         const data = JSON.parse(event.data) as NotificationEvent
-        
+
         if (typeof data.id !== 'number' || typeof data.fired !== 'boolean') {
           console.warn('Received invalid alert event data:', data)
           return
         }
-        
+
         fetchIncidents()
       } catch (err) {
         console.error('Failed to parse SSE event:', event.data, err)
