@@ -10,6 +10,11 @@ import type {
   DashboardView,
   DashboardUpdate,
   IncidentView,
+  UserView,
+  IncidentSetTask,
+  TaskCreate,
+  TaskUpdate,
+  TaskView,
 } from '@/types/api'
 
 const BASE_URL = 'http://localhost:1325/api'
@@ -34,7 +39,6 @@ async function request<T>(path: string, options: RequestInit = {}): Promise<T> {
   if (contentType && contentType.includes('application/json')) {
     return response.json() as Promise<T>
   }
-
   return response.text() as Promise<T>
 }
 
@@ -42,40 +46,35 @@ export const api = {
   // Auth
   login: (data: LoginRequest) =>
     request<string>('/auth/login', { method: 'POST', body: JSON.stringify(data) }),
-
   signup: (data: SignUpRequest) =>
     request<string>('/auth/signup', { method: 'POST', body: JSON.stringify(data) }),
-
   me: () => request<MeResponse>('/auth/me'),
-
   logout: () => request<void>('/auth/logout', { method: 'POST' }),
+  getUsers: () => request<UserView[]>('/auth/users'),
 
   // Metrics
   getMetrics: (data: MetricsRequest) =>
-    request<MetricsResponse>('/metrics', { method: 'POST', body: JSON.stringify(data)}),
+    request<MetricsResponse>('/metrics', { method: 'POST', body: JSON.stringify(data) }),
 
   // Alerts
   getAlerts: () => request<Array<AlertConfigView>>('/alerts'),
-
   createAlert: (data: AlertConfigCreate) =>
     request<void>('/alerts', { method: 'POST', body: JSON.stringify(data) }),
-
   deleteAlert: (id: number) => request<void>(`/alerts/${id}`, { method: 'DELETE' }),
 
   // Dashboards
   getDashboards: () => request<Array<DashboardView>>('/dashboards'),
-
   createDashboard: (data: DashboardCreate) =>
     request<void>('/dashboards', { method: 'POST', body: JSON.stringify(data) }),
-
   updateDashboard: (id: number, data: DashboardUpdate) =>
     request<void>(`/dashboards/${id}`, { method: 'PUT', body: JSON.stringify(data) }),
-
   deleteDashboard: (id: number) => request<void>(`/dashboards/${id}`, { method: 'DELETE' }),
 
   // Incidents
   getIncidents: () => request<Array<IncidentView>>('/incidents'),
-  
+  setIncidentTask: (incidentId: number, data: IncidentSetTask) =>
+    request<void>(`/incidents/${incidentId}/task`, { method: 'PUT', body: JSON.stringify(data) }),
+
   // SSE for incidents
   listenIncidents: (): EventSource => new EventSource(`${BASE_URL}/incidents/listen`),
 
@@ -84,7 +83,7 @@ export const api = {
     const response = await fetch(`${BASE_URL}/incidents/export`, {
       method: 'GET',
       headers: {
-        'Accept': 'text/csv',
+        Accept: 'text/csv',
       },
       credentials: 'include',
     })
@@ -118,4 +117,12 @@ export const api = {
     window.URL.revokeObjectURL(url)
     document.body.removeChild(a)
   },
-}
+
+  // Tasks
+  getTasks: () => request<TaskView[]>('/tasks'),
+  createTask: (data: TaskCreate) =>
+    request<void>('/tasks', { method: 'POST', body: JSON.stringify(data) }),
+  getTaskById: (id: number) => request<TaskView>(`/tasks/${id}`),
+  updateTask: (id: number, data: TaskUpdate) =>
+    request<void>(`/tasks/${id}`, { method: 'PUT', body: JSON.stringify(data) }),
+};

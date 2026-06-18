@@ -12,6 +12,7 @@ export enum Constraint {
   GreaterEqual = 5,
 }
 
+// --- Auth Types ---
 export interface LoginRequest {
   login: string
   password: string
@@ -27,6 +28,13 @@ export interface MeResponse {
   role: UserRole
 }
 
+export interface UserView {
+  id: number
+  login: string
+  role: UserRole
+}
+
+// --- Metrics Types ---
 export interface Metric {
   collectorId: string
   dt: string
@@ -53,6 +61,7 @@ export interface MetricsResponse {
   metrics: Metric[]
 }
 
+// --- Alerts Types ---
 export interface AlertRule {
   field: string
   constraint: Constraint
@@ -67,7 +76,7 @@ export interface AlertConfigCreate {
   rules: AlertRule[]
 }
 
-export interface AlertConfigView{
+export interface AlertConfigView {
   id: number
   name: string
   collectorKind: string
@@ -76,6 +85,7 @@ export interface AlertConfigView{
   rules: AlertRule[]
 }
 
+// --- Dashboards Types ---
 export type DashboardGroupBy = 'none' | 'collector' | string
 
 export interface DashboardView {
@@ -90,6 +100,7 @@ export interface DashboardView {
 export type DashboardCreate = Omit<DashboardView, 'id'>
 export type DashboardUpdate = Partial<DashboardCreate>
 
+// --- Incidents Types ---
 export interface IncidentView {
   id: number
   name: string
@@ -105,4 +116,36 @@ export interface IncidentView {
 export interface NotificationEvent {
   id: number
   fired: boolean
+}
+
+export interface IncidentSetTask {
+  task_id: number
+}
+
+// --- Tasks Types ---
+export interface TaskCreate {
+  assigneeId: number
+  authorId: number
+  description: string
+  incidentId: number
+  name: string
+}
+
+export interface TaskUpdate {
+  assigneeId?: number
+  description?: string
+  name?: string
+  status?: number
+}
+
+export interface TaskView {
+  assigneeId: number
+  authorId: number
+  createDt: string
+  description: string
+  id: number
+  incidentId: number
+  name: string
+  status: number
+  updateDt: string
 }
