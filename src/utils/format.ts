@@ -1,3 +1,5 @@
+import { APIError } from "@/services/error"
+
 export function formatDate(dt: Date | string): string {
   if (!dt) return '—'
 
@@ -10,4 +12,13 @@ export function formatDate(dt: Date | string): string {
   const hours = pad(d.getHours())
   const minutes = pad(d.getMinutes())
   return `${year}-${month}-${day}T${hours}:${minutes}`
+}
+
+
+export function formatError(e: Error, defaultMessage: string = "unknown error"): string {
+  if (e instanceof APIError) {
+    return e.responseBody.error || defaultMessage
+  }
+
+  return e.message
 }

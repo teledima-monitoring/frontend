@@ -1,7 +1,8 @@
 import { defineStore } from 'pinia'
-import { ref, computed, shallowRef } from 'vue'
+import { ref, shallowRef } from 'vue'
 import { api } from '@/services/api'
 import type { UserView } from '@/types/api'
+import { formatError } from '@/utils/format'
 
 export const useUsersStore = defineStore('users', () => {
   const users = ref<UserView[]>([])
@@ -14,13 +15,15 @@ export const useUsersStore = defineStore('users', () => {
 
   async function fetchUsers() {
     loading.value = true
+    error.value = null;
+    
     try {
       users.value = await api.getUsers()
     } catch (e) {
-      error.value = e instanceof Error ? e.message : 'Failed to fetch users'
+      error.value = formatError(e as Error, 'Failed to fetch users')
+    } finally {
+      loading.value = false
     }
-
-    loading.value = false
   }
 
   return {

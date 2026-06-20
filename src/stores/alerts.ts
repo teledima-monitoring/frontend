@@ -3,6 +3,7 @@ import { ref, computed } from 'vue'
 import { api } from '@/services/api'
 import { Constraint } from '@/types/api'
 import type { AlertConfigCreate, AlertConfigView } from '@/types/api'
+import { formatError } from '@/utils/format'
 
 export const useAlertsStore = defineStore('alerts', () => {
   const alerts = ref<AlertConfigView[]>([])
@@ -20,10 +21,11 @@ export const useAlertsStore = defineStore('alerts', () => {
   async function fetchAlerts() {
     loading.value = true
     error.value = null
+
     try {
       alerts.value = await api.getAlerts()
     } catch (e) {
-      error.value = e instanceof Error ? e.message : 'Failed to fetch alerts'
+      error.value = formatError(e as Error, 'Failed to fetch alerts')
     } finally {
       loading.value = false
     }
@@ -32,11 +34,12 @@ export const useAlertsStore = defineStore('alerts', () => {
   async function createAlert(data: AlertConfigCreate) {
     loading.value = true
     error.value = null
+
     try {
       await api.createAlert(data)
       await fetchAlerts()
     } catch (e) {
-      error.value = e instanceof Error ? e.message : 'Failed to create alert'
+      error.value = formatError(e as Error, 'Failed to create alert')
       throw e
     } finally {
       loading.value = false
@@ -46,11 +49,13 @@ export const useAlertsStore = defineStore('alerts', () => {
   async function deleteAlert(id: number) {
     loading.value = true
     error.value = null
+
     try {
       await api.deleteAlert(id)
       await fetchAlerts()
     } catch (e) {
-      error.value = e instanceof Error ? e.message : 'Failed to delete alert'
+      error.value = formatError(e as Error, 'Failed to delete alert')
+      throw e
     } finally {
       loading.value = false
     }

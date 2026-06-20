@@ -2,6 +2,7 @@ import { defineStore } from 'pinia'
 import { ref, computed, shallowRef } from 'vue'
 import { api } from '@/services/api'
 import type { Metric, DashboardView, DashboardCreate, DashboardUpdate } from '@/types/api'
+import { formatError } from '@/utils/format'
 
 export interface ChartSeries {
   name: string
@@ -14,13 +15,12 @@ export const useDashboardStore = defineStore('dashboard', () => {
   // Metrics data
   const metrics = ref<Array<Metric>>([])
   const collectors = ref<Map<number, { name: string; labels: Record<string, string> }>>(new Map())
-  const loading = ref(false)
-  const error = ref<string | null>(null)
+  const loading = shallowRef(false)
+  const error = shallowRef<string | null>(null)
 
   // User dashboards
   const userDashboards = ref<DashboardView[]>([])
   const selectedDashboardId = shallowRef<number | null>(null)
-  const dashboardsLoading = ref(false)
 
   const selectedDashboard = computed(
     () => userDashboards.value.find((d) => d.id === selectedDashboardId.value) ?? null,
@@ -99,6 +99,7 @@ export const useDashboardStore = defineStore('dashboard', () => {
   }) {
     loading.value = true
     error.value = null
+
     try {
       const response = await api.getMetrics(params)
       metrics.value = response.metrics
@@ -106,7 +107,7 @@ export const useDashboardStore = defineStore('dashboard', () => {
         response.collectors.map((c) => [c.id, { name: c.name, labels: c.labels }]),
       )
     } catch (e) {
-      error.value = e instanceof Error ? e.message : 'Failed to fetch metrics'
+      error.value = formatError(e as Error, 'Failed to fetch metrics')
     } finally {
       loading.value = false
     }
@@ -114,38 +115,53 @@ export const useDashboardStore = defineStore('dashboard', () => {
 
   // Dashboard CRUD
   async function fetchDashboards() {
-    dashboardsLoading.value = true
+    loading.value = true
+    error.value = null
+
     try {
       const response = await api.getDashboards()
       userDashboards.value = response
     } catch (e) {
-      error.value = e instanceof Error ? e.message : 'Failed to fetch dashboards'
+      error.value = formatError(e as Error, 'Failed to fetch dashboards')
     } finally {
-      dashboardsLoading.value = false
+      loading.value = false
     }
   }
 
   async function createDashboard(data: DashboardCreate) {
+    loading.value = true
+    error.value = null
+
     try {
       await api.createDashboard(data)
       await fetchDashboards()
     } catch (e) {
-      error.value = e instanceof Error ? e.message : 'Failed to create dashboard'
+      error.value = formatError(e as Error, 'Failed to create dashboard')
       throw e
+    } finally {
+      loading.value = false
     }
   }
 
   async function updateDashboard(id: number, data: DashboardUpdate) {
+    loading.value = true
+    error.value = null
+
     try {
       await api.updateDashboard(id, data)
       await fetchDashboards()
     } catch (e) {
-      error.value = e instanceof Error ? e.message : 'Failed to update dashboard'
+      error.value = formatError(e as Error, 'Failed to update dashboard')
       throw e
+    } finally {
+      loading.value = true
     }
   }
 
   async function removeDashboard(id: number) {
+    loading.value = true
+    error.value = null
+
     try {
       await api.deleteDashboard(id)
       if (selectedDashboardId.value === id) {
@@ -154,8 +170,10 @@ export const useDashboardStore = defineStore('dashboard', () => {
       }
       await fetchDashboards()
     } catch (e) {
-      error.value = e instanceof Error ? e.message : 'Failed to delete dashboard'
+      error.value = formatError(e as Error, 'Failed to delete dashboard')
       throw e
+    } finally {
+      loading.value = false
     }
   }
 
@@ -176,7 +194,6 @@ export const useDashboardStore = defineStore('dashboard', () => {
     userDashboards,
     selectedDashboardId,
     selectedDashboard,
-    dashboardsLoading,
     fetchMetrics,
     fetchDashboards,
     createDashboard,

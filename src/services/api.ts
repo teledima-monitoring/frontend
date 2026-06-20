@@ -16,6 +16,7 @@ import type {
   TaskUpdate,
   TaskView,
 } from '@/types/api'
+import { APIError } from '@/services/error'
 
 const BASE_URL = 'http://localhost:1325/api'
 
@@ -30,8 +31,15 @@ async function request<T>(path: string, options: RequestInit = {}): Promise<T> {
   })
 
   if (!response.ok) {
-    const errorBody = await response.text()
-    throw new Error(`API error ${response.status}: ${errorBody}`)
+    let errorBody;
+
+    try {
+      errorBody = await response.json()
+    } catch {
+      errorBody = await response.text()
+    }
+
+    throw new APIError(response.status, errorBody)
   }
 
   // For responses with no body (e.g., logout returning plain text or empty)

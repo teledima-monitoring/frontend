@@ -2,6 +2,8 @@ import { defineStore } from 'pinia'
 import { ref, shallowRef, computed } from 'vue'
 import { api } from '@/services/api'
 import { UserRole, type LoginRequest, type MeResponse, type SignUpRequest } from '@/types/api'
+import { APIError } from '@/services/error'
+import { formatError } from '@/utils/format'
 
 export const useAuthStore = defineStore('auth', () => {
   const user = ref<MeResponse>({ id: 0, login: '', role: UserRole.Guest })
@@ -13,11 +15,13 @@ export const useAuthStore = defineStore('auth', () => {
   async function login(data: LoginRequest) {
     loading.value = true
     error.value = null
+
     try {
       await api.login(data)
       await fetchMe()
     } catch (e) {
-      error.value = e instanceof Error ? e.message : 'Login failed'
+      error.value = formatError(e as Error, 'Login failed')
+      
       throw e
     } finally {
       loading.value = false
@@ -27,10 +31,12 @@ export const useAuthStore = defineStore('auth', () => {
   async function signup(data: SignUpRequest) {
     loading.value = true
     error.value = null
+
     try {
       await api.signup(data)
-    } catch (e) {
-      error.value = e instanceof Error ? e.message : 'Signup failed'
+    } catch (e) {      
+      error.value = formatError(e as Error, 'Signup failed')
+      
       throw e
     } finally {
       loading.value = false

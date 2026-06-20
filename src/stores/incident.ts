@@ -1,16 +1,24 @@
 import { defineStore } from 'pinia'
-import { ref } from 'vue'
+import { ref, shallowRef } from 'vue'
 import { api } from '@/services/api'
 import type { NotificationEvent, IncidentView } from '@/types/api'
+import { formatError } from '@/utils/format'
 
 export const useIncidentsStore = defineStore('incidenents', () => {
   const eventSource = ref<EventSource | null>(null)
-  const connected = ref(false)
+  const connected = shallowRef(false)
   const incidents = ref<IncidentView[]>([])
+  const error = shallowRef<string | null>(null)
 
   async function fetchIncidents() {
-    const data = await api.getIncidents()
-    incidents.value = data
+    error.value = null
+
+    try {
+      const data = await api.getIncidents()
+      incidents.value = data
+    } catch(e) {
+      error.value = formatError(e as Error, 'failure fetching incidents')
+    }
   }
 
   // Подключение к SSE
@@ -59,11 +67,12 @@ export const useIncidentsStore = defineStore('incidenents', () => {
 
   // Экспорт инцидентов в CSV
   async function exportIncidents() {
+    error.value = null
+
     try {
       await api.exportIncidentsCSV()
-      console.log('Incidents exported successfully')
-    } catch (error) {
-      console.error('Failed to export incidents:', error)
+    } catch (e) {
+      error.value = formatError(e as Error, 'Failed to export incidents')
       throw error
     }
   }
