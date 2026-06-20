@@ -13,7 +13,7 @@ const router = useRouter()
 const tasksStore = useTasksStore()
 const { selectedTask, loading, error } = storeToRefs(tasksStore)
 const { fetchTaskById, updateTask, clearSelectedTask } = tasksStore
- 
+
 const usersStore = useUsersStore()
 const { users } = storeToRefs(usersStore)
 const { fetchUsers, getUserNameById } = usersStore
@@ -114,14 +114,20 @@ watch(
     </div>
 
     <!-- Error State -->
-    <div v-else-if="error" class="alert alert-danger d-flex align-items-center mt-3 shadow-sm" role="alert">
+    <div
+      v-else-if="error"
+      class="alert alert-danger d-flex align-items-center mt-3 shadow-sm"
+      role="alert"
+    >
       <i class="bi bi-exclamation-triangle-fill me-3 fs-4"></i>
       <div>{{ error }}</div>
     </div>
 
     <!-- Task Detail -->
     <div v-else-if="selectedTask" class="card task-detail-card shadow-sm border-0">
-      <div class="card-header bg-white border-bottom d-flex justify-content-between align-items-center p-4">
+      <div
+        class="card-header bg-white border-bottom d-flex justify-content-between align-items-center p-4"
+      >
         <div class="d-flex align-items-center">
           <div class="task-icon-wrapper me-3">
             <i class="bi bi-clipboard-check fs-4 text-primary"></i>
@@ -153,7 +159,10 @@ watch(
               <div class="detail-box">
                 <div class="detail-label"><i class="bi bi-flag me-2 text-primary"></i>Status</div>
                 <div class="detail-value">
-                  <span class="badge status-badge" :class="tasksStore.getTaskStatusBadgeClass(selectedTask.status)">
+                  <span
+                    class="badge status-badge"
+                    :class="tasksStore.getTaskStatusBadgeClass(selectedTask.status)"
+                  >
                     {{ tasksStore.getTaskStatusLabel(selectedTask.status) }}
                   </span>
                 </div>
@@ -163,7 +172,9 @@ watch(
 
           <!-- Description -->
           <div class="detail-box mb-4">
-            <div class="detail-label"><i class="bi bi-text-paragraph me-2 text-primary"></i>Description</div>
+            <div class="detail-label">
+              <i class="bi bi-text-paragraph me-2 text-primary"></i>Description
+            </div>
             <div class="detail-value text-break">
               {{ selectedTask.description || 'No description provided.' }}
             </div>
@@ -173,14 +184,20 @@ watch(
           <div class="row g-4 mb-4">
             <div class="col-md-6">
               <div class="detail-box">
-                <div class="detail-label"><i class="bi bi-person-badge me-2 text-primary"></i>Author</div>
+                <div class="detail-label">
+                  <i class="bi bi-person-badge me-2 text-primary"></i>Author
+                </div>
                 <div class="detail-value">{{ getUserNameById(selectedTask.authorId) }}</div>
               </div>
             </div>
             <div class="col-md-6">
               <div class="detail-box">
-                <div class="detail-label"><i class="bi bi-person-check me-2 text-primary"></i>Assignee</div>
-                <div class="detail-value">{{ getUserNameById(selectedTask.assigneeId) || 'Unassigned' }}</div>
+                <div class="detail-label">
+                  <i class="bi bi-person-check me-2 text-primary"></i>Assignee
+                </div>
+                <div class="detail-value">
+                  {{ getUserNameById(selectedTask.assigneeId) || 'Unassigned' }}
+                </div>
               </div>
             </div>
           </div>
@@ -189,13 +206,17 @@ watch(
           <div class="row g-4 mb-4">
             <div class="col-md-6">
               <div class="detail-box">
-                <div class="detail-label"><i class="bi bi-calendar-plus me-2 text-primary"></i>Created</div>
+                <div class="detail-label">
+                  <i class="bi bi-calendar-plus me-2 text-primary"></i>Created
+                </div>
                 <div class="detail-value">{{ formatDate(selectedTask.createDt) }}</div>
               </div>
             </div>
             <div class="col-md-6">
               <div class="detail-box">
-                <div class="detail-label"><i class="bi bi-calendar-check me-2 text-primary"></i>Updated</div>
+                <div class="detail-label">
+                  <i class="bi bi-calendar-check me-2 text-primary"></i>Updated
+                </div>
                 <div class="detail-value">{{ formatDate(selectedTask.updateDt) }}</div>
               </div>
             </div>
@@ -203,7 +224,9 @@ watch(
 
           <!-- Comments placeholder -->
           <div class="detail-box comments-section">
-            <div class="detail-label mb-3"><i class="bi bi-chat-dots me-2 text-primary"></i>Comments</div>
+            <div class="detail-label mb-3">
+              <i class="bi bi-chat-dots me-2 text-primary"></i>Comments
+            </div>
             <div class="comments-placeholder text-center py-4">
               <i class="bi bi-chat-square-text fs-1 text-muted d-block mb-2"></i>
               <p class="text-muted mb-0">No comments yet. Be the first to start the discussion!</p>
@@ -245,7 +268,11 @@ watch(
               <label for="task-status" class="form-label fw-semibold">
                 <i class="bi bi-flag me-2 text-primary"></i>Status
               </label>
-              <select id="task-status" v-model.number="formData.status" class="form-select form-select-lg">
+              <select
+                id="task-status"
+                v-model.number="formData.status"
+                class="form-select form-select-lg"
+              >
                 <option :value="TaskStatus.Open">Open</option>
                 <option :value="TaskStatus.InProgress">In Progress</option>
                 <option :value="TaskStatus.Closed">Closed</option>
@@ -256,7 +283,11 @@ watch(
               <label for="task-assignee" class="form-label fw-semibold">
                 <i class="bi bi-person-check me-2 text-primary"></i>Assignee
               </label>
-              <select id="task-assignee" v-model.number="formData.assigneeId" class="form-select form-select-lg">
+              <select
+                id="task-assignee"
+                v-model.number="formData.assigneeId"
+                class="form-select form-select-lg"
+              >
                 <option :value="undefined" disabled>Select assignee</option>
                 <option v-for="user in users" :key="user.id" :value="user.id">
                   {{ user.login }}
@@ -378,7 +409,7 @@ watch(
     align-items: flex-start !important;
     gap: 1rem;
   }
-  
+
   .task-icon-wrapper {
     width: 40px;
     height: 40px;

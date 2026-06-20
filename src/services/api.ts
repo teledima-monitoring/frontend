@@ -31,7 +31,7 @@ async function request<T>(path: string, options: RequestInit = {}): Promise<T> {
   })
 
   if (!response.ok) {
-    let errorBody;
+    let errorBody
 
     try {
       errorBody = await response.json()

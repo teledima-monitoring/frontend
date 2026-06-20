@@ -64,7 +64,7 @@ export const useTasksStore = defineStore('tasks', () => {
   async function createTask(data: TaskCreate) {
     loading.value = true
     error.value = null
-    
+
     try {
       await api.createTask(data)
       await fetchTasks()
@@ -101,8 +101,8 @@ export const useTasksStore = defineStore('tasks', () => {
 
     try {
       await api.setIncidentTask(incidentId, data)
-    } catch(e) {
-      error.value = formatError(e as Error, "Failed to set incident task")
+    } catch (e) {
+      error.value = formatError(e as Error, 'Failed to set incident task')
     } finally {
       loading.value = false
     }

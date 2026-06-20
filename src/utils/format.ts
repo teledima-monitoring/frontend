@@ -1,4 +1,4 @@
-import { APIError } from "@/services/error"
+import { APIError } from '@/services/error'
 
 export function formatDate(dt: Date | string): string {
   if (!dt) return '—'
@@ -14,8 +14,7 @@ export function formatDate(dt: Date | string): string {
   return `${year}-${month}-${day}T${hours}:${minutes}`
 }
 
-
-export function formatError(e: Error, defaultMessage: string = "unknown error"): string {
+export function formatError(e: Error, defaultMessage: string = 'unknown error'): string {
   if (e instanceof APIError) {
     return e.responseBody.error || defaultMessage
   }

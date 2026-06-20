@@ -13,7 +13,6 @@ const { incidents } = storeToRefs(incidentsStore)
 
 const taskDialogRef = useTemplateRef<typeof TaskAssignDialog>('taskDialogRef')
 
-// Вычисляемые свойства для статистики
 const activeIncidents = computed(() => incidents.value.filter((i) => i.fired))
 const closedIncidents = computed(() => incidents.value.filter((i) => !i.fired))
 
@@ -32,106 +31,145 @@ onMounted(() => {
 </script>
 
 <template>
-  <div class="container-fluid">
-    <h3 class="mb-4">Incidents Management</h3>
+  <div class="container-fluid py-4">
+    <!-- Page Header -->
+    <div class="d-flex justify-content-between align-items-center mb-4">
+      <div>
+        <h3 class="fw-bold mb-1">
+          <i class="bi bi-exclamation-octagon me-2 text-danger"></i>Incidents Management
+        </h3>
+        <p class="text-muted mb-0">Monitor active alerts and assign tasks for resolution.</p>
+      </div>
+      <button class="btn btn-outline-success shadow-sm" @click="exportIncidents">
+        <i class="bi bi-download me-2"></i> Export CSV
+      </button>
+    </div>
 
     <!-- Statistics Cards -->
-    <div class="row mb-4">
+    <div class="row g-4 mb-4">
       <div class="col-md-4">
-        <div class="card bg-primary text-white">
-          <div class="card-body">
-            <h5 class="card-title">Total Incidents</h5>
-            <p class="card-text display-6">{{ incidents.length }}</p>
+        <div class="card border-0 shadow-sm stat-card h-100">
+          <div class="card-body d-flex align-items-center p-4">
+            <div class="stat-icon bg-primary bg-opacity-10 text-primary me-3">
+              <i class="bi bi-list-task"></i>
+            </div>
+            <div>
+              <p class="text-muted mb-1 small fw-semibold text-uppercase">Total Incidents</p>
+              <h3 class="fw-bold mb-0">{{ incidents.length }}</h3>
+            </div>
           </div>
         </div>
       </div>
       <div class="col-md-4">
-        <div class="card bg-danger text-white">
-          <div class="card-body">
-            <h5 class="card-title">Active</h5>
-            <p class="card-text display-6">{{ activeIncidents.length }}</p>
+        <div class="card border-0 shadow-sm stat-card h-100">
+          <div class="card-body d-flex align-items-center p-4">
+            <div class="stat-icon bg-danger bg-opacity-10 text-danger me-3">
+              <i class="bi bi-fire"></i>
+            </div>
+            <div>
+              <p class="text-muted mb-1 small fw-semibold text-uppercase">Active</p>
+              <h3 class="fw-bold mb-0 text-danger">{{ activeIncidents.length }}</h3>
+            </div>
           </div>
         </div>
       </div>
       <div class="col-md-4">
-        <div class="card bg-success text-white">
-          <div class="card-body">
-            <h5 class="card-title">Closed</h5>
-            <p class="card-text display-6">{{ closedIncidents.length }}</p>
+        <div class="card border-0 shadow-sm stat-card h-100">
+          <div class="card-body d-flex align-items-center p-4">
+            <div class="stat-icon bg-success bg-opacity-10 text-success me-3">
+              <i class="bi bi-check-circle"></i>
+            </div>
+            <div>
+              <p class="text-muted mb-1 small fw-semibold text-uppercase">Closed</p>
+              <h3 class="fw-bold mb-0 text-success">{{ closedIncidents.length }}</h3>
+            </div>
           </div>
         </div>
       </div>
     </div>
 
     <!-- Incidents Table -->
-    <div class="card">
-      <div class="card-header d-flex justify-content-between align-items-center">
-        <span>All Incidents ({{ incidents.length }})</span>
-        <div>
-          <button class="btn btn-sm btn-outline-success me-2" @click="exportIncidents">
-            <i class="bi bi-download"></i> Export CSV
-          </button>
-          <button class="btn btn-sm btn-outline-secondary" @click="fetchIncidents">
-            <i class="bi bi-arrow-clockwise"></i> Refresh
-          </button>
-        </div>
+    <div class="card border-0 shadow-sm table-card">
+      <div
+        class="card-header bg-white border-0 py-3 d-flex justify-content-between align-items-center"
+      >
+        <h6 class="mb-0 fw-bold"><i class="bi bi-inbox me-2 text-primary"></i>All Incidents</h6>
+        <button class="btn btn-sm btn-outline-secondary shadow-sm" @click="fetchIncidents">
+          <i class="bi bi-arrow-clockwise me-1"></i> Refresh
+        </button>
       </div>
       <div class="card-body p-0">
-        <div v-if="incidents.length === 0" class="text-center text-muted py-5">
-          <i class="bi bi-inbox display-4"></i>
-          <p class="mt-3">No incidents found</p>
+        <div v-if="incidents.length === 0" class="text-center py-5">
+          <i class="bi bi-shield-check display-1 text-muted d-block mb-3"></i>
+          <h5 class="text-muted">No incidents found</h5>
+          <p class="text-muted">System is running smoothly. All clear!</p>
         </div>
-        <table v-else class="table table-striped table-hover mb-0">
-          <thead class="table-light">
-            <tr>
-              <th>Key</th>
-              <th>Alert Name</th>
-              <th>Fired</th>
-              <th>Created At</th>
-              <th>Updated At</th>
-              <th>Task</th>
-              <th>Actions</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr
-              v-for="incident in incidents"
-              :key="incident.id"
-              :class="{ 'table-danger': incident.fired }"
-            >
-              <td>{{ incident.key }}</td>
-              <td>{{ incident.alertName }}</td>
-              <td>
-                <span class="badge" :class="incident.fired ? 'bg-danger' : 'bg-success'">
-                  {{ incident.fired ? 'Active' : 'Closed' }}
-                </span>
-              </td>
-              <td>{{ formatDate(incident.createDt) }}</td>
-              <td>{{ formatDate(incident.updateDt) }}</td>
-              <td>
-                <router-link
-                  v-if="incident.taskId"
-                  :to="{ name: 'TaskDetail', params: { id: incident.taskId } }"
-                >
-                  {{ incident.taskKey || '-' }}
-                </router-link>
-                <span v-else class="text-muted">—</span>
-              </td>
-              <td>
-                <button
-                  class="btn btn-sm btn-outline-primary"
-                  @click="openAssignDialog(incident.id)"
-                >
-                  <i class="bi bi-link-45deg"></i> Assign Task
-                </button>
-              </td>
-            </tr>
-          </tbody>
-        </table>
+
+        <div v-else class="table-responsive">
+          <table class="table table-hover align-middle mb-0">
+            <thead class="table-light">
+              <tr>
+                <th class="ps-4">Key</th>
+                <th>Alert Name</th>
+                <th>Status</th>
+                <th>Created</th>
+                <th>Updated</th>
+                <th>Linked Task</th>
+                <th class="text-end pe-4">Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr
+                v-for="incident in incidents"
+                :key="incident.id"
+                :class="{ 'table-row-danger': incident.fired }"
+              >
+                <td class="ps-4 fw-semibold text-muted">{{ incident.key }}</td>
+                <td class="fw-bold">{{ incident.alertName }}</td>
+                <td>
+                  <span
+                    class="badge status-pill"
+                    :class="
+                      incident.fired
+                        ? 'bg-danger bg-opacity-10 text-danger'
+                        : 'bg-success bg-opacity-10 text-success'
+                    "
+                  >
+                    <i
+                      :class="incident.fired ? 'bi bi-circle-fill' : 'bi bi-check-circle-fill'"
+                      class="me-1"
+                      style="font-size: 0.5rem; vertical-align: middle"
+                    ></i>
+                    {{ incident.fired ? 'Active' : 'Closed' }}
+                  </span>
+                </td>
+                <td class="text-muted small">{{ formatDate(incident.createDt) }}</td>
+                <td class="text-muted small">{{ formatDate(incident.updateDt) }}</td>
+                <td>
+                  <router-link
+                    v-if="incident.taskId"
+                    :to="{ name: 'TaskDetail', params: { id: incident.taskId } }"
+                    class="text-decoration-none fw-semibold"
+                  >
+                    <i class="bi bi-link-45deg me-1"></i> {{ incident.taskKey }}
+                  </router-link>
+                  <span v-else class="text-muted">—</span>
+                </td>
+                <td class="text-end pe-4">
+                  <button
+                    class="btn btn-sm btn-outline-primary shadow-sm"
+                    @click="openAssignDialog(incident.id)"
+                  >
+                    <i class="bi bi-plus-lg me-1"></i> Assign Task
+                  </button>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
       </div>
     </div>
 
-    <!-- Task Assignment Dialog -->
     <TaskAssignDialog
       ref="taskDialogRef"
       :incident-id="selectedIncidentId"
@@ -141,7 +179,37 @@ onMounted(() => {
 </template>
 
 <style scoped>
-.table-danger {
-  --bs-table-bg: rgba(220, 53, 69, 0.1);
+.stat-card {
+  border-radius: 12px;
+  transition: transform 0.2s ease;
+}
+.stat-card:hover {
+  transform: translateY(-2px);
+}
+.stat-icon {
+  width: 56px;
+  height: 56px;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.5rem;
+}
+
+.table-card {
+  border-radius: 12px;
+  overflow: hidden;
+}
+.table > :not(caption) > * > * {
+  padding: 1rem 0.75rem;
+}
+.table-row-danger {
+  --bs-table-bg: rgba(220, 53, 69, 0.04);
+}
+.status-pill {
+  padding: 0.4em 0.8em;
+  font-weight: 600;
+  border-radius: 20px;
+  font-size: 0.8rem;
 }
 </style>

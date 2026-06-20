@@ -17,15 +17,22 @@ const handleLogout = async () => {
 </script>
 
 <template>
-  <div id="app" class="min-vh-100 bg-light">
-    <nav v-if="isLoggedIn" class="navbar navbar-expand-lg navbar-dark bg-primary mb-3">
-      <div class="container-fluid">
-        <router-link class="navbar-brand" to="/">
-          <i class="fas fa-tv me-2"></i>
-          Monitoring
+  <div id="app" class="min-vh-100 bg-light d-flex flex-column">
+    <!-- Navbar -->
+    <nav
+      v-if="isLoggedIn"
+      class="navbar navbar-expand-lg navbar-dark shadow-sm sticky-top custom-navbar"
+    >
+      <div class="container-fluid px-4">
+        <router-link class="navbar-brand d-flex align-items-center" to="/">
+          <div class="brand-icon me-2">
+            <i class="bi bi-activity"></i>
+          </div>
+          <span class="fw-bold">Monitoring</span>
         </router-link>
+
         <button
-          class="navbar-toggler"
+          class="navbar-toggler border-0"
           type="button"
           data-bs-toggle="collapse"
           data-bs-target="#navbarNav"
@@ -35,12 +42,12 @@ const handleLogout = async () => {
         >
           <span class="navbar-toggler-icon"></span>
         </button>
+
         <div class="collapse navbar-collapse" id="navbarNav">
-          <ul class="navbar-nav me-auto">
+          <ul class="navbar-nav me-auto mb-2 mb-lg-0">
             <li class="nav-item">
               <router-link class="nav-link" :class="{ active: route.path === '/' }" to="/">
-                <i class="fas fa-chart-line me-1"></i>
-                Dashboard
+                <i class="bi bi-graph-up me-1"></i> Dashboard
               </router-link>
             </li>
             <li class="nav-item">
@@ -49,8 +56,7 @@ const handleLogout = async () => {
                 :class="{ active: route.path === '/alerts' }"
                 to="/alerts"
               >
-                <i class="fas fa-bell me-1"></i>
-                Alerts
+                <i class="bi bi-bell me-1"></i> Alerts
               </router-link>
             </li>
             <li class="nav-item">
@@ -59,8 +65,7 @@ const handleLogout = async () => {
                 :class="{ active: route.path === '/incidents' }"
                 to="/incidents"
               >
-                <i class="fas fa-exclamation-triangle me-1"></i>
-                Incidents
+                <i class="bi bi-exclamation-triangle me-1"></i> Incidents
               </router-link>
             </li>
             <li class="nav-item">
@@ -69,58 +74,113 @@ const handleLogout = async () => {
                 :class="{ active: route.path.startsWith('/tasks') }"
                 to="/tasks"
               >
-                <i class="fas fa-tasks me-1"></i>
-                Tasks
+                <i class="bi bi-kanban me-1"></i> Tasks
               </router-link>
             </li>
           </ul>
-          <div class="d-flex align-items-center gap-2 text-white">
-            <i class="fas fa-user me-1"></i>
-            <span>{{ user.login }} ({{ UserRole[user.role] }})</span>
-            <button class="btn btn-outline-light btn-sm" @click="handleLogout">
-              <i class="fas fa-sign-out-alt me-1"></i>
-              Logout
+
+          <div class="d-flex align-items-center gap-3 user-section">
+            <div class="d-flex align-items-center text-white">
+              <div class="user-avatar me-2">
+                {{ user.login.charAt(0).toUpperCase() }}
+              </div>
+              <div class="d-none d-md-block">
+                <div class="fw-semibold small lh-1">{{ user.login }}</div>
+                <div class="opacity-75" style="font-size: 0.7rem">{{ UserRole[user.role] }}</div>
+              </div>
+            </div>
+            <button class="btn btn-outline-light btn-sm logout-btn" @click="handleLogout">
+              <i class="bi bi-box-arrow-right me-1"></i> Logout
             </button>
           </div>
         </div>
       </div>
     </nav>
 
-    <main>
+    <!-- Main content -->
+    <main class="flex-grow-1">
       <router-view />
     </main>
 
-    <footer v-if="isLoggedIn" class="bg-light border-top mt-4 py-3">
+    <!-- Footer -->
+    <footer v-if="isLoggedIn" class="bg-white border-top py-3 mt-auto">
       <div class="container text-center">
-        <a
-          href="https://www.flaticon.com/free-icons/sock"
-          target="_blank"
-          rel="noopener noreferrer"
-          class="text-decoration-none text-secondary"
-          title="sock icons"
-        >
-          Sock icons created by Freepik - Flaticon
-        </a>
+        <small class="text-muted">
+          <i class="bi bi-heart-fill text-danger me-1" style="font-size: 0.7rem"></i>
+          Monitoring System &copy; {{ new Date().getFullYear() }}
+        </small>
       </div>
     </footer>
   </div>
 </template>
 
 <style scoped>
-.nav-link.active {
-  background-color: rgba(255, 255, 255, 0.25);
-  border-radius: 0.375rem;
+.custom-navbar {
+  background: linear-gradient(135deg, #4e73df 0%, #224abe 100%);
+  border-bottom: none;
+}
+
+.brand-icon {
+  width: 36px;
+  height: 36px;
+  background: rgba(255, 255, 255, 0.2);
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.1rem;
+}
+
+.nav-link {
   font-weight: 500;
+  padding: 0.5rem 1rem !important;
+  margin: 0 0.15rem;
+  border-radius: 8px;
+  transition: all 0.2s ease;
+}
+
+.nav-link:hover {
+  background-color: rgba(255, 255, 255, 0.1);
+}
+
+.nav-link.active {
+  background-color: rgba(255, 255, 255, 0.2);
+  color: #fff !important;
+}
+
+.user-avatar {
+  width: 36px;
+  height: 36px;
+  background: rgba(255, 255, 255, 0.2);
+  border: 2px solid rgba(255, 255, 255, 0.4);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 600;
+  font-size: 0.9rem;
+  color: #fff;
+}
+
+.logout-btn {
+  border-width: 1px;
+  transition: all 0.2s ease;
+}
+.logout-btn:hover {
+  background-color: rgba(255, 255, 255, 0.15);
+  transform: translateY(-1px);
 }
 
 @media (max-width: 991.98px) {
-  .nav-link.active {
-    background-color: rgba(255, 255, 255, 0.3);
+  .navbar-nav {
+    padding: 1rem 0;
   }
-}
-
-footer a:hover {
-  text-decoration: underline !important;
-  color: #0d6efd !important;
+  .nav-link {
+    margin: 0.25rem 0;
+  }
+  .user-section {
+    padding-top: 1rem;
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+  }
 }
 </style>

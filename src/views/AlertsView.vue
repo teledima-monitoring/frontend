@@ -17,65 +17,117 @@ async function handleCreate(data: AlertConfigCreate) {
 </script>
 
 <template>
-  <div class="container-fluid">
-    <h3 class="mb-4">Alerts Management</h3>
+  <div class="container-fluid py-4">
+    <!-- Page Header -->
+    <div class="mb-4">
+      <h3 class="fw-bold mb-1">
+        <i class="bi bi-bell-fill me-2 text-warning"></i>Alerts Management
+      </h3>
+      <p class="text-muted mb-0">Configure thresholds and notifications for system metrics.</p>
+    </div>
 
     <!-- Create Alert Form -->
-    <div class="card mb-4">
-      <div class="card-header">Create New Alert</div>
-      <div class="card-body">
+    <div class="card border-0 shadow-sm mb-4 form-card">
+      <div class="card-header bg-light border-0 py-3">
+        <h6 class="mb-0 fw-bold">
+          <i class="bi bi-plus-circle me-2 text-primary"></i>Create New Alert
+        </h6>
+      </div>
+      <div class="card-body p-4">
         <AlertForm @submit="handleCreate" :get-constraint-name="getConstraintName" />
       </div>
     </div>
 
-    <!-- Error -->
-    <div v-if="error" class="alert alert-danger">{{ error }}</div>
-
-    <!-- Loading -->
-    <div v-if="loading" class="text-center py-4">
-      <div class="spinner-border text-primary" />
+    <div v-if="error" class="alert alert-danger d-flex align-items-center shadow-sm">
+      <i class="bi bi-exclamation-triangle-fill me-2"></i> {{ error }}
     </div>
 
     <!-- Alerts Table -->
-    <div class="card" v-if="!loading">
-      <div class="card-header">Alert Configurations ({{ alerts.length }})</div>
+    <div class="card border-0 shadow-sm table-card">
+      <div
+        class="card-header bg-white border-0 py-3 d-flex justify-content-between align-items-center"
+      >
+        <h6 class="mb-0 fw-bold">
+          <i class="bi bi-list-ul me-2 text-primary"></i>Alert Configurations
+          <span class="badge bg-primary bg-opacity-10 text-primary ms-2">{{ alerts.length }}</span>
+        </h6>
+      </div>
       <div class="card-body p-0">
-        <table class="table table-striped table-hover mb-0">
-          <thead>
-            <tr>
-              <th>ID</th>
-              <th>Name</th>
-              <th>Collector Kind</th>
-              <th>Period (s)</th>
-              <th>Rules</th>
-              <th class="text-end">Actions</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr v-if="alerts.length === 0">
-              <td colspan="8" class="text-center text-muted py-4">No alerts configured</td>
-            </tr>
-            <tr v-for="alert in alerts" :key="alert.id">
-              <td>{{ alert.id }}</td>
-              <td>{{ alert.name }}</td>
-              <td>{{ alert.collectorKind }}</td>
-              <td>{{ alert.dataPeriod }}</td>
-              <td>
-                <ul class="list-unstyled mb-0 small">
-                  <li v-for="(rule, idx) in alert.rules" :key="idx">
-                    {{ rule.field }} {{ getConstraintName(rule.constraint) }} {{ rule.value }}
-                  </li>
-                </ul>
-              </td>
-              <td class="text-end">
-                <button class="btn btn-outline-danger btn-sm" @click="deleteAlert(alert.id)">
-                  Delete
-                </button>
-              </td>
-            </tr>
-          </tbody>
-        </table>
+        <div v-if="loading" class="text-center py-5">
+          <div class="spinner-border text-primary" role="status"></div>
+        </div>
+
+        <div v-else-if="alerts.length === 0" class="text-center py-5">
+          <i class="bi bi-bell-slash display-1 text-muted d-block mb-3"></i>
+          <h5 class="text-muted">No alerts configured</h5>
+          <p class="text-muted">Create your first alert to start monitoring.</p>
+        </div>
+
+        <div v-else class="table-responsive">
+          <table class="table table-hover align-middle mb-0">
+            <thead class="table-light">
+              <tr>
+                <th class="ps-4">ID</th>
+                <th>Name</th>
+                <th>Collector</th>
+                <th>Period</th>
+                <th>Rules</th>
+                <th class="text-end pe-4">Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr v-for="alert in alerts" :key="alert.id">
+                <td class="ps-4 fw-semibold text-muted">#{{ alert.id }}</td>
+                <td class="fw-bold">{{ alert.name }}</td>
+                <td>
+                  <span class="badge bg-light text-dark border">{{ alert.collectorKind }}</span>
+                </td>
+                <td>{{ alert.dataPeriod }}s</td>
+                <td>
+                  <div class="d-flex flex-wrap gap-1">
+                    <span v-for="(rule, idx) in alert.rules" :key="idx" class="rule-badge">
+                      <code>{{ rule.field }}</code>
+                      <span class="text-muted mx-1">{{ getConstraintName(rule.constraint) }}</span>
+                      <code>{{ rule.value }}</code>
+                    </span>
+                  </div>
+                </td>
+                <td class="text-end pe-4">
+                  <button
+                    class="btn btn-sm btn-outline-danger shadow-sm"
+                    @click="deleteAlert(alert.id)"
+                  >
+                    <i class="bi bi-trash me-1"></i> Delete
+                  </button>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
       </div>
     </div>
   </div>
 </template>
+
+<style scoped>
+.form-card,
+.table-card {
+  border-radius: 12px;
+  overflow: hidden;
+}
+.rule-badge {
+  background-color: #f8f9fa;
+  border: 1px solid #e9ecef;
+  border-radius: 6px;
+  padding: 0.25rem 0.5rem;
+  font-size: 0.85rem;
+}
+.rule-badge code {
+  color: #d63384;
+  background: transparent;
+  font-weight: 600;
+}
+.table > :not(caption) > * > * {
+  padding: 1rem 0.75rem;
+}
+</style>

@@ -76,106 +76,259 @@ function handleSubmit() {
 </script>
 
 <template>
-  <form @submit.prevent="handleSubmit" class="row g-3">
-    <!-- Name -->
-    <div class="col-md-4">
-      <label class="form-label">Alert Name *</label>
-      <input v-model="name" type="text" class="form-control" placeholder="My Alert" />
+  <form @submit.prevent="handleSubmit" class="alert-form">
+    <!-- Main Fields -->
+    <div class="row g-3 mb-4">
+      <div class="col-md-4">
+        <label class="form-label small fw-semibold">
+          <i class="bi bi-tag me-1 text-primary"></i> Alert Name *
+        </label>
+        <div class="input-group">
+          <span class="input-group-text bg-light border-end-0">
+            <i class="bi bi-bell text-muted"></i>
+          </span>
+          <input
+            v-model="name"
+            type="text"
+            class="form-control bg-light border-start-0"
+            placeholder="My Alert"
+          />
+        </div>
+      </div>
+
+      <div class="col-md-4">
+        <label class="form-label small fw-semibold">
+          <i class="bi bi-hdd-network me-1 text-primary"></i> Collector Kind *
+        </label>
+        <div class="input-group">
+          <span class="input-group-text bg-light border-end-0">
+            <i class="bi bi-cpu text-muted"></i>
+          </span>
+          <input
+            v-model="collectorKind"
+            type="text"
+            class="form-control bg-light border-start-0"
+            placeholder="e.g. nginx, redis"
+          />
+        </div>
+      </div>
+
+      <div class="col-md-4">
+        <label class="form-label small fw-semibold">
+          <i class="bi bi-clock me-1 text-primary"></i> Data Period (seconds)
+        </label>
+        <div class="input-group">
+          <span class="input-group-text bg-light border-end-0">
+            <i class="bi bi-hourglass-split text-muted"></i>
+          </span>
+          <input
+            v-model.number="dataPeriod"
+            type="number"
+            class="form-control bg-light border-start-0"
+            min="1"
+          />
+        </div>
+      </div>
     </div>
 
-    <!-- Collector Kind -->
-    <div class="col-md-4">
-      <label class="form-label">Collector Kind *</label>
-      <input
-        v-model="collectorKind"
-        type="text"
-        class="form-control"
-        placeholder="e.g. nginx, redis"
-      />
-    </div>
-
-    <!-- Data Period -->
-    <div class="col-md-4">
-      <label class="form-label">Data Period (seconds)</label>
-      <input v-model.number="dataPeriod" type="number" class="form-control" min="1" />
-    </div>
-
-    <!-- Filters -->
-    <div class="col-12">
-      <label class="form-label">Filters</label>
-      <div class="d-flex gap-2 mb-2">
+    <!-- Filters Section -->
+    <div class="form-section mb-4">
+      <label class="form-label fw-semibold">
+        <i class="bi bi-funnel me-1 text-primary"></i> Filters
+      </label>
+      <div class="d-flex gap-2 mb-3">
         <input v-model="filterKey" type="text" class="form-control" placeholder="Key" />
         <input v-model="filterValue" type="text" class="form-control" placeholder="Value" />
-        <button type="button" class="btn btn-secondary" @click="addFilter">Add</button>
+        <button type="button" class="btn btn-outline-primary" @click="addFilter">
+          <i class="bi bi-plus-lg me-1"></i> Add
+        </button>
       </div>
-      <div
-        v-for="(val, key) in filters"
-        :key="key"
-        class="badge bg-secondary d-inline-block me-1 mb-1 p-2"
-      >
-        {{ key }}: {{ val }}
-        <button type="button" class="btn-close btn-close-sm ms-1" @click="removeFilter(key)" />
+      <div v-if="Object.keys(filters).length > 0" class="d-flex flex-wrap gap-2">
+        <span v-for="(val, key) in filters" :key="key" class="filter-badge">
+          <code class="me-1">{{ key }}</code>
+          <span class="text-muted">=</span>
+          <code class="ms-1">{{ val }}</code>
+          <button
+            type="button"
+            class="btn-close btn-close-sm ms-2"
+            @click="removeFilter(key)"
+            aria-label="Remove"
+          ></button>
+        </span>
+      </div>
+      <div v-else class="text-muted small">
+        <i class="bi bi-info-circle me-1"></i> No filters added. Leave empty to match all sources.
       </div>
     </div>
 
-    <!-- Rules -->
-    <div class="col-12">
-      <label class="form-label fw-bold">Rules *</label>
-      <div class="d-flex gap-2 mb-2 align-items-end">
-        <div>
-          <small class="text-muted d-block">Field</small>
-          <input
-            v-model="field"
-            type="text"
-            class="form-control form-control-sm"
-            placeholder="metric_name"
-          />
+    <!-- Rules Section -->
+    <div class="form-section mb-4">
+      <label class="form-label fw-semibold">
+        <i class="bi bi-shield-check me-1 text-primary"></i> Rules *
+      </label>
+
+      <div class="rule-builder p-3 bg-light rounded-3 mb-3">
+        <div class="row g-2 align-items-end">
+          <div class="col-md-3">
+            <small class="text-muted d-block mb-1">Field</small>
+            <input
+              v-model="field"
+              type="text"
+              class="form-control form-control-sm"
+              placeholder="metric_name"
+            />
+          </div>
+          <div class="col-md-3">
+            <small class="text-muted d-block mb-1">Constraint</small>
+            <select v-model.number="constraint" class="form-select form-select-sm">
+              <option v-for="c in constraintValues" :key="c" :value="c">
+                {{ getConstraintName(c) }}
+              </option>
+            </select>
+          </div>
+          <div class="col-md-3">
+            <small class="text-muted d-block mb-1">Value</small>
+            <input v-model.number="ruleValue" type="number" class="form-control form-control-sm" />
+          </div>
+          <div class="col-md-3">
+            <button type="button" class="btn btn-primary btn-sm w-100" @click="addRule">
+              <i class="bi bi-plus-lg me-1"></i> Add Rule
+            </button>
+          </div>
         </div>
-        <div>
-          <small class="text-muted d-block">Constraint</small>
-          <select
-            v-model.number="constraint"
-            class="form-select form-select-sm"
-            style="width: 80px"
-          >
-            <option v-for="c in constraintValues" :key="c" :value="c">
-              {{ getConstraintName(c) }}
-            </option>
-          </select>
-        </div>
-        <div>
-          <small class="text-muted d-block">Value</small>
-          <input
-            v-model.number="ruleValue"
-            type="number"
-            class="form-control form-control-sm"
-            style="width: 100px"
-          />
-        </div>
-        <button type="button" class="btn btn-secondary btn-sm" @click="addRule">Add Rule</button>
       </div>
 
-      <!-- Rules list -->
-      <ul class="list-group">
-        <li
+      <!-- Rules List -->
+      <div v-if="rules.length > 0" class="rules-list">
+        <div
           v-for="(rule, idx) in rules"
           :key="idx"
-          class="list-group-item d-flex justify-content-between align-items-center"
+          class="rule-item d-flex justify-content-between align-items-center"
         >
-          <span>
-            <strong>{{ rule.field }}</strong> {{ getConstraintName(rule.constraint) }}
-            <strong>{{ rule.value }}</strong>
-          </span>
-          <button type="button" class="btn btn-outline-danger btn-sm" @click="removeRule(idx)">
-            Remove
+          <div class="d-flex align-items-center">
+            <div class="rule-number me-3">{{ idx + 1 }}</div>
+            <div>
+              <code class="rule-field">{{ rule.field }}</code>
+              <span class="text-muted mx-2">{{ getConstraintName(rule.constraint) }}</span>
+              <code class="rule-value">{{ rule.value }}</code>
+            </div>
+          </div>
+          <button type="button" class="btn btn-sm btn-outline-danger" @click="removeRule(idx)">
+            <i class="bi bi-trash me-1"></i> Remove
           </button>
-        </li>
-      </ul>
+        </div>
+      </div>
+      <div v-else class="text-muted small text-center py-3">
+        <i class="bi bi-list-ul d-block mb-1" style="font-size: 1.5rem"></i>
+        No rules defined. Add at least one rule to create the alert.
+      </div>
     </div>
 
     <!-- Submit -->
-    <div class="col-12">
-      <button type="submit" class="btn btn-success" :disabled="!isValid">Create Alert</button>
+    <div class="d-flex justify-content-end pt-3 border-top">
+      <button type="submit" class="btn btn-success px-4 shadow-sm" :disabled="!isValid">
+        <i class="bi bi-check-circle me-1"></i> Create Alert
+      </button>
     </div>
   </form>
 </template>
+
+<style scoped>
+.alert-form {
+  padding: 0;
+}
+
+.form-section {
+  padding: 1.25rem;
+  background: #fff;
+  border: 1px solid #e9ecef;
+  border-radius: 10px;
+}
+
+.rule-builder {
+  border: 1px dashed #ced4da;
+  background: #f8f9fa !important;
+}
+
+.filter-badge {
+  display: inline-flex;
+  align-items: center;
+  background: #f1f3f5;
+  border: 1px solid #dee2e6;
+  border-radius: 6px;
+  padding: 0.35rem 0.65rem;
+  font-size: 0.85rem;
+}
+
+.filter-badge code {
+  color: #4e73df;
+  background: transparent;
+  font-weight: 600;
+}
+
+.filter-badge .btn-close {
+  font-size: 0.6rem;
+}
+
+.rules-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.rule-item {
+  padding: 0.75rem 1rem;
+  background: #f8f9fa;
+  border: 1px solid #e9ecef;
+  border-radius: 8px;
+  transition: all 0.15s ease;
+}
+
+.rule-item:hover {
+  border-color: #dee2e6;
+  background: #f1f3f5;
+}
+
+.rule-number {
+  width: 28px;
+  height: 28px;
+  background: linear-gradient(135deg, #4e73df 0%, #224abe 100%);
+  color: #fff;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.75rem;
+  font-weight: 600;
+}
+
+.rule-field,
+.rule-value {
+  color: #d63384;
+  background: rgba(214, 51, 128, 0.08);
+  padding: 0.15rem 0.4rem;
+  border-radius: 4px;
+  font-weight: 600;
+}
+
+/* Input group focus styling */
+.input-group .form-control {
+  border-left: 0;
+}
+.input-group .form-control:focus {
+  border-color: #ced4da;
+  box-shadow: none;
+  background-color: #fff !important;
+}
+.input-group:focus-within {
+  box-shadow: 0 0 0 0.25rem rgba(var(--bs-primary-rgb), 0.15);
+  border-radius: 0.375rem;
+}
+.input-group:focus-within .input-group-text {
+  border-color: var(--bs-primary);
+  background-color: #fff !important;
+}
+.input-group:focus-within .form-control {
+  border-color: var(--bs-primary);
+}
+</style>

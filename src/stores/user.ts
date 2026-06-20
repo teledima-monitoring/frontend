@@ -10,13 +10,13 @@ export const useUsersStore = defineStore('users', () => {
   const error = shallowRef<string | null>(null)
 
   function getUserNameById(userId: number): string {
-    return users.value.find(u => u.id == userId)?.login ?? `Unknown (${userId})`
+    return users.value.find((u) => u.id == userId)?.login ?? `Unknown (${userId})`
   }
 
   async function fetchUsers() {
     loading.value = true
-    error.value = null;
-    
+    error.value = null
+
     try {
       users.value = await api.getUsers()
     } catch (e) {

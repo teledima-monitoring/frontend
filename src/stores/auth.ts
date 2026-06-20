@@ -21,7 +21,7 @@ export const useAuthStore = defineStore('auth', () => {
       await fetchMe()
     } catch (e) {
       error.value = formatError(e as Error, 'Login failed')
-      
+
       throw e
     } finally {
       loading.value = false
@@ -34,9 +34,9 @@ export const useAuthStore = defineStore('auth', () => {
 
     try {
       await api.signup(data)
-    } catch (e) {      
+    } catch (e) {
       error.value = formatError(e as Error, 'Signup failed')
-      
+
       throw e
     } finally {
       loading.value = false

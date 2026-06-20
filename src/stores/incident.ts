@@ -16,7 +16,7 @@ export const useIncidentsStore = defineStore('incidenents', () => {
     try {
       const data = await api.getIncidents()
       incidents.value = data
-    } catch(e) {
+    } catch (e) {
       error.value = formatError(e as Error, 'failure fetching incidents')
     }
   }
