@@ -28,5 +28,32 @@ export default defineConfig({
       '@': fileURLToPath(new URL('./src', import.meta.url))
     },
   },
-  build: {chunkSizeWarningLimit: 550 * 1024}
+  build: {
+    chunkSizeWarningLimit: 600 * 1024,
+    rollupOptions: {
+      output: {
+        chunkFileNames: 'assets/js/[name]-[hash].js',
+        entryFileNames: 'assets/js/[name]-[hash].js',
+        assetFileNames: 'assets/[ext]/[name]-[hash].[ext]',
+        codeSplitting: {
+          minSize: 10000, // Минимальный размер чанка (10 КБ)
+
+          groups: [
+            {
+              name: 'vendor-echarts',
+              test: /[\\/]node_modules[\\/](echarts|vue-echarts)[\\/]/,
+            },
+            {
+              name: 'vendor-vue',
+              test: /[\\/]node_modules[\\/](vue|@vue|pinia|vue-router)[\\/]/,
+            },
+            {
+              name: 'vendor-base',
+              test: /[\\/]node_modules[\\/]/,
+            },
+          ],
+        },
+      },
+    },
+  },
 })
