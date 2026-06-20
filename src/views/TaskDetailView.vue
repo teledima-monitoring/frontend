@@ -4,6 +4,7 @@ import { useRoute, useRouter } from 'vue-router'
 import { storeToRefs } from 'pinia'
 import { useTasksStore } from '@/stores/tasks'
 import { useUsersStore } from '@/stores/user'
+import { useIncidentsStore } from '@/stores/incident'
 import { TaskStatus } from '@/types/api'
 import { formatDate } from '@/utils/format'
 
@@ -18,7 +19,33 @@ const usersStore = useUsersStore()
 const { users } = storeToRefs(usersStore)
 const { fetchUsers, getUserNameById } = usersStore
 
+const incidentsStore = useIncidentsStore()
+const { incidents } = storeToRefs(incidentsStore)
+const { fetchIncidents } = incidentsStore
+
 const taskId = computed(() => Number(route.params.id))
+
+const showAllIncidents = ref(false)
+const INCIDENTS_PREVIEW_LIMIT = 2
+
+// Фильтрация инцидентов, привязанных к текущей задаче
+const relatedIncidents = computed(() => {
+  if (!selectedTask.value) return []
+  return incidents.value.filter((i) => i.taskId === selectedTask.value?.id)
+})
+
+const displayedIncidents = computed(() => {
+  if (showAllIncidents.value || relatedIncidents.value.length <= INCIDENTS_PREVIEW_LIMIT) {
+    return relatedIncidents.value
+  }
+  return relatedIncidents.value.slice(0, INCIDENTS_PREVIEW_LIMIT)
+})
+
+const hasMoreIncidents = computed(() => relatedIncidents.value.length > INCIDENTS_PREVIEW_LIMIT)
+
+const hiddenIncidentsCount = computed(() =>
+  Math.max(0, relatedIncidents.value.length - INCIDENTS_PREVIEW_LIMIT),
+)
 
 // Local form state for editing
 const editMode = ref(false)
@@ -31,7 +58,11 @@ const formData = reactive({
 
 async function loadTask() {
   try {
-    await fetchTaskById(taskId.value)
+    await Promise.all([fetchTaskById(taskId.value), fetchIncidents()])
+
+    // 🔥 Сбрасываем состояние сворачивания при смене задачи
+    showAllIncidents.value = false
+
     if (selectedTask.value) {
       formData.name = selectedTask.value.name
       formData.description = selectedTask.value.description
@@ -48,18 +79,13 @@ async function saveChanges() {
 
   const updates: Record<string, unknown> = {}
 
-  if (formData.name && formData.name !== selectedTask.value.name) {
-    updates.name = formData.name
-  }
-  if (formData.description !== selectedTask.value.description) {
+  if (formData.name && formData.name !== selectedTask.value.name) updates.name = formData.name
+  if (formData.description !== selectedTask.value.description)
     updates.description = formData.description
-  }
-  if (formData.assigneeId && formData.assigneeId !== selectedTask.value.assigneeId) {
+  if (formData.assigneeId && formData.assigneeId !== selectedTask.value.assigneeId)
     updates.assigneeId = formData.assigneeId
-  }
-  if (formData.status && formData.status !== selectedTask.value.status) {
+  if (formData.status && formData.status !== selectedTask.value.status)
     updates.status = formData.status
-  }
 
   if (Object.keys(updates).length > 0) {
     await updateTask(taskId.value, updates)
@@ -86,7 +112,11 @@ function goBack() {
   router.push({ name: 'Tasks' })
 }
 
-// Watch route param changes — handles both initial load and navigation to different tasks
+// 🔥 Переключение состояния сворачивания
+function toggleIncidents() {
+  showAllIncidents.value = !showAllIncidents.value
+}
+
 watch(
   () => route.params.id,
   async () => {
@@ -202,6 +232,99 @@ watch(
             </div>
           </div>
 
+          <!-- 🔥 Related Incidents Section с возможностью сворачивания -->
+          <div class="detail-box mb-4">
+            <div class="detail-label mb-3 d-flex justify-content-between align-items-center">
+              <div>
+                <i class="bi bi-exclamation-octagon me-2 text-primary"></i>Related Incidents
+                <span
+                  v-if="relatedIncidents.length > 0"
+                  class="badge bg-primary bg-opacity-10 text-primary ms-2"
+                >
+                  {{ relatedIncidents.length }}
+                </span>
+              </div>
+            </div>
+
+            <div
+              v-if="relatedIncidents.length === 0"
+              class="text-muted small d-flex align-items-center"
+            >
+              <i class="bi bi-info-circle me-2"></i>No incidents linked to this task.
+            </div>
+
+            <div v-else>
+              <!-- Список инцидентов с анимацией -->
+              <div class="incident-list">
+                <transition-group name="incident-fade">
+                  <div
+                    v-for="incident in displayedIncidents"
+                    :key="incident.id"
+                    class="incident-item"
+                  >
+                    <div class="d-flex justify-content-between align-items-center">
+                      <div class="d-flex align-items-center">
+                        <div
+                          class="incident-icon me-3"
+                          :class="
+                            incident.fired
+                              ? 'bg-danger bg-opacity-10 text-danger'
+                              : 'bg-success bg-opacity-10 text-success'
+                          "
+                        >
+                          <i :class="incident.fired ? 'bi bi-fire' : 'bi bi-check-circle'"></i>
+                        </div>
+                        <div>
+                          <div class="fw-semibold">{{ incident.key }}</div>
+                          <div class="text-muted small">{{ incident.alertName }}</div>
+                        </div>
+                      </div>
+                      <div class="d-flex align-items-center gap-3">
+                        <span class="text-muted small d-none d-md-inline">{{
+                          formatDate(incident.createDt)
+                        }}</span>
+                        <span
+                          class="badge status-pill"
+                          :class="
+                            incident.fired
+                              ? 'bg-danger bg-opacity-10 text-danger'
+                              : 'bg-success bg-opacity-10 text-success'
+                          "
+                        >
+                          <i
+                            :class="
+                              incident.fired ? 'bi bi-circle-fill' : 'bi bi-check-circle-fill'
+                            "
+                            class="me-1"
+                            style="font-size: 0.5rem; vertical-align: middle"
+                          ></i>
+                          {{ incident.fired ? 'Active' : 'Closed' }}
+                        </span>
+                      </div>
+                    </div>
+                  </div>
+                </transition-group>
+              </div>
+
+              <div v-if="hasMoreIncidents" class="text-center mt-3 pt-3 border-top">
+                <button
+                  class="btn btn-sm btn-link text-decoration-none toggle-incidents-btn"
+                  @click="toggleIncidents"
+                >
+                  <i
+                    :class="showAllIncidents ? 'bi bi-chevron-up' : 'bi bi-chevron-down'"
+                    class="me-1"
+                  ></i>
+                  <span v-if="showAllIncidents"> Show less </span>
+                  <span v-else>
+                    Show all {{ relatedIncidents.length }} incidents
+                    <span class="text-muted small">({{ hiddenIncidentsCount }} more)</span>
+                  </span>
+                </button>
+              </div>
+            </div>
+          </div>
+
           <!-- Dates -->
           <div class="row g-4 mb-4">
             <div class="col-md-6">
@@ -237,9 +360,9 @@ watch(
         <!-- Edit Mode -->
         <form v-else @submit.prevent="saveChanges" class="needs-validation edit-form">
           <div class="mb-4">
-            <label for="task-name" class="form-label fw-semibold">
-              <i class="bi bi-card-heading me-2 text-primary"></i>Name
-            </label>
+            <label for="task-name" class="form-label fw-semibold"
+              ><i class="bi bi-card-heading me-2 text-primary"></i>Name</label
+            >
             <input
               id="task-name"
               v-model="formData.name"
@@ -249,11 +372,10 @@ watch(
               required
             />
           </div>
-
           <div class="mb-4">
-            <label for="task-desc" class="form-label fw-semibold">
-              <i class="bi bi-text-paragraph me-2 text-primary"></i>Description
-            </label>
+            <label for="task-desc" class="form-label fw-semibold"
+              ><i class="bi bi-text-paragraph me-2 text-primary"></i>Description</label
+            >
             <textarea
               id="task-desc"
               v-model="formData.description"
@@ -262,12 +384,11 @@ watch(
               placeholder="Enter task description"
             ></textarea>
           </div>
-
           <div class="row g-4 mb-4">
             <div class="col-md-6">
-              <label for="task-status" class="form-label fw-semibold">
-                <i class="bi bi-flag me-2 text-primary"></i>Status
-              </label>
+              <label for="task-status" class="form-label fw-semibold"
+                ><i class="bi bi-flag me-2 text-primary"></i>Status</label
+              >
               <select
                 id="task-status"
                 v-model.number="formData.status"
@@ -278,11 +399,10 @@ watch(
                 <option :value="TaskStatus.Closed">Closed</option>
               </select>
             </div>
-
             <div class="col-md-6">
-              <label for="task-assignee" class="form-label fw-semibold">
-                <i class="bi bi-person-check me-2 text-primary"></i>Assignee
-              </label>
+              <label for="task-assignee" class="form-label fw-semibold"
+                ><i class="bi bi-person-check me-2 text-primary"></i>Assignee</label
+              >
               <select
                 id="task-assignee"
                 v-model.number="formData.assigneeId"
@@ -295,7 +415,6 @@ watch(
               </select>
             </div>
           </div>
-
           <div class="d-flex gap-2 mt-4 pt-3 border-top">
             <button type="submit" class="btn btn-primary px-4 shadow-sm" :disabled="!formData.name">
               <i class="bi bi-check-lg me-1"></i> Save Changes
@@ -321,11 +440,9 @@ watch(
   border-radius: 12px;
   overflow: hidden;
 }
-
 .card-header {
   border-bottom: 1px solid rgba(0, 0, 0, 0.05);
 }
-
 .task-icon-wrapper {
   width: 48px;
   height: 48px;
@@ -335,12 +452,10 @@ watch(
   align-items: center;
   justify-content: center;
 }
-
 .back-btn:hover {
   color: var(--bs-primary) !important;
   transition: color 0.2s ease;
 }
-
 .detail-box {
   background-color: #f8f9fa;
   border: 1px solid #e9ecef;
@@ -349,12 +464,10 @@ watch(
   height: 100%;
   transition: all 0.2s ease;
 }
-
 .detail-box:hover {
   border-color: #dee2e6;
   background-color: #f1f3f5;
 }
-
 .detail-label {
   font-size: 0.8rem;
   font-weight: 600;
@@ -365,51 +478,112 @@ watch(
   display: flex;
   align-items: center;
 }
-
 .detail-value {
   font-size: 1rem;
   color: #212529;
   font-weight: 500;
   word-break: break-word;
 }
-
 .status-badge {
   font-size: 0.85rem;
   padding: 0.4em 0.8em;
   font-weight: 600;
   border-radius: 20px;
 }
-
 .comments-section {
   background-color: #fff;
   border: 2px dashed #dee2e6;
 }
-
 .comments-placeholder {
   background-color: transparent;
 }
-
 .edit-form .form-control,
 .edit-form .form-select {
   border-radius: 8px;
   border: 1px solid #ced4da;
   transition: all 0.2s ease;
 }
-
 .edit-form .form-control:focus,
 .edit-form .form-select:focus {
   border-color: var(--bs-primary);
   box-shadow: 0 0 0 0.25rem rgba(var(--bs-primary-rgb), 0.15);
 }
 
-/* Responsive adjustments */
+.incident-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.incident-item {
+  padding: 0.85rem 1rem;
+  background: #fff;
+  border: 1px solid #e9ecef;
+  border-radius: 8px;
+  transition: all 0.15s ease;
+}
+
+.incident-item:hover {
+  border-color: #dee2e6;
+  background: #f8f9fa;
+  transform: translateX(2px);
+}
+
+.incident-icon {
+  width: 36px;
+  height: 36px;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1rem;
+}
+
+.status-pill {
+  font-size: 0.78rem;
+  padding: 0.4em 0.8em;
+  font-weight: 600;
+  border-radius: 20px;
+}
+
+.toggle-incidents-btn {
+  color: var(--bs-primary);
+  font-weight: 500;
+  padding: 0.5rem 1rem;
+  transition: all 0.2s ease;
+}
+
+.toggle-incidents-btn:hover {
+  color: var(--bs-primary);
+  background-color: rgba(var(--bs-primary-rgb), 0.05);
+  border-radius: 6px;
+}
+
+.toggle-incidents-btn i {
+  transition: transform 0.3s ease;
+}
+
+.incident-fade-enter-active,
+.incident-fade-leave-active {
+  transition: all 0.3s ease;
+}
+
+.incident-fade-enter-from,
+.incident-fade-leave-to {
+  opacity: 0;
+  transform: translateY(-10px);
+}
+
+.incident-fade-move {
+  transition: transform 0.3s ease;
+}
+
 @media (max-width: 768px) {
   .card-header {
     flex-direction: column;
     align-items: flex-start !important;
     gap: 1rem;
   }
-
   .task-icon-wrapper {
     width: 40px;
     height: 40px;
