@@ -18,6 +18,11 @@ export enum TaskStatus {
   Closed = 3,
 }
 
+export enum SSESource {
+  Incident = 1,
+  Task = 2,
+}
+
 // --- Auth Types ---
 export interface LoginRequest {
   login: string
@@ -47,6 +52,11 @@ export interface Metric {
   dt: string
   name: string
   value: number
+}
+
+export interface SSEEvent {
+  id: number
+  source: SSESource
 }
 
 export interface Collector {
@@ -120,11 +130,6 @@ export interface IncidentView {
   updateDt: Date
 }
 
-export interface NotificationEvent {
-  id: number
-  fired: boolean
-}
-
 export interface IncidentSetTask {
   task_id: number
 }
@@ -156,4 +161,12 @@ export interface TaskView {
   incidentsId: Array<number>
   createDt: Date
   updateDt: Date
+}
+
+// Notifications
+export interface NotificationView {
+  id: number
+  text: string
+  readed: boolean
+  dt: Date
 }

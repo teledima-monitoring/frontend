@@ -17,6 +17,7 @@ declare module 'vue' {
     DashboardList: typeof import('./src/components/dashboard/DashboardList.vue')['default']
     FilterKeyValueEditor: typeof import('./src/components/dashboard/FilterKeyValueEditor.vue')['default']
     MetricChart: typeof import('./src/components/MetricChart.vue')['default']
+    NotificationsDropdown: typeof import('./src/components/NotificationsDropdown.vue')['default']
     RouterLink: typeof import('vue-router')['RouterLink']
     RouterView: typeof import('vue-router')['RouterView']
     TaskAssignDialog: typeof import('./src/components/tasks/TaskAssignDialog.vue')['default']

@@ -3,10 +3,12 @@ import { useAuthStore } from '@/stores/auth'
 import { UserRole } from '@/types/api'
 import { storeToRefs } from 'pinia'
 import { useRoute, useRouter } from 'vue-router'
+import NotificationsDropdown from '@/components/NotificationsDropdown.vue'
 
 const authStore = useAuthStore()
 const { isLoggedIn, user } = storeToRefs(authStore)
 const { logout } = authStore
+
 const route = useRoute()
 const router = useRouter()
 
@@ -80,6 +82,10 @@ const handleLogout = async () => {
           </ul>
 
           <div class="d-flex align-items-center gap-3 user-section">
+            <!-- Подключаем наш отдельный компонент уведомлений -->
+            <NotificationsDropdown />
+
+            <!-- User Info & Logout -->
             <div class="d-flex align-items-center text-white">
               <div class="user-avatar me-2">
                 {{ user.login.charAt(0).toUpperCase() }}

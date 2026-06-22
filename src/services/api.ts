@@ -15,6 +15,7 @@ import type {
   TaskCreate,
   TaskUpdate,
   TaskView,
+  NotificationView,
 } from '@/types/api'
 import { APIError } from '@/services/error'
 
@@ -64,6 +65,9 @@ export const api = {
   getMetrics: (data: MetricsRequest) =>
     request<MetricsResponse>('/metrics', { method: 'POST', body: JSON.stringify(data) }),
 
+  // SSE for incidents
+  listenEvents: (): EventSource => new EventSource(`${BASE_URL}/sse/listen`),
+
   // Alerts
   getAlerts: () => request<Array<AlertConfigView>>('/alerts'),
   createAlert: (data: AlertConfigCreate) =>
@@ -82,9 +86,6 @@ export const api = {
   getIncidents: () => request<Array<IncidentView>>('/incidents'),
   setIncidentTask: (incidentId: number, data: IncidentSetTask) =>
     request<void>(`/incidents/${incidentId}/task`, { method: 'PUT', body: JSON.stringify(data) }),
-
-  // SSE for incidents
-  listenIncidents: (): EventSource => new EventSource(`${BASE_URL}/incidents/listen`),
 
   // Export incidents to CSV
   exportIncidentsCSV: async (): Promise<void> => {
@@ -133,4 +134,10 @@ export const api = {
   getTaskById: (id: number) => request<TaskView>(`/tasks/${id}`),
   updateTask: (id: number, data: TaskUpdate) =>
     request<void>(`/tasks/${id}`, { method: 'PUT', body: JSON.stringify(data) }),
+
+  // Notifications
+  getNotifications: () => request<NotificationView[]>('/notifications'),
+  markAsRead: (notificationId: number) =>
+    request<void>(`/notifications/${notificationId}/read`, { method: 'POST' }),
+  markAllAsRead: () => request<void>('/notifications/read-all', { method: 'POST' }),
 }
