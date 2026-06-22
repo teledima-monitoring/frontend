@@ -1,28 +1,20 @@
 <script setup lang="ts">
-import type { AlertRule } from '@/types/api'
+import type { AlertConfigView, AlertRule } from '@/types/api'
 import { Constraint } from '@/types/api'
-import { ref, computed } from 'vue'
+import { ref, computed, watch } from 'vue'
 
 const props = defineProps<{
-  initialName?: string
-  initialKind?: string
+  initialData?: AlertConfigView
   getConstraintName: (constraint: Constraint) => string
 }>()
 
 const emit = defineEmits<{
-  submit: [
-    data: {
-      name: string
-      collectorKind: string
-      dataPeriod: number
-      filters: Record<string, string>
-      rules: AlertRule[]
-    },
-  ]
+  submit: [data: any]
+  cancel: []
 }>()
 
-const name = ref(props.initialName || '')
-const collectorKind = ref(props.initialKind || '')
+const name = ref('')
+const collectorKind = ref('')
 const dataPeriod = ref(60)
 const filterKey = ref('')
 const filterValue = ref('')
@@ -32,6 +24,30 @@ const field = ref('')
 const constraint = ref(Constraint.Equal)
 const ruleValue = ref(0)
 const rules = ref<AlertRule[]>([])
+
+const isEditing = computed(() => !!props.initialData)
+
+// Следим за изменением initialData, чтобы заполнять форму при редактировании
+watch(() => props.initialData, (newData) => {
+  if (newData) {
+    name.value = newData.name
+    collectorKind.value = newData.collectorKind
+    dataPeriod.value = newData.dataPeriod
+    filters.value = { ...newData.filters }
+    rules.value = newData.rules.map(r => ({ ...r }))
+  } else {
+    name.value = ''
+    collectorKind.value = ''
+    dataPeriod.value = 60
+    filters.value = {}
+    rules.value = []
+  }
+  // Сбрасываем поля конструктора
+  filterKey.value = ''
+  filterValue.value = ''
+  field.value = ''
+  ruleValue.value = 0
+}, { immediate: true })
 
 const constraintValues = Object.keys(Constraint)
   .filter((key) => !isNaN(Number(key)))
@@ -51,7 +67,7 @@ function removeFilter(key: string) {
 
 function addRule() {
   if (field.value) {
-    rules.value.push({ field: field.value, constraint: constraint.value, value: ruleValue.value })
+    rules.value.push({ field: field.value, constraint: constraint.value, value: ruleValue.value }) 
     field.value = ''
     ruleValue.value = 0
   }
@@ -65,13 +81,21 @@ const isValid = computed(() => name.value && collectorKind.value && rules.value.
 
 function handleSubmit() {
   if (!isValid.value) return
-  emit('submit', {
+  
+  const payload = {
     name: name.value,
     collectorKind: collectorKind.value,
     dataPeriod: dataPeriod.value,
     filters: filters.value,
     rules: rules.value,
-  })
+  }
+  
+  // Если редактируем, добавляем id в payload
+  if (isEditing.value && props.initialData) {
+    emit('submit', { id: props.initialData.id, ...payload })
+  } else {
+    emit('submit', payload)
+  }
 }
 </script>
 
@@ -87,15 +111,9 @@ function handleSubmit() {
           <span class="input-group-text bg-light border-end-0">
             <i class="bi bi-bell text-muted"></i>
           </span>
-          <input
-            v-model="name"
-            type="text"
-            class="form-control bg-light border-start-0"
-            placeholder="My Alert"
-          />
+          <input v-model="name" type="text" class="form-control bg-light border-start-0" placeholder="My Alert" />
         </div>
       </div>
-
       <div class="col-md-4">
         <label class="form-label small fw-semibold">
           <i class="bi bi-hdd-network me-1 text-primary"></i> Collector Kind *
@@ -104,15 +122,9 @@ function handleSubmit() {
           <span class="input-group-text bg-light border-end-0">
             <i class="bi bi-cpu text-muted"></i>
           </span>
-          <input
-            v-model="collectorKind"
-            type="text"
-            class="form-control bg-light border-start-0"
-            placeholder="e.g. nginx, redis"
-          />
+          <input v-model="collectorKind" type="text" class="form-control bg-light border-start-0" placeholder="e.g. nginx, redis" />
         </div>
       </div>
-
       <div class="col-md-4">
         <label class="form-label small fw-semibold">
           <i class="bi bi-clock me-1 text-primary"></i> Data Period (seconds)
@@ -121,12 +133,7 @@ function handleSubmit() {
           <span class="input-group-text bg-light border-end-0">
             <i class="bi bi-hourglass-split text-muted"></i>
           </span>
-          <input
-            v-model.number="dataPeriod"
-            type="number"
-            class="form-control bg-light border-start-0"
-            min="1"
-          />
+          <input v-model.number="dataPeriod" type="number" class="form-control bg-light border-start-0" min="1" />
         </div>
       </div>
     </div>
@@ -148,12 +155,7 @@ function handleSubmit() {
           <code class="me-1">{{ key }}</code>
           <span class="text-muted">=</span>
           <code class="ms-1">{{ val }}</code>
-          <button
-            type="button"
-            class="btn-close btn-close-sm ms-2"
-            @click="removeFilter(key)"
-            aria-label="Remove"
-          ></button>
+          <button type="button" class="btn-close btn-close-sm ms-2" @click="removeFilter(key)" aria-label="Remove"></button>
         </span>
       </div>
       <div v-else class="text-muted small">
@@ -166,24 +168,16 @@ function handleSubmit() {
       <label class="form-label fw-semibold">
         <i class="bi bi-shield-check me-1 text-primary"></i> Rules *
       </label>
-
       <div class="rule-builder p-3 bg-light rounded-3 mb-3">
         <div class="row g-2 align-items-end">
           <div class="col-md-3">
             <small class="text-muted d-block mb-1">Field</small>
-            <input
-              v-model="field"
-              type="text"
-              class="form-control form-control-sm"
-              placeholder="metric_name"
-            />
+            <input v-model="field" type="text" class="form-control form-control-sm" placeholder="metric_name" />
           </div>
           <div class="col-md-3">
             <small class="text-muted d-block mb-1">Constraint</small>
             <select v-model.number="constraint" class="form-select form-select-sm">
-              <option v-for="c in constraintValues" :key="c" :value="c">
-                {{ getConstraintName(c) }}
-              </option>
+              <option v-for="c in constraintValues" :key="c" :value="c">{{ getConstraintName(c) }}</option>
             </select>
           </div>
           <div class="col-md-3">
@@ -200,11 +194,7 @@ function handleSubmit() {
 
       <!-- Rules List -->
       <div v-if="rules.length > 0" class="rules-list">
-        <div
-          v-for="(rule, idx) in rules"
-          :key="idx"
-          class="rule-item d-flex justify-content-between align-items-center"
-        >
+        <div v-for="(rule, idx) in rules" :key="idx" class="rule-item d-flex justify-content-between align-items-center">
           <div class="d-flex align-items-center">
             <div class="rule-number me-3">{{ idx + 1 }}</div>
             <div>
@@ -225,9 +215,12 @@ function handleSubmit() {
     </div>
 
     <!-- Submit -->
-    <div class="d-flex justify-content-end pt-3 border-top">
+    <div class="d-flex justify-content-end pt-3 border-top gap-2">
+      <button v-if="isEditing" type="button" class="btn btn-outline-secondary px-4" @click="emit('cancel')">
+        <i class="bi bi-x-lg me-1"></i> Cancel
+      </button>
       <button type="submit" class="btn btn-success px-4 shadow-sm" :disabled="!isValid">
-        <i class="bi bi-check-circle me-1"></i> Create Alert
+        <i class="bi bi-check-circle me-1"></i> {{ isEditing ? 'Update Alert' : 'Create Alert' }}
       </button>
     </div>
   </form>

@@ -1,18 +1,38 @@
 <script setup lang="ts">
-import { onMounted } from 'vue'
+import { onMounted, ref } from 'vue'
 import { useAlertsStore } from '@/stores/alerts'
 import { storeToRefs } from 'pinia'
 import AlertForm from '@/components/AlertForm.vue'
-import type { AlertConfigCreate } from '@/types/api'
+import type { AlertConfigView } from '@/types/api'
 
 const alertsStore = useAlertsStore()
 const { alerts, loading, error } = storeToRefs(alertsStore)
-const { fetchAlerts, deleteAlert, getConstraintName } = alertsStore
+const { fetchAlerts, deleteAlert, createAlert, updateAlert, getConstraintName } = alertsStore
+
+const editingAlert = ref<AlertConfigView | null>(null)
 
 onMounted(fetchAlerts)
 
-async function handleCreate(data: AlertConfigCreate) {
-  await alertsStore.createAlert(data)
+async function handleSubmit(data: any) {
+  if (data.id) {
+    // Если есть id, вызываем обновление
+    await updateAlert(data.id, data)
+  } else {
+    // Иначе создание
+    await createAlert(data)
+  }
+  // Сбрасываем режим редактирования после успешного сохранения
+  editingAlert.value = null
+}
+
+function startEdit(alert: AlertConfigView) {
+  editingAlert.value = alert
+  // Плавно скроллим наверх к форме
+  window.scrollTo({ top: 0, behavior: 'smooth' })
+}
+
+function cancelEdit() {
+  editingAlert.value = null
 }
 </script>
 
@@ -26,15 +46,26 @@ async function handleCreate(data: AlertConfigCreate) {
       <p class="text-muted mb-0">Configure thresholds and notifications for system metrics.</p>
     </div>
 
-    <!-- Create Alert Form -->
+    <!-- Create / Edit Alert Form -->
     <div class="card border-0 shadow-sm mb-4 form-card">
-      <div class="card-header bg-light border-0 py-3">
+      <div class="card-header bg-light border-0 py-3 d-flex justify-content-between align-items-center">
         <h6 class="mb-0 fw-bold">
-          <i class="bi bi-plus-circle me-2 text-primary"></i>Create New Alert
+          <i :class="editingAlert ? 'bi bi-pencil-square me-2 text-warning' : 'bi bi-plus-circle me-2 text-primary'"></i>
+          {{ editingAlert ? `Edit Alert: ${editingAlert.name}` : 'Create New Alert' }}
         </h6>
+        <button v-if="editingAlert" class="btn btn-sm btn-outline-secondary" @click="cancelEdit">
+          <i class="bi bi-x-lg me-1"></i> Cancel
+        </button>
       </div>
       <div class="card-body p-4">
-        <AlertForm @submit="handleCreate" :get-constraint-name="getConstraintName" />
+        <!-- :key нужен для полного пересоздания компонента при смене алерта, чтобы сбросить внутреннее состояние -->
+        <AlertForm 
+          :key="editingAlert?.id || 'new'" 
+          :initial-data="editingAlert || undefined" 
+          :get-constraint-name="getConstraintName" 
+          @submit="handleSubmit" 
+          @cancel="cancelEdit" 
+        />
       </div>
     </div>
 
@@ -44,9 +75,7 @@ async function handleCreate(data: AlertConfigCreate) {
 
     <!-- Alerts Table -->
     <div class="card border-0 shadow-sm table-card">
-      <div
-        class="card-header bg-white border-0 py-3 d-flex justify-content-between align-items-center"
-      >
+      <div class="card-header bg-white border-0 py-3 d-flex justify-content-between align-items-center">
         <h6 class="mb-0 fw-bold">
           <i class="bi bi-list-ul me-2 text-primary"></i>Alert Configurations
           <span class="badge bg-primary bg-opacity-10 text-primary ms-2">{{ alerts.length }}</span>
@@ -93,12 +122,21 @@ async function handleCreate(data: AlertConfigCreate) {
                   </div>
                 </td>
                 <td class="text-end pe-4">
-                  <button
-                    class="btn btn-sm btn-outline-danger shadow-sm"
-                    @click="deleteAlert(alert.id)"
-                  >
-                    <i class="bi bi-trash me-1"></i> Delete
-                  </button>
+                  <div class="d-flex justify-content-end gap-2">
+                    <!-- Кнопка редактирования -->
+                    <button
+                      class="btn btn-sm btn-outline-primary shadow-sm"
+                      @click="startEdit(alert)"
+                    >
+                      <i class="bi bi-pencil me-1"></i> Edit
+                    </button>
+                    <button
+                      class="btn btn-sm btn-outline-danger shadow-sm"
+                      @click="deleteAlert(alert.id)"
+                    >
+                      <i class="bi bi-trash me-1"></i> Delete
+                    </button>
+                  </div>
                 </td>
               </tr>
             </tbody>

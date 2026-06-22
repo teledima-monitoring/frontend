@@ -2,7 +2,7 @@ import { defineStore } from 'pinia'
 import { ref } from 'vue'
 import { api } from '@/services/api'
 import { Constraint } from '@/types/api'
-import type { AlertConfigCreate, AlertConfigView } from '@/types/api'
+import type { AlertConfigCreate, AlertConfigUpdate, AlertConfigView } from '@/types/api'
 import { formatError } from '@/utils/format'
 
 export const useAlertsStore = defineStore('alerts', () => {
@@ -46,6 +46,21 @@ export const useAlertsStore = defineStore('alerts', () => {
     }
   }
 
+  async function updateAlert(id: number, data: AlertConfigUpdate) {
+    loading.value = true
+    error.value = null
+
+    try {
+      await api.updateAlert(id, data)
+      await fetchAlerts()
+    } catch (e) {
+      error.value = formatError(e as Error, 'Failed to update alert')
+      throw e
+    } finally {
+      loading.value = false
+    }
+  }
+
   async function deleteAlert(id: number) {
     loading.value = true
     error.value = null
@@ -71,6 +86,7 @@ export const useAlertsStore = defineStore('alerts', () => {
     error,
     fetchAlerts,
     createAlert,
+    updateAlert,
     deleteAlert,
     getConstraintName,
   }

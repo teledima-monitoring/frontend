@@ -100,6 +100,16 @@ export interface AlertConfigView {
   dataPeriod: number
   filters: Record<string, string>
   rules: AlertRule[]
+  subscribers: number[]
+}
+
+export interface AlertConfigUpdate {
+  name?: string
+  collectorKind?: string
+  dataPeriod?: number
+  filters?: Record<string, string>
+  rules?: AlertRule[]
+  subscribers?: number[]
 }
 
 // --- Dashboards Types ---
