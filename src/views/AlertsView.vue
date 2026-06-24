@@ -1,33 +1,59 @@
 <script setup lang="ts">
 import { onMounted, ref } from 'vue'
 import { useAlertsStore } from '@/stores/alerts'
+import { useAuthStore } from '@/stores/auth' // Импортируем auth store
 import { storeToRefs } from 'pinia'
 import AlertForm from '@/components/AlertForm.vue'
 import type { AlertConfigView } from '@/types/api'
 
 const alertsStore = useAlertsStore()
+const authStore = useAuthStore() // Получаем auth store
+
 const { alerts, loading, error } = storeToRefs(alertsStore)
+const { user } = storeToRefs(authStore) // Получаем данные текущего пользователя
+
 const { fetchAlerts, deleteAlert, createAlert, updateAlert, getConstraintName } = alertsStore
 
 const editingAlert = ref<AlertConfigView | null>(null)
 
 onMounted(fetchAlerts)
 
+// Проверка, подписан ли текущий пользователь на алерт
+function isSubscribed(alert: AlertConfigView): boolean {
+  if (!user.value) return false
+  return (alert.subscribers || []).includes(user.value.id)
+}
+
+// Переключение подписки (добавить/удалить себя из subscribers)
+async function toggleSubscribe(alert: AlertConfigView) {
+  if (!user.value) return
+  
+  const currentSubs = alert.subscribers || []
+  let newSubs: number[]
+  
+  if (isSubscribed(alert)) {
+    // Если уже подписан - удаляем себя
+    newSubs = currentSubs.filter(id => id !== user.value!.id)
+  } else {
+    // Если не подписан - добавляем себя
+    newSubs = [...currentSubs, user.value.id]
+  }
+  
+  // Вызываем обновление алерта, передавая только новый массив подписчиков
+  await updateAlert(alert.id, { subscribers: newSubs })
+}
+
 async function handleSubmit(data: any) {
   if (data.id) {
-    // Если есть id, вызываем обновление
     await updateAlert(data.id, data)
   } else {
-    // Иначе создание
     await createAlert(data)
   }
-  // Сбрасываем режим редактирования после успешного сохранения
   editingAlert.value = null
 }
 
 function startEdit(alert: AlertConfigView) {
   editingAlert.value = alert
-  // Плавно скроллим наверх к форме
   window.scrollTo({ top: 0, behavior: 'smooth' })
 }
 
@@ -58,7 +84,6 @@ function cancelEdit() {
         </button>
       </div>
       <div class="card-body p-4">
-        <!-- :key нужен для полного пересоздания компонента при смене алерта, чтобы сбросить внутреннее состояние -->
         <AlertForm 
           :key="editingAlert?.id || 'new'" 
           :initial-data="editingAlert || undefined" 
@@ -123,7 +148,19 @@ function cancelEdit() {
                 </td>
                 <td class="text-end pe-4">
                   <div class="d-flex justify-content-end gap-2">
-                    <!-- Кнопка редактирования -->
+                    
+                    <button
+                      class="btn btn-sm shadow-sm d-flex align-items-center"
+                      :class="isSubscribed(alert) ? 'btn-outline-secondary' : 'btn-outline-primary'"
+                      @click="toggleSubscribe(alert)"
+                      :title="isSubscribed(alert) ? 'Unsubscribe from this alert' : 'Subscribe to this alert'"
+                    >
+                      <i :class="isSubscribed(alert) ? 'bi bi-bell-slash' : 'bi bi-bell-fill'"></i>
+                      <span class="d-none d-xl-inline ms-1">
+                        {{ isSubscribed(alert) ? 'Unsubscribe' : 'Subscribe' }}
+                      </span>
+                    </button>
+
                     <button
                       class="btn btn-sm btn-outline-primary shadow-sm"
                       @click="startEdit(alert)"

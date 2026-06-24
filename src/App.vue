@@ -40,7 +40,7 @@ function connect() {
   }
   eventSource.value = api.listenEvents()
 
-  eventSource.value.onmessage = (event) => {
+  eventSource.value.onmessage = async(event) => {
     try {
       if (typeof event.data == 'string' && event.data == 'OK') {
         return
@@ -53,7 +53,8 @@ function connect() {
       }
 
       if (data.source == SSESource.Incident) {
-        incidentsStore.fetchIncidents()
+        await incidentsStore.fetchIncidents()
+        await notificationsStore.fetchNotifications()
       } else if (data.source == SSESource.Task) {
         notificationsStore.fetchNotifications()
       } else {
