@@ -32,6 +32,10 @@ export interface LoginRequest {
 export interface SignUpRequest {
   login: string
   password: string
+  firstName: string
+  lastName: string
+  middleName?: string
+  email: string
 }
 
 export interface MeResponse {
