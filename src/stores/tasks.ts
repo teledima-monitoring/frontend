@@ -2,7 +2,7 @@ import { defineStore } from 'pinia'
 import { ref, shallowRef } from 'vue'
 import { api } from '@/services/api'
 import type { TaskView, TaskCreate, TaskUpdate, IncidentSetTask } from '@/types/api'
-import { TaskStatus } from '@/types/api'
+import { TaskStatus, TaskPriority } from '@/types/api'
 import { formatError } from '@/utils/format'
 
 export const useTasksStore = defineStore('tasks', () => {
@@ -23,12 +23,30 @@ export const useTasksStore = defineStore('tasks', () => {
     [TaskStatus.Closed]: 'bg-success',
   }
 
+  const taskPriorityLabels: Record<TaskPriority, string> = {
+    [TaskPriority.High]: 'High',
+    [TaskPriority.Medium]: 'Medium',
+    [TaskPriority.Low]: 'Low',
+  }
+  const taskPriorityBadgeClasses: Record<TaskPriority, string> = {
+    [TaskPriority.High]: 'bg-danger',
+    [TaskPriority.Medium]: 'bg-warning text-dark',
+    [TaskPriority.Low]: 'bg-info text-dark',
+  }
+
   function getTaskStatusLabel(status: TaskStatus): string {
     return taskStatusLabels[status] ?? 'Unknown'
   }
 
   function getTaskStatusBadgeClass(status: TaskStatus): string {
     return taskStatusBadgeClasses[status] ?? 'bg-secondary'
+  }
+
+  function getTaskPriorityLabel(priority: TaskPriority): string {
+    return taskPriorityLabels[priority] ?? 'Medium'
+  }
+  function getTaskPriorityBadgeClass(priority: TaskPriority): string {
+    return taskPriorityBadgeClasses[priority] ?? 'bg-secondary'
   }
 
   async function fetchTasks() {
@@ -119,6 +137,8 @@ export const useTasksStore = defineStore('tasks', () => {
     error,
     getTaskStatusLabel,
     getTaskStatusBadgeClass,
+    getTaskPriorityLabel,
+    getTaskPriorityBadgeClass,
     fetchTasks,
     fetchTaskById,
     createTask,

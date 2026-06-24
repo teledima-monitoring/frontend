@@ -73,7 +73,7 @@ export const api = {
   getAlerts: () => request<Array<AlertConfigView>>('/alerts'),
   createAlert: (data: AlertConfigCreate) =>
     request<void>('/alerts', { method: 'POST', body: JSON.stringify(data) }),
-  updateAlert: (id: number, data: AlertConfigUpdate) => 
+  updateAlert: (id: number, data: AlertConfigUpdate) =>
     request<void>(`/alerts/${id}`, { method: 'PUT', body: JSON.stringify(data) }),
   deleteAlert: (id: number) => request<void>(`/alerts/${id}`, { method: 'DELETE' }),
 

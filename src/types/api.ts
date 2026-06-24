@@ -23,6 +23,12 @@ export enum SSESource {
   Task = 2,
 }
 
+export enum TaskPriority {
+  High = 1,
+  Medium = 2,
+  Low = 3,
+}
+
 // --- Auth Types ---
 export interface LoginRequest {
   login: string
@@ -155,6 +161,8 @@ export interface TaskCreate {
   description: string
   incidentId: number
   name: string
+  priority: TaskPriority
+  estimate?: string
 }
 
 export interface TaskUpdate {
@@ -162,6 +170,8 @@ export interface TaskUpdate {
   description?: string
   name?: string
   status?: TaskStatus
+  priority?: TaskPriority
+  estimate?: string
 }
 
 export interface TaskView {
@@ -175,6 +185,8 @@ export interface TaskView {
   incidentsId: Array<number>
   createDt: Date
   updateDt: Date
+  priority: TaskPriority
+  estimate?: string
 }
 
 // Notifications

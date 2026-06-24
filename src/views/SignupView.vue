@@ -23,16 +23,16 @@ async function handleSignup() {
   if (!firstName.value || !lastName.value || !email.value || !login.value || !password.value) {
     return
   }
-  
+
   await authStore.signup({
     firstName: firstName.value,
     lastName: lastName.value,
     middleName: middleName.value || undefined, // Отправляем undefined, если поле пустое
     email: email.value,
     login: login.value,
-    password: password.value
+    password: password.value,
   })
-  
+
   await router.push('/')
 }
 </script>
@@ -48,7 +48,6 @@ async function handleSignup() {
 
       <!-- Form -->
       <form @submit.prevent="handleSignup">
-        
         <!-- Фамилия -->
         <div class="mb-3">
           <label for="signup-last-name" class="form-label small fw-semibold">

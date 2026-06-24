@@ -27,18 +27,18 @@ function isSubscribed(alert: AlertConfigView): boolean {
 // Переключение подписки (добавить/удалить себя из subscribers)
 async function toggleSubscribe(alert: AlertConfigView) {
   if (!user.value) return
-  
+
   const currentSubs = alert.subscribers || []
   let newSubs: number[]
-  
+
   if (isSubscribed(alert)) {
     // Если уже подписан - удаляем себя
-    newSubs = currentSubs.filter(id => id !== user.value!.id)
+    newSubs = currentSubs.filter((id) => id !== user.value!.id)
   } else {
     // Если не подписан - добавляем себя
     newSubs = [...currentSubs, user.value.id]
   }
-  
+
   // Вызываем обновление алерта, передавая только новый массив подписчиков
   await updateAlert(alert.id, { subscribers: newSubs })
 }
@@ -74,9 +74,17 @@ function cancelEdit() {
 
     <!-- Create / Edit Alert Form -->
     <div class="card border-0 shadow-sm mb-4 form-card">
-      <div class="card-header bg-light border-0 py-3 d-flex justify-content-between align-items-center">
+      <div
+        class="card-header bg-light border-0 py-3 d-flex justify-content-between align-items-center"
+      >
         <h6 class="mb-0 fw-bold">
-          <i :class="editingAlert ? 'bi bi-pencil-square me-2 text-warning' : 'bi bi-plus-circle me-2 text-primary'"></i>
+          <i
+            :class="
+              editingAlert
+                ? 'bi bi-pencil-square me-2 text-warning'
+                : 'bi bi-plus-circle me-2 text-primary'
+            "
+          ></i>
           {{ editingAlert ? `Edit Alert: ${editingAlert.name}` : 'Create New Alert' }}
         </h6>
         <button v-if="editingAlert" class="btn btn-sm btn-outline-secondary" @click="cancelEdit">
@@ -84,12 +92,12 @@ function cancelEdit() {
         </button>
       </div>
       <div class="card-body p-4">
-        <AlertForm 
-          :key="editingAlert?.id || 'new'" 
-          :initial-data="editingAlert || undefined" 
-          :get-constraint-name="getConstraintName" 
-          @submit="handleSubmit" 
-          @cancel="cancelEdit" 
+        <AlertForm
+          :key="editingAlert?.id || 'new'"
+          :initial-data="editingAlert || undefined"
+          :get-constraint-name="getConstraintName"
+          @submit="handleSubmit"
+          @cancel="cancelEdit"
         />
       </div>
     </div>
@@ -100,7 +108,9 @@ function cancelEdit() {
 
     <!-- Alerts Table -->
     <div class="card border-0 shadow-sm table-card">
-      <div class="card-header bg-white border-0 py-3 d-flex justify-content-between align-items-center">
+      <div
+        class="card-header bg-white border-0 py-3 d-flex justify-content-between align-items-center"
+      >
         <h6 class="mb-0 fw-bold">
           <i class="bi bi-list-ul me-2 text-primary"></i>Alert Configurations
           <span class="badge bg-primary bg-opacity-10 text-primary ms-2">{{ alerts.length }}</span>
@@ -148,12 +158,15 @@ function cancelEdit() {
                 </td>
                 <td class="text-end pe-4">
                   <div class="d-flex justify-content-end gap-2">
-                    
                     <button
                       class="btn btn-sm shadow-sm d-flex align-items-center"
                       :class="isSubscribed(alert) ? 'btn-outline-secondary' : 'btn-outline-primary'"
                       @click="toggleSubscribe(alert)"
-                      :title="isSubscribed(alert) ? 'Unsubscribe from this alert' : 'Subscribe to this alert'"
+                      :title="
+                        isSubscribed(alert)
+                          ? 'Unsubscribe from this alert'
+                          : 'Subscribe to this alert'
+                      "
                     >
                       <i :class="isSubscribed(alert) ? 'bi bi-bell-slash' : 'bi bi-bell-fill'"></i>
                       <span class="d-none d-xl-inline ms-1">

@@ -5,7 +5,7 @@ import { storeToRefs } from 'pinia'
 import { useTasksStore } from '@/stores/tasks'
 import { useUsersStore } from '@/stores/user'
 import { useIncidentsStore } from '@/stores/incident'
-import { TaskStatus } from '@/types/api'
+import { TaskPriority, TaskStatus } from '@/types/api'
 import { formatDate } from '@/utils/format'
 
 const route = useRoute()
@@ -54,6 +54,8 @@ const formData = reactive({
   description: '',
   assigneeId: undefined as number | undefined,
   status: undefined as TaskStatus | undefined,
+  priority: undefined as TaskPriority | undefined,
+  estimate: '',
 })
 
 async function loadTask() {
@@ -66,8 +68,8 @@ async function loadTask() {
     if (selectedTask.value) {
       formData.name = selectedTask.value.name
       formData.description = selectedTask.value.description
-      formData.assigneeId = selectedTask.value.assigneeId
-      formData.status = selectedTask.value.status
+      formData.priority = selectedTask.value.priority || TaskPriority.Medium
+      formData.estimate = selectedTask.value.estimate || ''
     }
   } catch {
     router.push({ name: 'Tasks' })
@@ -87,6 +89,11 @@ async function saveChanges() {
   if (formData.status && formData.status !== selectedTask.value.status)
     updates.status = formData.status
 
+  if (formData.priority && formData.priority !== selectedTask.value.priority)
+    updates.priority = formData.priority
+  if (formData.estimate !== (selectedTask.value.estimate || ''))
+    updates.estimate = formData.estimate || undefined
+
   if (Object.keys(updates).length > 0) {
     await updateTask(taskId.value, updates)
     editMode.value = false
@@ -99,6 +106,8 @@ function cancelEdit() {
     formData.description = selectedTask.value.description
     formData.assigneeId = selectedTask.value.assigneeId
     formData.status = selectedTask.value.status
+    formData.priority = selectedTask.value.priority
+    formData.estimate = selectedTask.value.estimate || ''
   }
   editMode.value = false
 }
@@ -198,6 +207,32 @@ watch(
                 </div>
               </div>
             </div>
+
+            <div class="row g-4 mb-4">
+              <div class="col-md-6">
+                <div class="detail-box">
+                  <div class="detail-label">
+                    <i class="bi bi-exclamation-triangle me-2 text-primary"></i>Priority
+                  </div>
+                  <div class="detail-value">
+                    <span
+                      class="badge status-badge"
+                      :class="tasksStore.getTaskPriorityBadgeClass(selectedTask.priority)"
+                    >
+                      {{ tasksStore.getTaskPriorityLabel(selectedTask.priority) }}
+                    </span>
+                  </div>
+                </div>
+              </div>
+              <div class="col-md-6">
+                <div class="detail-box">
+                  <div class="detail-label">
+                    <i class="bi bi-clock-history me-2 text-primary"></i>Estimate
+                  </div>
+                  <div class="detail-value">{{ selectedTask.estimate || 'Not estimated' }}</div>
+                </div>
+              </div>
+            </div>
           </div>
 
           <!-- Description -->
@@ -232,7 +267,7 @@ watch(
             </div>
           </div>
 
-          <!-- 🔥 Related Incidents Section с возможностью сворачивания -->
+          <!-- Related Incidents Section с возможностью сворачивания -->
           <div class="detail-box mb-4">
             <div class="detail-label mb-3 d-flex justify-content-between align-items-center">
               <div>
@@ -384,6 +419,36 @@ watch(
               placeholder="Enter task description"
             ></textarea>
           </div>
+
+          <div class="row g-4 mb-4">
+            <div class="col-md-6">
+              <label for="task-priority" class="form-label fw-semibold"
+                ><i class="bi bi-exclamation-triangle me-2 text-primary"></i>Priority</label
+              >
+              <select
+                id="task-priority"
+                v-model.number="formData.priority"
+                class="form-select form-select-lg"
+              >
+                <option :value="TaskPriority.High">High</option>
+                <option :value="TaskPriority.Medium">Medium</option>
+                <option :value="TaskPriority.Low">Low</option>
+              </select>
+            </div>
+            <div class="col-md-6">
+              <label for="task-estimate" class="form-label fw-semibold"
+                ><i class="bi bi-clock-history me-2 text-primary"></i>Estimate</label
+              >
+              <input
+                id="task-estimate"
+                v-model="formData.estimate"
+                type="text"
+                class="form-control form-control-lg"
+                placeholder="e.g., 2h, 1d"
+              />
+            </div>
+          </div>
+
           <div class="row g-4 mb-4">
             <div class="col-md-6">
               <label for="task-status" class="form-label fw-semibold"

@@ -4,6 +4,7 @@ import { storeToRefs } from 'pinia'
 import { useTasksStore } from '@/stores/tasks'
 import { useUsersStore } from '@/stores/user'
 import { useAuthStore } from '@/stores/auth'
+import { TaskPriority } from '@/types/api'
 
 const props = defineProps<{
   incidentId: number
@@ -31,6 +32,8 @@ const activeTab = ref<'create' | 'existing'>('create')
 const newTaskName = ref('')
 const newTaskDescription = ref('')
 const newTaskAssigneeId = ref<number | null>(null)
+const newTaskPriority = ref(TaskPriority.Medium)
+const newTaskEstimate = ref('')
 
 async function openDialog() {
   await usersStore.fetchUsers()
@@ -46,6 +49,8 @@ function resetForm() {
   newTaskName.value = ''
   newTaskDescription.value = ''
   newTaskAssigneeId.value = null
+  newTaskPriority.value = TaskPriority.Medium
+  newTaskEstimate.value = ''
   selectedExistingTaskId.value = null
   activeTab.value = 'create'
 }
@@ -59,6 +64,8 @@ async function handleCreateTask() {
     assigneeId: newTaskAssigneeId.value,
     authorId: currentUser.value.id,
     incidentId: props.incidentId,
+    priority: newTaskPriority.value,
+    estimate: newTaskEstimate.value || undefined,
   })
 
   emit('assigned', -1)
@@ -159,6 +166,35 @@ defineExpose({ openDialog })
                     rows="3"
                     placeholder="Enter task description (optional)"
                   ></textarea>
+                </div>
+
+                <div class="row g-3 mb-3">
+                  <div class="col-md-6">
+                    <label for="new-task-priority" class="form-label small fw-semibold">
+                      <i class="bi bi-exclamation-triangle me-1 text-primary"></i> Priority *
+                    </label>
+                    <select
+                      id="new-task-priority"
+                      v-model.number="newTaskPriority"
+                      class="form-select"
+                    >
+                      <option :value="TaskPriority.High">High</option>
+                      <option :value="TaskPriority.Medium">Medium</option>
+                      <option :value="TaskPriority.Low">Low</option>
+                    </select>
+                  </div>
+                  <div class="col-md-6">
+                    <label for="new-task-estimate" class="form-label small fw-semibold">
+                      <i class="bi bi-clock-history me-1 text-primary"></i> Estimate
+                    </label>
+                    <input
+                      id="new-task-estimate"
+                      v-model="newTaskEstimate"
+                      type="text"
+                      class="form-control"
+                      placeholder="e.g., 2h, 1d"
+                    />
+                  </div>
                 </div>
 
                 <div class="mb-4">

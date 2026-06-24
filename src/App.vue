@@ -40,7 +40,7 @@ function connect() {
   }
   eventSource.value = api.listenEvents()
 
-  eventSource.value.onmessage = async(event) => {
+  eventSource.value.onmessage = async (event) => {
     try {
       if (typeof event.data == 'string' && event.data == 'OK') {
         return
