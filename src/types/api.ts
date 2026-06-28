@@ -39,8 +39,8 @@ export interface SignUpRequest {
   login: string
   password: string
   firstName: string
-  lastName: string
-  middleName?: string
+  secondName: string
+  thirdName?: string
   email: string
 }
 

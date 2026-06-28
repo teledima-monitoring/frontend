@@ -10,8 +10,8 @@ const { loading, error } = storeToRefs(authStore)
 
 // Новые поля
 const firstName = ref('')
-const lastName = ref('')
-const middleName = ref('')
+const secondName = ref('')
+const thirdName = ref('')
 const email = ref('')
 
 // Существующие поля
@@ -20,14 +20,14 @@ const password = ref('')
 
 async function handleSignup() {
   // Проверка обязательных полей
-  if (!firstName.value || !lastName.value || !email.value || !login.value || !password.value) {
+  if (!firstName.value || !secondName.value || !email.value || !login.value || !password.value) {
     return
   }
 
   await authStore.signup({
     firstName: firstName.value,
-    lastName: lastName.value,
-    middleName: middleName.value || undefined, // Отправляем undefined, если поле пустое
+    secondName: secondName.value,
+    thirdName: thirdName.value || undefined, // Отправляем undefined, если поле пустое
     email: email.value,
     login: login.value,
     password: password.value,
@@ -48,27 +48,6 @@ async function handleSignup() {
 
       <!-- Form -->
       <form @submit.prevent="handleSignup">
-        <!-- Фамилия -->
-        <div class="mb-3">
-          <label for="signup-last-name" class="form-label small fw-semibold">
-            Фамилия <span class="text-danger">*</span>
-          </label>
-          <div class="input-group">
-            <span class="input-group-text bg-light border-end-0">
-              <i class="bi bi-person-lines-fill text-muted"></i>
-            </span>
-            <input
-              id="signup-last-name"
-              v-model="lastName"
-              type="text"
-              class="form-control bg-light border-start-0"
-              placeholder="Введите фамилию"
-              autocomplete="family-name"
-              required
-            />
-          </div>
-        </div>
-
         <!-- Имя -->
         <div class="mb-3">
           <label for="signup-first-name" class="form-label small fw-semibold">
@@ -90,6 +69,27 @@ async function handleSignup() {
           </div>
         </div>
 
+        <!-- Фамилия -->
+        <div class="mb-3">
+          <label for="signup-last-name" class="form-label small fw-semibold">
+            Фамилия <span class="text-danger">*</span>
+          </label>
+          <div class="input-group">
+            <span class="input-group-text bg-light border-end-0">
+              <i class="bi bi-person-lines-fill text-muted"></i>
+            </span>
+            <input
+              id="signup-last-name"
+              v-model="secondName"
+              type="text"
+              class="form-control bg-light border-start-0"
+              placeholder="Введите фамилию"
+              autocomplete="family-name"
+              required
+            />
+          </div>
+        </div>
+
         <!-- Отчество -->
         <div class="mb-3">
           <label for="signup-middle-name" class="form-label small fw-semibold">
@@ -101,7 +101,7 @@ async function handleSignup() {
             </span>
             <input
               id="signup-middle-name"
-              v-model="middleName"
+              v-model="thirdName"
               type="text"
               class="form-control bg-light border-start-0"
               placeholder="Введите отчество"
