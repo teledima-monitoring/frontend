@@ -22,5 +22,6 @@ declare module 'vue' {
     RouterView: typeof import('vue-router')['RouterView']
     TaskAssignDialog: typeof import('./src/components/tasks/TaskAssignDialog.vue')['default']
     TaskListView: typeof import('./src/components/tasks/TaskListView.vue')['default']
+    User: typeof import('./src/components/User.vue')['default']
   }
 }

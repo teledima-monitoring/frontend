@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { computed } from 'vue'
-import type { TaskView, TaskStatus } from '@/types/api'
+import type { TaskView, TaskStatus, UserView } from '@/types/api'
 import { formatDate } from '@/utils/format'
 
 const props = defineProps<{
@@ -8,7 +8,7 @@ const props = defineProps<{
   selectedTaskIds: Set<number>
   taskStatusLabel: (status: TaskStatus) => string
   taskStatusBadgeClass: (status: TaskStatus) => string
-  getUserNameById: (userId: number) => string
+  getUserById: (id: number) => UserView | undefined
 }>()
 
 const emit = defineEmits<{
@@ -100,14 +100,38 @@ const isAllSelected = computed(() => {
               </td>
               <td class="fw-medium">{{ task.name }}</td>
               <td>
-                <div class="d-flex align-items-center">
+                <div 
+                  v-if="getUserById(task.assigneeId)" 
+                  class="assignee-cell position-relative d-inline-flex align-items-center"
+                >
+                  <!-- Аватарка с первой буквой имени -->
                   <div class="assignee-avatar me-2">
-                    {{ props.getUserNameById(task.assigneeId).charAt(0).toUpperCase() || '?' }}
+                    {{ getUserById(task.assigneeId)?.firstName?.charAt(0).toUpperCase() || '?' }}
                   </div>
-                  <span class="small">{{
-                    props.getUserNameById(task.assigneeId) || 'Unassigned'
-                  }}</span>
+                  
+                  <!-- Имя и Фамилия -->
+                  <span class="assignee-name fw-medium text-nowrap">
+                    {{ getUserById(task.assigneeId)?.firstName }} {{ getUserById(task.assigneeId)?.secondName }}
+                  </span>
+
+                  <!-- Кастомный Tooltip -->
+                  <div class="assignee-tooltip text-start">
+                    <div class="fw-bold mb-1 text-dark">
+                      {{ getUserById(task.assigneeId)?.firstName }} 
+                      {{ getUserById(task.assigneeId)?.secondName }} 
+                      {{ getUserById(task.assigneeId)?.thirdName }}
+                    </div>
+                    <div class="small text-muted mb-1">
+                      <i class="bi bi-briefcase me-1"></i>
+                      {{ getUserById(task.assigneeId)?.jobTitle || 'Должность не указана' }}
+                    </div>
+                    <div class="small text-muted">
+                      <i class="bi bi-envelope me-1"></i>
+                      {{ getUserById(task.assigneeId)?.email || 'Email не указан' }}
+                    </div>
+                  </div>
                 </div>
+                <span v-else class="text-muted fst-italic">Не назначен</span>
               </td>
               <td>
                 <span class="badge status-pill" :class="props.taskStatusBadgeClass(task.status)">
@@ -206,4 +230,77 @@ const isAllSelected = computed(() => {
   color: #6c757d;
   border-bottom-width: 1px;
 }
+
+.assignee-cell {
+  cursor: pointer;
+  padding: 4px 8px;
+  border-radius: 6px;
+  transition: background-color 0.2s ease;
+}
+
+.assignee-cell:hover {
+  background-color: rgba(0, 0, 0, 0.03);
+}
+
+.assignee-avatar {
+  width: 28px;
+  height: 28px;
+  background: var(--bs-primary-bg-subtle);
+  color: var(--bs-primary);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 600;
+  font-size: 0.8rem;
+  flex-shrink: 0;
+}
+
+.assignee-name {
+  font-size: 0.9rem;
+}
+
+/* Стили для всплывающей подсказки */
+.assignee-tooltip {
+  visibility: hidden;
+  opacity: 0;
+  position: absolute;
+  top: 100%;
+  left: 0;
+  margin-top: 8px;
+  background: #fff;
+  color: #212529;
+  padding: 0.75rem 1rem;
+  border-radius: 8px;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.15);
+  width: max-content;
+  max-width: 250px;
+  z-index: 1050;
+  transition: opacity 0.2s ease, visibility 0.2s ease, transform 0.2s ease;
+  transform: translateY(-5px);
+  pointer-events: none;
+  border: 1px solid rgba(0, 0, 0, 0.05);
+}
+
+/* Стрелочка у тултипа */
+.assignee-tooltip::before {
+  content: '';
+  position: absolute;
+  top: -6px;
+  left: 16px;
+  width: 12px;
+  height: 12px;
+  background: #fff;
+  border-left: 1px solid rgba(0, 0, 0, 0.05);
+  border-top: 1px solid rgba(0, 0, 0, 0.05);
+  transform: rotate(45deg);
+}
+
+/* Показ тултипа при наведении */
+.assignee-cell:hover .assignee-tooltip {
+  visibility: visible;
+  opacity: 1;
+  transform: translateY(0);
+}
+
 </style>

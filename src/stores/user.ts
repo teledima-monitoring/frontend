@@ -9,8 +9,8 @@ export const useUsersStore = defineStore('users', () => {
   const loading = shallowRef(false)
   const error = shallowRef<string | null>(null)
 
-  function getUserNameById(userId: number): string {
-    return users.value.find((u) => u.id == userId)?.login ?? `Unknown (${userId})`
+  function getUserById(id: number): UserView | undefined {
+    return users.value.find((u) => u.id === id)
   }
 
   async function fetchUsers() {
@@ -30,7 +30,7 @@ export const useUsersStore = defineStore('users', () => {
     users,
     loading,
     error,
-    getUserNameById,
+    getUserById,
     fetchUsers,
   }
 })

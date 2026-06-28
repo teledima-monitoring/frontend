@@ -17,7 +17,7 @@ const { fetchTaskById, updateTask, clearSelectedTask } = tasksStore
 
 const usersStore = useUsersStore()
 const { users } = storeToRefs(usersStore)
-const { fetchUsers, getUserNameById } = usersStore
+const { fetchUsers, getUserById } = usersStore
 
 const incidentsStore = useIncidentsStore()
 const { incidents } = storeToRefs(incidentsStore)
@@ -39,6 +39,16 @@ const displayedIncidents = computed(() => {
     return relatedIncidents.value
   }
   return relatedIncidents.value.slice(0, INCIDENTS_PREVIEW_LIMIT)
+})
+
+const author = computed(() => {
+  if (!selectedTask.value) return null
+  return getUserById(selectedTask.value.authorId)!
+})
+
+const assignee = computed(() => {
+  if (!selectedTask.value) return null
+  return getUserById(selectedTask.value.assigneeId)
 })
 
 const hasMoreIncidents = computed(() => relatedIncidents.value.length > INCIDENTS_PREVIEW_LIMIT)
@@ -252,7 +262,32 @@ watch(
                 <div class="detail-label">
                   <i class="bi bi-person-badge me-2 text-primary"></i>Author
                 </div>
-                <div class="detail-value">{{ getUserNameById(selectedTask.authorId) }}</div>
+                <div
+                  v-if="author"
+                  class="assignee-cell position-relative d-inline-flex align-items-center"
+                >                  
+                  <!-- Имя и Фамилия -->
+                  <span class="assignee-name fw-medium text-nowrap">
+                    {{ author.firstName }} {{ author.secondName }}
+                  </span>
+
+                  <!-- Кастомный Tooltip -->
+                  <div class="assignee-tooltip text-start">
+                    <div class="fw-bold mb-1 text-dark">
+                      {{ author.firstName }} 
+                      {{ author.secondName }} 
+                      {{ author?.thirdName }}
+                    </div>
+                    <div class="small text-muted mb-1">
+                      <i class="bi bi-briefcase me-1"></i>
+                      {{ author.jobTitle }}
+                    </div>
+                    <div class="small text-muted">
+                      <i class="bi bi-envelope me-1"></i>
+                      {{ author.email }}
+                    </div>
+                  </div>
+                </div>
               </div>
             </div>
             <div class="col-md-6">
@@ -260,9 +295,33 @@ watch(
                 <div class="detail-label">
                   <i class="bi bi-person-check me-2 text-primary"></i>Assignee
                 </div>
-                <div class="detail-value">
-                  {{ getUserNameById(selectedTask.assigneeId) || 'Unassigned' }}
+                <div 
+                  v-if="assignee" 
+                  class="assignee-cell position-relative d-inline-flex align-items-center"
+                >                  
+                  <!-- Имя и Фамилия -->
+                  <span class="assignee-name fw-medium text-nowrap">
+                    {{ assignee.firstName }} {{ assignee.secondName }}
+                  </span>
+
+                  <!-- Кастомный Tooltip -->
+                  <div class="assignee-tooltip text-start">
+                    <div class="fw-bold mb-1 text-dark">
+                      {{ assignee.firstName }} 
+                      {{ assignee.secondName }} 
+                      {{ assignee?.thirdName }}
+                    </div>
+                    <div class="small text-muted mb-1">
+                      <i class="bi bi-briefcase me-1"></i>
+                      {{ assignee.jobTitle }}
+                    </div>
+                    <div class="small text-muted">
+                      <i class="bi bi-envelope me-1"></i>
+                      {{ assignee.email }}
+                    </div>
+                  </div>
                 </div>
+                <span v-else class="text-muted fst-italic">Не назначен</span>
               </div>
             </div>
           </div>
@@ -642,6 +701,79 @@ watch(
 .incident-fade-move {
   transition: transform 0.3s ease;
 }
+
+.assignee-cell {
+  cursor: pointer;
+  padding: 4px 8px;
+  border-radius: 6px;
+  transition: background-color 0.2s ease;
+}
+
+.assignee-cell:hover {
+  background-color: rgba(0, 0, 0, 0.03);
+}
+
+.assignee-avatar {
+  width: 28px;
+  height: 28px;
+  background: var(--bs-primary-bg-subtle);
+  color: var(--bs-primary);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 600;
+  font-size: 0.8rem;
+  flex-shrink: 0;
+}
+
+.assignee-name {
+  font-size: 0.9rem;
+}
+
+/* Стили для всплывающей подсказки */
+.assignee-tooltip {
+  visibility: hidden;
+  opacity: 0;
+  position: absolute;
+  top: 100%;
+  left: 0;
+  margin-top: 8px;
+  background: #fff;
+  color: #212529;
+  padding: 0.75rem 1rem;
+  border-radius: 8px;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.15);
+  width: max-content;
+  max-width: 250px;
+  z-index: 1050;
+  transition: opacity 0.2s ease, visibility 0.2s ease, transform 0.2s ease;
+  transform: translateY(-5px);
+  pointer-events: none;
+  border: 1px solid rgba(0, 0, 0, 0.05);
+}
+
+/* Стрелочка у тултипа */
+.assignee-tooltip::before {
+  content: '';
+  position: absolute;
+  top: -6px;
+  left: 16px;
+  width: 12px;
+  height: 12px;
+  background: #fff;
+  border-left: 1px solid rgba(0, 0, 0, 0.05);
+  border-top: 1px solid rgba(0, 0, 0, 0.05);
+  transform: rotate(45deg);
+}
+
+/* Показ тултипа при наведении */
+.assignee-cell:hover .assignee-tooltip {
+  visibility: visible;
+  opacity: 1;
+  transform: translateY(0);
+}
+
 
 @media (max-width: 768px) {
   .card-header {

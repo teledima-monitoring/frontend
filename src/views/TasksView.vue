@@ -17,7 +17,7 @@ const { fetchTasks, getTaskStatusLabel, getTaskStatusBadgeClass } = tasksStore
 
 const usersStore = useUsersStore()
 const { users } = storeToRefs(usersStore)
-const { fetchUsers, getUserNameById } = usersStore
+const { fetchUsers, getUserById } = usersStore
 
 // --- Фильтры и Выделение ---
 const statusFilter = ref<TaskStatus | ''>('')
@@ -165,7 +165,7 @@ watch(
           :tasks="filteredTasks"
           :task-status-label="getTaskStatusLabel"
           :task-status-badge-class="getTaskStatusBadgeClass"
-          :get-user-name-by-id="getUserNameById"
+          :get-user-by-id="getUserById" 
           :selected-task-ids="selectedTaskIds"
           @select="handleSelectTask"
           @toggle-select="handleTaskToggle"
