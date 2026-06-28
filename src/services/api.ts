@@ -137,6 +137,41 @@ export const api = {
   getTaskById: (id: number) => request<TaskView>(`/tasks/${id}`),
   updateTask: (id: number, data: TaskUpdate) =>
     request<void>(`/tasks/${id}`, { method: 'PUT', body: JSON.stringify(data) }),
+  exportTasksCSV: async (ids?: number[]): Promise<void> => {
+    const response = await fetch(`${BASE_URL}/tasks/export`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        Accept: 'text/csv',
+      },
+      credentials: 'include',
+      body: ids ? JSON.stringify({ ids }) : undefined,
+    })
+
+    if (!response.ok) {
+      throw new Error(`Export failed: ${response.statusText}`)
+    }
+
+    const blob = await response.blob()
+    let filename = `tasks_${new Date().toISOString().split('T')[0]}.csv`
+    const contentDisposition = response.headers.get('Content-Disposition')
+    if (contentDisposition) {
+      const filenameMatch = contentDisposition.match(/filename=([^;]+)/)
+      if (filenameMatch && filenameMatch[1]) {
+        filename = filenameMatch[1].trim()
+      }
+    }
+
+    const url = window.URL.createObjectURL(blob)
+    const a = document.createElement('a')
+    a.href = url
+    a.download = filename
+    document.body.appendChild(a)
+    a.click()
+
+    window.URL.revokeObjectURL(url)
+    document.body.removeChild(a)
+  },
 
   // Notifications
   getNotifications: () => request<NotificationView[]>('/notifications'),
