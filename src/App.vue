@@ -61,7 +61,7 @@ function showToast(text: string) {
   // Автоматически скрываем уведомление через 4 секунды
   setTimeout(() => {
     removeToast(id)
-  }, 1000000)
+  }, 4000)
 }
 
 function removeToast(id: number) {
@@ -74,7 +74,6 @@ watch(
   isLoggedIn,
   (isLoggedIn) => {
     if (isLoggedIn && !connected.value) {
-      showToast("Alert I-66 fired!")
       connect()
     } else if (!isLoggedIn && connected.value) {
       disconnect()
