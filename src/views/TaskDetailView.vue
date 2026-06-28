@@ -62,14 +62,15 @@ async function loadTask() {
   try {
     await Promise.all([fetchTaskById(taskId.value), fetchIncidents()])
 
-    // 🔥 Сбрасываем состояние сворачивания при смене задачи
     showAllIncidents.value = false
 
     if (selectedTask.value) {
       formData.name = selectedTask.value.name
       formData.description = selectedTask.value.description
-      formData.priority = selectedTask.value.priority || TaskPriority.Medium
+      formData.status = selectedTask.value.status
+      formData.priority = selectedTask.value.priority
       formData.estimate = selectedTask.value.estimate || ''
+      formData.assigneeId = selectedTask.value.assigneeId
     }
   } catch {
     router.push({ name: 'Tasks' })
@@ -121,7 +122,6 @@ function goBack() {
   router.push({ name: 'Tasks' })
 }
 
-// 🔥 Переключение состояния сворачивания
 function toggleIncidents() {
   showAllIncidents.value = !showAllIncidents.value
 }
