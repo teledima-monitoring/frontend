@@ -265,7 +265,7 @@ watch(
                 <div
                   v-if="author"
                   class="assignee-cell position-relative d-inline-flex align-items-center"
-                >                  
+                >
                   <!-- Имя и Фамилия -->
                   <span class="assignee-name fw-medium text-nowrap">
                     {{ author.firstName }} {{ author.secondName }}
@@ -274,8 +274,8 @@ watch(
                   <!-- Кастомный Tooltip -->
                   <div class="assignee-tooltip text-start">
                     <div class="fw-bold mb-1 text-dark">
-                      {{ author.firstName }} 
-                      {{ author.secondName }} 
+                      {{ author.firstName }}
+                      {{ author.secondName }}
                       {{ author?.thirdName }}
                     </div>
                     <div class="small text-muted mb-1">
@@ -295,10 +295,10 @@ watch(
                 <div class="detail-label">
                   <i class="bi bi-person-check me-2 text-primary"></i>Assignee
                 </div>
-                <div 
-                  v-if="assignee" 
+                <div
+                  v-if="assignee"
                   class="assignee-cell position-relative d-inline-flex align-items-center"
-                >                  
+                >
                   <!-- Имя и Фамилия -->
                   <span class="assignee-name fw-medium text-nowrap">
                     {{ assignee.firstName }} {{ assignee.secondName }}
@@ -307,8 +307,8 @@ watch(
                   <!-- Кастомный Tooltip -->
                   <div class="assignee-tooltip text-start">
                     <div class="fw-bold mb-1 text-dark">
-                      {{ assignee.firstName }} 
-                      {{ assignee.secondName }} 
+                      {{ assignee.firstName }}
+                      {{ assignee.secondName }}
                       {{ assignee?.thirdName }}
                     </div>
                     <div class="small text-muted mb-1">
@@ -534,7 +534,10 @@ watch(
               >
                 <option :value="undefined" disabled>Select assignee</option>
                 <option v-for="user in users" :key="user.id" :value="user.id">
-                  {{ user.login }}
+                  {{ user.firstName }}
+                  {{ user.secondName }}
+                  {{ user?.thirdName }}
+                  ({{ user.email }})
                 </option>
               </select>
             </div>
@@ -747,7 +750,10 @@ watch(
   width: max-content;
   max-width: 250px;
   z-index: 1050;
-  transition: opacity 0.2s ease, visibility 0.2s ease, transform 0.2s ease;
+  transition:
+    opacity 0.2s ease,
+    visibility 0.2s ease,
+    transform 0.2s ease;
   transform: translateY(-5px);
   pointer-events: none;
   border: 1px solid rgba(0, 0, 0, 0.05);
@@ -773,7 +779,6 @@ watch(
   opacity: 1;
   transform: translateY(0);
 }
-
 
 @media (max-width: 768px) {
   .card-header {

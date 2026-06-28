@@ -165,7 +165,7 @@ watch(
           :tasks="filteredTasks"
           :task-status-label="getTaskStatusLabel"
           :task-status-badge-class="getTaskStatusBadgeClass"
-          :get-user-by-id="getUserById" 
+          :get-user-by-id="getUserById"
           :selected-task-ids="selectedTaskIds"
           @select="handleSelectTask"
           @toggle-select="handleTaskToggle"

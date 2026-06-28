@@ -196,7 +196,10 @@ const handleLogout = async () => {
   width: max-content;
   max-width: 280px;
   z-index: 1050;
-  transition: opacity 0.2s ease, visibility 0.2s ease, transform 0.2s ease;
+  transition:
+    opacity 0.2s ease,
+    visibility 0.2s ease,
+    transform 0.2s ease;
   transform: translateY(-5px);
   pointer-events: none;
   border: 1px solid rgba(0, 0, 0, 0.05);

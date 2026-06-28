@@ -100,25 +100,26 @@ const isAllSelected = computed(() => {
               </td>
               <td class="fw-medium">{{ task.name }}</td>
               <td>
-                <div 
-                  v-if="getUserById(task.assigneeId)" 
+                <div
+                  v-if="getUserById(task.assigneeId)"
                   class="assignee-cell position-relative d-inline-flex align-items-center"
                 >
                   <!-- Аватарка с первой буквой имени -->
                   <div class="assignee-avatar me-2">
                     {{ getUserById(task.assigneeId)?.firstName?.charAt(0).toUpperCase() || '?' }}
                   </div>
-                  
+
                   <!-- Имя и Фамилия -->
                   <span class="assignee-name fw-medium text-nowrap">
-                    {{ getUserById(task.assigneeId)?.firstName }} {{ getUserById(task.assigneeId)?.secondName }}
+                    {{ getUserById(task.assigneeId)?.firstName }}
+                    {{ getUserById(task.assigneeId)?.secondName }}
                   </span>
 
                   <!-- Кастомный Tooltip -->
                   <div class="assignee-tooltip text-start">
                     <div class="fw-bold mb-1 text-dark">
-                      {{ getUserById(task.assigneeId)?.firstName }} 
-                      {{ getUserById(task.assigneeId)?.secondName }} 
+                      {{ getUserById(task.assigneeId)?.firstName }}
+                      {{ getUserById(task.assigneeId)?.secondName }}
                       {{ getUserById(task.assigneeId)?.thirdName }}
                     </div>
                     <div class="small text-muted mb-1">
@@ -276,7 +277,10 @@ const isAllSelected = computed(() => {
   width: max-content;
   max-width: 250px;
   z-index: 1050;
-  transition: opacity 0.2s ease, visibility 0.2s ease, transform 0.2s ease;
+  transition:
+    opacity 0.2s ease,
+    visibility 0.2s ease,
+    transform 0.2s ease;
   transform: translateY(-5px);
   pointer-events: none;
   border: 1px solid rgba(0, 0, 0, 0.05);
@@ -302,5 +306,4 @@ const isAllSelected = computed(() => {
   opacity: 1;
   transform: translateY(0);
 }
-
 </style>

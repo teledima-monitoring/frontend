@@ -4,7 +4,7 @@ import { storeToRefs } from 'pinia'
 import { useTasksStore } from '@/stores/tasks'
 import { useUsersStore } from '@/stores/user'
 import { useAuthStore } from '@/stores/auth'
-import { TaskPriority } from '@/types/api'
+import { TaskPriority, type TaskView, type UserView } from '@/types/api'
 
 const props = defineProps<{
   incidentId: number
@@ -43,6 +43,14 @@ async function openDialog() {
 function closeDialog() {
   showForm.value = false
   resetForm()
+}
+
+function getAssignee(task: TaskView): UserView | undefined {
+  if (task.assigneeId) {
+    return usersStore.getUserById(task.assigneeId)
+  }
+
+  return undefined
 }
 
 function resetForm() {
@@ -204,7 +212,10 @@ defineExpose({ openDialog })
                   <select id="task-assignee" v-model.number="newTaskAssigneeId" class="form-select">
                     <option :value="null" disabled>Select assignee...</option>
                     <option v-for="user in users" :key="user.id" :value="user.id">
-                      {{ user.login }}
+                      {{ user.firstName }}
+                      {{ user.secondName }}
+                      {{ user?.thirdName }}
+                      ({{ user.email }})
                     </option>
                   </select>
                 </div>
@@ -258,10 +269,36 @@ defineExpose({ openDialog })
                         <span class="text-muted">{{ task.name }}</span>
                       </div>
                       <div class="d-flex align-items-center gap-2 small text-muted">
-                        <span
-                          ><i class="bi bi-person me-1"></i
-                          >{{ usersStore.getUserNameById(task.assigneeId) }}</span
-                        >
+                        <span>
+                          <i class="bi bi-person me-1"></i>
+                          <div
+                            v-if="getAssignee(task)"
+                            class="assignee-cell position-relative d-inline-flex align-items-center"
+                          >
+                            <!-- Имя и Фамилия -->
+                            <span class="assignee-name fw-medium text-nowrap">
+                              {{ getAssignee(task)?.firstName }} {{ getAssignee(task)?.secondName }}
+                            </span>
+
+                            <!-- Кастомный Tooltip -->
+                            <div class="assignee-tooltip text-start">
+                              <div class="fw-bold mb-1 text-dark">
+                                {{ getAssignee(task)?.firstName }}
+                                {{ getAssignee(task)?.secondName }}
+                                {{ getAssignee(task)?.thirdName }}
+                              </div>
+                              <div class="small text-muted mb-1">
+                                <i class="bi bi-briefcase me-1"></i>
+                                {{ getAssignee(task)?.jobTitle }}
+                              </div>
+                              <div class="small text-muted">
+                                <i class="bi bi-envelope me-1"></i>
+                                {{ getAssignee(task)?.email }}
+                              </div>
+                            </div>
+                          </div>
+                          <span v-else class="text-muted fst-italic">Не назначен</span>
+                        </span>
                         <span
                           class="badge"
                           :class="tasksStore.getTaskStatusBadgeClass(task.status)"
@@ -389,6 +426,67 @@ defineExpose({ openDialog })
 
 .task-select-item.selected .task-radio {
   color: #4e73df;
+}
+
+.assignee-cell {
+  cursor: pointer;
+  padding: 4px 8px;
+  border-radius: 6px;
+  transition: background-color 0.2s ease;
+}
+
+.assignee-cell:hover {
+  background-color: rgba(0, 0, 0, 0.03);
+}
+
+.assignee-name {
+  font-size: 0.9rem;
+}
+
+/* Стили для всплывающей подсказки */
+.assignee-tooltip {
+  visibility: hidden;
+  opacity: 0;
+  position: absolute;
+  top: 100%;
+  left: 0;
+  margin-top: 8px;
+  background: #fff;
+  color: #212529;
+  padding: 0.75rem 1rem;
+  border-radius: 8px;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.15);
+  width: max-content;
+  max-width: 250px;
+  z-index: 1050;
+  transition:
+    opacity 0.2s ease,
+    visibility 0.2s ease,
+    transform 0.2s ease;
+  transform: translateY(-5px);
+  pointer-events: none;
+  border: 1px solid rgba(0, 0, 0, 0.05);
+}
+
+/* Стрелочка у тултипа */
+.assignee-tooltip::before {
+  content: '';
+  position: absolute;
+  top: -6px;
+  left: 16px;
+  width: 12px;
+  height: 12px;
+  background: #fff;
+  border-left: 1px solid rgba(0, 0, 0, 0.05);
+  border-top: 1px solid rgba(0, 0, 0, 0.05);
+  transform: rotate(45deg);
+}
+
+/* Показ тултипа при наведении */
+.assignee-cell:hover .assignee-tooltip {
+  visibility: visible;
+  opacity: 1;
+  transform: translateY(0);
 }
 
 /* Empty state */

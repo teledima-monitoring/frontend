@@ -20,7 +20,14 @@ const password = ref('')
 
 async function handleSignup() {
   // Проверка обязательных полей (добавили position.value)
-  if (!firstName.value || !secondName.value || !email.value || !login.value || !password.value || !jobTitle.value) {
+  if (
+    !firstName.value ||
+    !secondName.value ||
+    !email.value ||
+    !login.value ||
+    !password.value ||
+    !jobTitle.value
+  ) {
     return
   }
 
