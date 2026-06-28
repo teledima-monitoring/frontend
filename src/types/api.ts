@@ -42,6 +42,7 @@ export interface SignUpRequest {
   secondName: string
   thirdName?: string
   email: string
+  jobTitle: string
 }
 
 export interface MeResponse {

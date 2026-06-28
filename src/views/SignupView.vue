@@ -8,29 +8,30 @@ const router = useRouter()
 const authStore = useAuthStore()
 const { loading, error } = storeToRefs(authStore)
 
-// Новые поля
+// Поля формы
 const firstName = ref('')
 const secondName = ref('')
 const thirdName = ref('')
 const email = ref('')
+const jobTitle = ref('') // Инициализируем пустой строкой для корректной работы placeholder в select
 
-// Существующие поля
 const login = ref('')
 const password = ref('')
 
 async function handleSignup() {
-  // Проверка обязательных полей
-  if (!firstName.value || !secondName.value || !email.value || !login.value || !password.value) {
+  // Проверка обязательных полей (добавили position.value)
+  if (!firstName.value || !secondName.value || !email.value || !login.value || !password.value || !jobTitle.value) {
     return
   }
 
   await authStore.signup({
     firstName: firstName.value,
     secondName: secondName.value,
-    thirdName: thirdName.value || undefined, // Отправляем undefined, если поле пустое
+    thirdName: thirdName.value || undefined,
     email: email.value,
     login: login.value,
     password: password.value,
+    jobTitle: jobTitle.value, // <-- Передаем выбранную должность
   })
 
   await router.push('/')
@@ -128,6 +129,29 @@ async function handleSignup() {
               autocomplete="email"
               required
             />
+          </div>
+        </div>
+
+        <div class="mb-3">
+          <label for="signup-position" class="form-label small fw-semibold">
+            Должность <span class="text-danger">*</span>
+          </label>
+          <div class="input-group">
+            <span class="input-group-text bg-light border-end-0">
+              <i class="bi bi-briefcase text-muted"></i>
+            </span>
+            <select
+              id="signup-position"
+              v-model="jobTitle"
+              class="form-select bg-light border-start-0"
+              required
+            >
+              <option value="" disabled>Выберите должность</option>
+              <option value="Разработчик">Разработчик</option>
+              <option value="Аналитик">Аналитик</option>
+              <option value="Тестировщик">Тестировщик</option>
+              <option value="Дизайнер">Дизайнер</option>
+            </select>
           </div>
         </div>
 
