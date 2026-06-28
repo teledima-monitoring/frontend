@@ -48,12 +48,22 @@ export interface SignUpRequest {
 export interface MeResponse {
   id: number
   login: string
+  firstName: string
+  secondName: string
+  thirdName?: string
+  email: string
+  jobTitle: string
   role: UserRole
 }
 
 export interface UserView {
   id: number
   login: string
+  firstName: string
+  secondName: string
+  thirdName?: string
+  email: string
+  jobTitle: string
   role: UserRole
 }
 

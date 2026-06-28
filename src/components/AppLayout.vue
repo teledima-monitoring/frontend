@@ -1,6 +1,5 @@
 <script setup lang="ts">
 import { useAuthStore } from '@/stores/auth'
-import { UserRole } from '@/types/api'
 import { storeToRefs } from 'pinia'
 import { useRoute, useRouter } from 'vue-router'
 import NotificationsDropdown from '@/components/NotificationsDropdown.vue'
@@ -82,19 +81,28 @@ const handleLogout = async () => {
           </ul>
 
           <div class="d-flex align-items-center gap-3 user-section">
-            <!-- Подключаем наш отдельный компонент уведомлений -->
             <NotificationsDropdown />
 
             <!-- User Info & Logout -->
-            <div class="d-flex align-items-center text-white">
+            <div class="user-info-wrapper position-relative d-flex align-items-center text-white">
               <div class="user-avatar me-2">
-                {{ user.login.charAt(0).toUpperCase() }}
+                {{ user.firstName ? user.firstName.charAt(0).toUpperCase() : '?' }}
               </div>
-              <div class="d-none d-md-block">
-                <div class="fw-semibold small lh-1">{{ user.login }}</div>
-                <div class="opacity-75" style="font-size: 0.7rem">{{ UserRole[user.role] }}</div>
+
+              <!-- Кастомный Tooltip -->
+              <div class="custom-tooltip text-start">
+                <div class="fw-bold mb-1 text-dark">
+                  {{ user.firstName }} {{ user.secondName }} {{ user.thirdName }}
+                </div>
+                <div class="small text-muted mb-1">
+                  <i class="bi bi-briefcase me-1"></i>{{ user.jobTitle || 'Должность не указана' }}
+                </div>
+                <div class="small text-muted">
+                  <i class="bi bi-envelope me-1"></i>{{ user.email || 'Email не указан' }}
+                </div>
               </div>
             </div>
+
             <button class="btn btn-outline-light btn-sm logout-btn" @click="handleLogout">
               <i class="bi bi-box-arrow-right me-1"></i> Logout
             </button>
@@ -166,6 +174,52 @@ const handleLogout = async () => {
   font-weight: 600;
   font-size: 0.9rem;
   color: #fff;
+}
+
+/* Стили для нового блока с пользователем и тултипа */
+.user-info-wrapper {
+  cursor: pointer;
+}
+
+.custom-tooltip {
+  visibility: hidden;
+  opacity: 0;
+  position: absolute;
+  top: 100%;
+  right: 0;
+  margin-top: 12px;
+  background: #fff;
+  color: #212529;
+  padding: 0.75rem 1rem;
+  border-radius: 8px;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.15);
+  width: max-content;
+  max-width: 280px;
+  z-index: 1050;
+  transition: opacity 0.2s ease, visibility 0.2s ease, transform 0.2s ease;
+  transform: translateY(-5px);
+  pointer-events: none;
+  border: 1px solid rgba(0, 0, 0, 0.05);
+}
+
+/* Стрелочка у тултипа (опционально, для красоты) */
+.custom-tooltip::before {
+  content: '';
+  position: absolute;
+  top: -6px;
+  right: 16px;
+  width: 12px;
+  height: 12px;
+  background: #fff;
+  border-left: 1px solid rgba(0, 0, 0, 0.05);
+  border-top: 1px solid rgba(0, 0, 0, 0.05);
+  transform: rotate(45deg);
+}
+
+.user-info-wrapper:hover .custom-tooltip {
+  visibility: visible;
+  opacity: 1;
+  transform: translateY(0);
 }
 
 .logout-btn {

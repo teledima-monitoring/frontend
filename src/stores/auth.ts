@@ -6,7 +6,16 @@ import { APIError } from '@/services/error'
 import { formatError } from '@/utils/format'
 
 export const useAuthStore = defineStore('auth', () => {
-  const user = ref<MeResponse>({ id: 0, login: '', role: UserRole.Guest })
+  const user = ref<MeResponse>({ 
+    id: 0, 
+    login: '', 
+    firstName: '',
+    secondName: '',
+    thirdName: '',
+    email: '',
+    jobTitle: '',
+    role: UserRole.Guest 
+  })
   const loading = shallowRef(false)
   const error = shallowRef<string | null>(null)
 
