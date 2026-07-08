@@ -4,7 +4,9 @@ import { storeToRefs } from 'pinia'
 import { useTasksStore } from '@/stores/tasks'
 import { useUsersStore } from '@/stores/user'
 import { useAuthStore } from '@/stores/auth'
-import { TaskPriority, type TaskView, type UserView } from '@/types/api'
+import { useIncidentsStore } from '@/stores/incident'
+import { TaskPriority, type TaskView } from '@/types/task'
+import type { UserView } from '@/types/auth'
 
 const props = defineProps<{
   incidentId: number
@@ -23,6 +25,8 @@ const { users } = storeToRefs(usersStore)
 
 const authStore = useAuthStore()
 const { user: currentUser } = storeToRefs(authStore)
+
+const incidentsStore = useIncidentsStore()
 
 const showForm = ref(false)
 const selectedExistingTaskId = ref<number | null>(null)
@@ -83,7 +87,7 @@ async function handleCreateTask() {
 async function handleAssignExisting() {
   if (!selectedExistingTaskId.value) return
 
-  await tasksStore.setIncidentTask(props.incidentId, selectedExistingTaskId.value)
+  await incidentsStore.setIncidentTask(props.incidentId, selectedExistingTaskId.value)
   emit('assigned', selectedExistingTaskId.value)
   closeDialog()
 }

@@ -1,7 +1,7 @@
 import { defineStore } from 'pinia'
 import { ref, shallowRef } from 'vue'
 import { api } from '@/services/api'
-import type { IncidentView } from '@/types/api'
+import type { IncidentView, IncidentSetTask } from '@/types/incident'
 import { formatError } from '@/utils/format'
 
 export const useIncidentsStore = defineStore('incidenents', () => {
@@ -17,6 +17,17 @@ export const useIncidentsStore = defineStore('incidenents', () => {
       incidents.value = data
     } catch (e) {
       error.value = formatError(e as Error, 'failure fetching incidents')
+    }
+  }
+
+  async function setIncidentTask(incidentId: number, taskId: number) {
+    error.value = null
+    const data: IncidentSetTask = { task_id: taskId }
+
+    try {
+      await api.setIncidentTask(incidentId, data)
+    } catch (e) {
+      error.value = formatError(e as Error, 'Failed to set incident task')
     }
   }
 
@@ -36,6 +47,7 @@ export const useIncidentsStore = defineStore('incidenents', () => {
     connected,
     incidents,
     fetchIncidents,
+    setIncidentTask,
     exportIncidents,
   }
 })

@@ -37,7 +37,7 @@ import { useAuthStore } from '@/stores/auth'
 import { useNotificationsStore } from '@/stores/notifications'
 import { storeToRefs } from 'pinia'
 import { api } from '@/services/api'
-import { SSESource, type SSEEvent } from '@/types/api'
+import { SSESource, type SSEEvent } from '@/types/sse'
 import AppLayout from '@/components/AppLayout.vue'
 
 const authStore = useAuthStore()

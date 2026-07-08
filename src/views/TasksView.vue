@@ -4,9 +4,9 @@ import { useRoute, useRouter } from 'vue-router'
 import { storeToRefs } from 'pinia'
 import { useTasksStore } from '@/stores/tasks'
 import { useUsersStore } from '@/stores/user'
-import { TaskStatus } from '@/types/api'
 import TaskListView from '@/components/tasks/TaskListView.vue'
 import { api } from '@/services/api'
+import { TaskStatus } from '@/types/task'
 
 const route = useRoute()
 const router = useRouter()

@@ -5,7 +5,7 @@ import { storeToRefs } from 'pinia'
 import { useTasksStore } from '@/stores/tasks'
 import { useUsersStore } from '@/stores/user'
 import { useIncidentsStore } from '@/stores/incident'
-import { TaskPriority, TaskStatus } from '@/types/api'
+import { TaskPriority, TaskStatus } from '@/types/task'
 import { formatDate } from '@/utils/format'
 
 const route = useRoute()

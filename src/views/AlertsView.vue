@@ -4,7 +4,7 @@ import { useAlertsStore } from '@/stores/alerts'
 import { useAuthStore } from '@/stores/auth' // Импортируем auth store
 import { storeToRefs } from 'pinia'
 import AlertForm from '@/components/AlertForm.vue'
-import type { AlertConfigView } from '@/types/api'
+import type { AlertConfigView } from '@/types/alert'
 
 const alertsStore = useAlertsStore()
 const authStore = useAuthStore() // Получаем auth store

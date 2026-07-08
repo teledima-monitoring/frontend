@@ -1,8 +1,13 @@
 import { defineStore } from 'pinia'
 import { ref, shallowRef } from 'vue'
 import { api } from '@/services/api'
-import type { TaskView, TaskCreate, TaskUpdate, IncidentSetTask } from '@/types/api'
-import { TaskStatus, TaskPriority } from '@/types/api'
+import {
+  type TaskView,
+  type TaskCreate,
+  type TaskUpdate,
+  TaskPriority,
+  TaskStatus,
+} from '@/types/task'
 import { formatError } from '@/utils/format'
 
 export const useTasksStore = defineStore('tasks', () => {
@@ -112,20 +117,6 @@ export const useTasksStore = defineStore('tasks', () => {
     }
   }
 
-  async function setIncidentTask(incidentId: number, taskId: number) {
-    loading.value = true
-    error.value = null
-    const data: IncidentSetTask = { task_id: taskId }
-
-    try {
-      await api.setIncidentTask(incidentId, data)
-    } catch (e) {
-      error.value = formatError(e as Error, 'Failed to set incident task')
-    } finally {
-      loading.value = false
-    }
-  }
-
   function clearSelectedTask() {
     selectedTask.value = null
   }
@@ -143,7 +134,6 @@ export const useTasksStore = defineStore('tasks', () => {
     fetchTaskById,
     createTask,
     updateTask,
-    setIncidentTask,
     clearSelectedTask,
   }
 })

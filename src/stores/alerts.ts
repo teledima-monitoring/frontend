@@ -1,8 +1,12 @@
 import { defineStore } from 'pinia'
 import { ref } from 'vue'
 import { api } from '@/services/api'
-import { Constraint } from '@/types/api'
-import type { AlertConfigCreate, AlertConfigUpdate, AlertConfigView } from '@/types/api'
+import {
+  Constraint,
+  type AlertConfigCreate,
+  type AlertConfigUpdate,
+  type AlertConfigView,
+} from '@/types/alert'
 import { formatError } from '@/utils/format'
 
 export const useAlertsStore = defineStore('alerts', () => {

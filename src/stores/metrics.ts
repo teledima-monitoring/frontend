@@ -1,7 +1,7 @@
 import { defineStore } from 'pinia'
 import { ref, computed, shallowRef } from 'vue'
 import { api } from '@/services/api'
-import type { Metric } from '@/types/api'
+import type { Metric } from '@/types/metrics'
 import { formatError } from '@/utils/format'
 import { useDashboardStore } from './dashboard'
 

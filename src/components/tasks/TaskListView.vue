@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { computed } from 'vue'
-import type { TaskView, TaskStatus, UserView } from '@/types/api'
+import type { TaskView, TaskStatus } from '@/types/task'
+import type { UserView } from '@/types/auth'
 import { formatDate } from '@/utils/format'
 
 const props = defineProps<{

@@ -1,7 +1,7 @@
 import { defineStore } from 'pinia'
 import { ref, computed, shallowRef } from 'vue'
 import { api } from '@/services/api'
-import type { DashboardView, DashboardCreate, DashboardUpdate } from '@/types/api'
+import type { DashboardView, DashboardCreate, DashboardUpdate } from '@/types/dashboard'
 import { formatError } from '@/utils/format'
 
 export type DashboardGroupBy = 'none' | 'collector' | string

@@ -1,8 +1,7 @@
 import { defineStore } from 'pinia'
 import { ref, shallowRef, computed } from 'vue'
 import { api } from '@/services/api'
-import { UserRole, type LoginRequest, type MeResponse, type SignUpRequest } from '@/types/api'
-import { APIError } from '@/services/error'
+import { UserRole, type LoginRequest, type MeResponse, type SignUpRequest } from '@/types/auth'
 import { formatError } from '@/utils/format'
 
 export const useAuthStore = defineStore('auth', () => {

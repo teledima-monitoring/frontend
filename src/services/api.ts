@@ -1,24 +1,11 @@
-import type {
-  LoginRequest,
-  MeResponse,
-  MetricsRequest,
-  SignUpRequest,
-  MetricsResponse,
-  AlertConfigView,
-  AlertConfigCreate,
-  DashboardCreate,
-  DashboardView,
-  DashboardUpdate,
-  IncidentView,
-  UserView,
-  IncidentSetTask,
-  TaskCreate,
-  TaskUpdate,
-  TaskView,
-  NotificationView,
-  AlertConfigUpdate,
-} from '@/types/api'
 import { APIError } from '@/services/error'
+import type { AlertConfigCreate, AlertConfigUpdate, AlertConfigView } from '@/types/alert'
+import type { LoginRequest, MeResponse, SignUpRequest, UserView } from '@/types/auth'
+import type { DashboardCreate, DashboardUpdate, DashboardView } from '@/types/dashboard'
+import type { IncidentSetTask, IncidentView } from '@/types/incident'
+import type { MetricsRequest, MetricsResponse } from '@/types/metrics'
+import type { NotificationView } from '@/types/notification'
+import type { TaskCreate, TaskUpdate, TaskView } from '@/types/task'
 
 const BASE_URL = 'http://localhost:1325/api'
 

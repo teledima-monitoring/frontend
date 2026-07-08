@@ -1,6 +1,6 @@
 <script setup lang="ts">
-import type { AlertConfigView, AlertRule } from '@/types/api'
-import { Constraint } from '@/types/api'
+import type { AlertConfigView, AlertRule } from '@/types/alert'
+import { Constraint } from '@/types/alert'
 import { ref, computed, watch } from 'vue'
 
 const props = defineProps<{
