@@ -106,7 +106,16 @@ const changeLanguage = (locale: string) => {
                     href="#"
                     @click.prevent="changeLanguage('en')"
                   >
-                    <span class="me-2">🇬🇧</span> English
+                    <span class="me-2">🇬🇧</span>English
+                  </a>
+                </li>
+                <li>
+                  <a
+                    class="dropdown-item d-flex align-items-center"
+                    href="#"
+                    @click.prevent="changeLanguage('ru')"
+                  >
+                    <span class="me-2">🇷🇺</span>Русский
                   </a>
                 </li>
               </ul>

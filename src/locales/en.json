@@ -2,7 +2,7 @@
   "newNotification": "New notification",
   "cancel": "Cancel",
   "edit": "Edit",
-  "delete": "Delete",
+  "del": "Delete",
   "save": "Save Changes",
   "exportCSV": "Export CSV",
   "load": "Loading...",

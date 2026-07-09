@@ -193,7 +193,7 @@ function cancelEdit() {
                       class="btn btn-sm btn-outline-danger shadow-sm"
                       @click="deleteAlert(alert.id)"
                     >
-                      <i class="bi bi-trash me-1"></i>{{ $t('delete') }}
+                      <i class="bi bi-trash me-1"></i>{{ $t('del') }}
                     </button>
                   </div>
                 </td>

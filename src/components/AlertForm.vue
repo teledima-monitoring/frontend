@@ -126,7 +126,7 @@ function handleSubmit() {
       <div class="col-md-4">
         <label class="form-label small fw-semibold">
           <i class="bi bi-hdd-network me-1 text-primary"></i
-          >{{ $t('alert.form.collectoKind.title') }} *
+          >{{ $t('alert.form.collectorKind.title') }} *
         </label>
         <div class="input-group">
           <span class="input-group-text bg-light border-end-0">
@@ -136,7 +136,7 @@ function handleSubmit() {
             v-model="collectorKind"
             type="text"
             class="form-control bg-light border-start-0"
-            :placeholder="$t('alert.form.collectoKind.placeholder')"
+            :placeholder="$t('alert.form.collectorKind.placeholder')"
           />
         </div>
       </div>
