@@ -62,7 +62,8 @@ function handleSubmit() {
       <!-- Name -->
       <div class="col-md-6">
         <label for="dash-name" class="form-label small fw-semibold">
-          <i class="bi bi-card-heading me-1 text-primary"></i> Name *
+          <i class="bi bi-card-heading me-1 text-primary"></i
+          >{{ $t('dashboard.form.name.title') }} *
         </label>
         <div class="input-group">
           <span class="input-group-text bg-light border-end-0">
@@ -73,7 +74,7 @@ function handleSubmit() {
             v-model="form.name"
             type="text"
             class="form-control bg-light border-start-0"
-            placeholder="My Dashboard"
+            :placeholder="$t('dashboard.form.name.placeholder')"
             required
           />
         </div>
@@ -82,7 +83,8 @@ function handleSubmit() {
       <!-- Collector Kind -->
       <div class="col-md-6">
         <label for="dash-kind" class="form-label small fw-semibold">
-          <i class="bi bi-hdd-network me-1 text-primary"></i> Collector Kind *
+          <i class="bi bi-hdd-network me-1 text-primary"></i
+          >{{ $t('dashboard.form.collectorKind.title') }} *
         </label>
         <div class="input-group">
           <span class="input-group-text bg-light border-end-0">
@@ -93,7 +95,7 @@ function handleSubmit() {
             v-model="form.collectorKind"
             type="text"
             class="form-control bg-light border-start-0"
-            placeholder="e.g. OSCollector"
+            :placeholder="$t('dashboard.form.collectorKind.placeholder')"
             required
           />
         </div>
@@ -102,7 +104,8 @@ function handleSubmit() {
       <!-- Metric Name -->
       <div class="col-md-6">
         <label for="dash-metric" class="form-label small fw-semibold">
-          <i class="bi bi-activity me-1 text-primary"></i> Metric Name *
+          <i class="bi bi-activity me-1 text-primary"></i
+          >{{ $t('dashboard.form.metricName.title') }} *
         </label>
         <div class="input-group">
           <span class="input-group-text bg-light border-end-0">
@@ -113,7 +116,7 @@ function handleSubmit() {
             v-model="form.metricName"
             type="text"
             class="form-control bg-light border-start-0"
-            placeholder="e.g. cpu_idle"
+            :placeholder="$t('dashboard.form.metricName.placeholder')"
             required
           />
         </div>
@@ -122,7 +125,7 @@ function handleSubmit() {
       <!-- Group By -->
       <div class="col-md-6">
         <label for="dash-group-by" class="form-label small fw-semibold">
-          <i class="bi bi-diagram-3 me-1 text-primary"></i> Group By
+          <i class="bi bi-diagram-3 me-1 text-primary"></i>{{ $t('dashboard.form.groupBy') }}
         </label>
         <div class="input-group">
           <span class="input-group-text bg-light border-end-0">
@@ -143,7 +146,7 @@ function handleSubmit() {
       <!-- Filters -->
       <div class="col-12">
         <label class="form-label small fw-semibold">
-          <i class="bi bi-funnel me-1 text-primary"></i> Filters
+          <i class="bi bi-funnel me-1 text-primary"></i>{{ $t('dashboard.form.filter') }}
         </label>
         <div class="p-3 bg-light border rounded-3">
           <FilterKeyValueEditor v-model="form.filters" />
@@ -154,10 +157,10 @@ function handleSubmit() {
     <div class="mt-4 d-flex gap-2 pt-3 border-top">
       <button type="submit" class="btn btn-primary shadow-sm">
         <i class="bi bi-check-circle me-1"></i>
-        {{ isEditing ? 'Update' : 'Create' }} Dashboard
+        {{ isEditing ? $t('dashboard.form.update') : $t('dashboard.form.create') }}
       </button>
       <button type="button" class="btn btn-outline-secondary" @click="emit('cancel')">
-        <i class="bi bi-x-lg me-1"></i> Cancel
+        <i class="bi bi-x-lg me-1"></i>{{ $t('cancel') }}
       </button>
     </div>
   </form>

@@ -1,0 +1,348 @@
+{
+  "newNotification": "New notification",
+  "cancel": "Cancel",
+  "edit": "Edit",
+  "delete": "Delete",
+  "save": "Save Changes",
+  "exportCSV": "Export CSV",
+  "load": "Loading...",
+  "signup": {
+    "title": "Signup",
+    "description": "Fill the data for new account",
+    "username": {
+      "title": "Username",
+      "placeholder": "Set username"
+    },
+    "password": {
+      "title": "Password",
+      "placeholder": "Set password"
+    },
+    "firstName": {
+      "title": "Name",
+      "placeholder": "Input name"
+    },
+    "secondName": {
+      "title": "Second Name",
+      "placeholder": "Input second name"
+    },
+    "thirdName": {
+      "title": "Third Name",
+      "optional": "optional",
+      "placeholder": "Input third name"
+    },
+    "email": "Email",
+    "job": {
+      "title": "Job Title",
+      "default": "Select your job",
+      "engineer": "Engineer",
+      "analytic": "Analytic",
+      "qa": "QA",
+      "designer": "Designer"
+    },
+    "alreadyHave": "Do you already have an account?",
+    "login": "Login",
+    "signup": "Signup",
+    "signupProccess": "Creating account..."
+  },
+  "login": {
+    "title": "Welcome Back",
+    "description": "Please enter your details to sign in",
+    "username": {
+      "title": "Username",
+      "placeholder": "Enter your username"
+    },
+    "password": {
+      "title": "Password",
+      "placeholder": "Enter your password"
+    },
+    "dontHave": "Don't have an account?",
+    "signup": "Sign up",
+    "signin": "Sign In",
+    "signinProccess": "Signing in..."
+  },
+  "app": {
+    "title": "Monitoring",
+    "nav": {
+      "dashboard": "Dashboard",
+      "alerts": "Alerts",
+      "incidents": "Incidents",
+      "tasks": "Tasks"
+    },
+    "user": {
+      "jobTitleEmpty": "Job not specified",
+      "emailEmpty": "Email not specified"
+    },
+    "logout": "Logout"
+  },
+  "dashboard": {
+    "title": "Dashboard",
+    "description": "Monitor metrics and visualize system performance",
+    "edit": "Edit dashboard",
+    "new": "New dashboard",
+    "metrics": {
+      "title": "Metrics Visualization",
+      "timeRange": {
+        "start": "Start",
+        "end": "End"
+      },
+      "fetch": {
+        "initial": "Fetch Metrics",
+        "loading": "Fetching..."
+      },
+      "noData": {
+        "title": "No metrics data",
+        "text": "Select a dashboard and time range, then click @:dashboard.metrics.fetch.initial"
+      }
+    },
+    "form": {
+      "name": {
+        "title": "Name",
+        "placeholder": "My Dashboard"
+      },
+      "collectorKind": {
+        "title": "Collector Kind",
+        "placeholder": "e.g. OSCollector"
+      },
+      "metricName": {
+        "title": "Metric Name",
+        "placeholder": "e.g. cpu_idle"
+      },
+      "groupBy": "Group By",
+      "filter": "Filters",
+      "edit": "Edit Dashboard",
+      "create": "Create Dashboard"
+    },
+    "list": {
+      "title": "Saved Dashboards",
+      "empty": "No dashboards yet. Create one to get started",
+      "new": "New"
+    }
+  },
+  "alert": {
+    "title": "Alerts Management",
+    "description": "Configure thresholds and notifications for system metrics",
+    "edit": "Edit Alert",
+    "create": "Create New Alert",
+    "configurations": {
+      "title": "Alert Configurations",
+      "table": {
+        "id": "ID",
+        "name": "Name",
+        "collector": "Collector",
+        "period": "Period",
+        "rules": "Rules",
+        "actions": "Actions"
+      }
+    },
+    "noConfigurations": {
+      "title": "No alerts configured",
+      "placeholder": "Create your first alert to start monitoring"
+    },
+    "subscribe": {
+      "text": "Subscribe",
+      "tooltip": "Subscribe to this alert"
+    },
+    "unsubscribe": {
+      "text": "Unsubscribe",
+      "tooltip": "Unsubscribe from this alert"
+    },
+    "form": {
+      "name": {
+        "title": "Alert Name",
+        "placeholder": "My alert"
+      },
+      "collectorKind": {
+        "title": "Collector Kind",
+        "placeholder": "e.g. OSCollector"
+      },
+      "dataPeriod": "Data period (seconds)",
+      "filter": {
+        "title": "Filters",
+        "add": "Add",
+        "remove": "Remove",
+        "key": "Key",
+        "value": "Value",
+        "empty": "No filters added. Leave empty to match all sources"
+      },
+      "rule": {
+        "title": "Rules",
+        "field": {
+          "title": "Field",
+          "placeholder": "e.g. memory_used"
+        },
+        "constraint": "Constraint",
+        "value": "Value",
+        "add": "Add Rule",
+        "remove": "Remove",
+        "empty": "No rules defined. Add at least one rule to create the alert"
+      },
+      "update": "Update Alert",
+      "create": "Create Alert"
+    }
+  },
+  "incident": {
+    "title": "Incidents Management",
+    "description": "Monitor active alerts and assign tasks for resolution",
+    "total": "Total Incidents",
+    "active": "Active",
+    "closed": "Closed",
+    "all": "All Incidents",
+    "refresh": "Refresh",
+    "empty": {
+      "title": "No incidents found",
+      "text": "System is running smoothly. All clear!"
+    },
+    "table": {
+      "key": "Key",
+      "alertName": "Alert Name",
+      "status": "Status",
+      "created": "Created",
+      "updated": "Updated",
+      "linkedTask": "Linked Task",
+      "actions": "Actions"
+    },
+    "status": {
+      "active": "Active",
+      "closed": "Closed"
+    },
+    "assignTask": "Assign Task",
+    "assign": {
+      "title": "Assign Task to Incident",
+      "incident": "Incident #{id}",
+      "createNew": "Create New Task",
+      "selectExisting": "Select Existing Task",
+      "select": {
+        "empty": {
+          "title": "No tasks available",
+          "text": "Create a new task instead"
+        },
+        "assigneeEmpty": "Assignee not specified",
+        "assign": "Assign Selected Task"
+      },
+      "new": {
+        "name": {
+          "title": "Name",
+          "placeholder": "Enter task name"
+        },
+        "description": {
+          "title": "Description",
+          "placeholder": "Enter task description (optional)"
+        },
+        "priority": "Priority *",
+        "estimate": {
+          "title": "Estimate",
+          "placeholder": "e.g., 2h, 1d"
+        },
+        "assignee": {
+          "title": "Assignee",
+          "select": "Select assignee..."
+        },
+        "create": "Create & Assign Task"
+      }
+    }
+  },
+  "task": {
+    "title": "Tasks Management",
+    "description": "Track, manage, and update your project tasks",
+    "load": "Fetching your tasks...",
+    "export": {
+      "all": "Export Tasks",
+      "selected": "Export Selected Tasks"
+    },
+    "filters": {
+      "status": {
+        "title": "status",
+        "all": "All Statuses"
+      },
+      "assignee": {
+        "title": "Assignee",
+        "all": "All Assignees"
+      },
+      "clear": "Clear filters & selection"
+    },
+    "status": {
+      "unknown": "Unknown",
+      "open": "Open",
+      "inProgress": "In Progress",
+      "closed": "Closed"
+    },
+    "priority": {
+      "low": "Low",
+      "medium": "Medium",
+      "high": "High"
+    },
+    "list": {
+      "title": "All Tasks",
+      "noTasks": {
+        "title": "No tasks found",
+        "text": "Create your first task to get started"
+      },
+      "table": {
+        "select": "Select / Unselect all",
+        "key": "Key",
+        "name": "Name",
+        "assignee": "Assignee",
+        "status": "Status",
+        "created": "Created",
+        "updated": "Updated"
+      },
+      "jobEmpty": "Job not specified",
+      "assigneeEmpty": "Assignee not specified",
+      "emailEmpty": "Email not specified"
+    },
+    "detail": {
+      "back": "Back to Tasks",
+      "load": "Loading tasks details...",
+      "notFound": "Task not found",
+      "key": "Key",
+      "name": {
+        "title": "Name",
+        "placeholder": "Enter task name"
+      },
+      "status": "Status",
+      "priority": "Priority",
+      "estimate": {
+        "title": "Estimate",
+        "empty": "Not estimated",
+        "placeholder": "e.g., 2h, 1d"
+      },
+      "description": {
+        "title": "Description",
+        "empty": "No description provided",
+        "placeholder": "Enter task description"
+      },
+      "author": "Author",
+      "assignee": {
+        "title": "Assignee",
+        "empty": "No assigned",
+        "select": "Select assignee"
+      },
+      "incident": {
+        "related": "Related Incidents",
+        "empty": "No incidents linked to this task",
+        "showLess": "Show less",
+        "showAll": "Show all incidents",
+        "remains": "{cnt} more"
+      },
+      "created": "Created",
+      "updated": "Updated",
+      "comments": {
+        "title": "Comments",
+        "empty": "No comments yet. Be the first to start the discussion!"
+      }
+    }
+  },
+  "notification": {
+    "title": "Notifications",
+    "readAll": "Read All",
+    "noNew": "No new notifications",
+    "error": "Unexpected error: {err}"
+  },
+  "filterKeyValue": {
+    "empty": "No filters configured",
+    "emptyValue": "(empty)",
+    "key": "Key",
+    "value": "Value",
+    "add": "Add Filter"
+  }
+}

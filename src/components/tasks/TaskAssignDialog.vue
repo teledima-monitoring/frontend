@@ -121,8 +121,10 @@ defineExpose({ openDialog })
                 <i class="bi bi-link-45deg"></i>
               </div>
               <div>
-                <h5 class="modal-title fw-bold mb-0">Assign Task to Incident</h5>
-                <small class="text-muted">Incident #{{ incidentId }}</small>
+                <h5 class="modal-title fw-bold mb-0">{{ $t('incident.assign.title') }}</h5>
+                <small class="text-muted">{{
+                  $t('incident.assign.incident', { id: incidentId })
+                }}</small>
               </div>
             </div>
             <button type="button" class="btn-close" @click="closeDialog"></button>
@@ -137,7 +139,7 @@ defineExpose({ openDialog })
                   :class="{ active: activeTab === 'create' }"
                   @click="activeTab = 'create'"
                 >
-                  <i class="bi bi-plus-circle me-1"></i> Create New Task
+                  <i class="bi bi-plus-circle me-1"></i>{{ $t('incident.assign.createNew') }}
                 </button>
               </li>
               <li class="nav-item">
@@ -146,7 +148,7 @@ defineExpose({ openDialog })
                   :class="{ active: activeTab === 'existing' }"
                   @click="activeTab = 'existing'"
                 >
-                  <i class="bi bi-list-ul me-1"></i> Select Existing Task
+                  <i class="bi bi-list-ul me-1"></i>{{ $t('incident.assign.selectExisting') }}
                 </button>
               </li>
             </ul>
@@ -156,65 +158,80 @@ defineExpose({ openDialog })
               <form @submit.prevent="handleCreateTask">
                 <div class="mb-3">
                   <label for="task-name" class="form-label small fw-semibold">
-                    <i class="bi bi-card-heading me-1 text-primary"></i> Name *
+                    <i class="bi bi-card-heading me-1 text-primary"></i
+                    >{{ $t('incident.assign.new.name.title') }} *
                   </label>
                   <input
                     id="task-name"
                     v-model="newTaskName"
                     type="text"
                     class="form-control"
-                    placeholder="Enter task name"
+                    :placeholder="$t('incident.assign.new.name.placeholder')"
                   />
                 </div>
 
                 <div class="mb-3">
                   <label for="task-desc" class="form-label small fw-semibold">
-                    <i class="bi bi-text-paragraph me-1 text-primary"></i> Description
+                    <i class="bi bi-text-paragraph me-1 text-primary"></i
+                    >{{ $t('incident.assign.new.description.title') }}
                   </label>
                   <textarea
                     id="task-desc"
                     v-model="newTaskDescription"
                     class="form-control"
                     rows="3"
-                    placeholder="Enter task description (optional)"
+                    :placeholder="$t('incident.assign.new.description.placeholder')"
                   ></textarea>
                 </div>
 
                 <div class="row g-3 mb-3">
                   <div class="col-md-6">
                     <label for="new-task-priority" class="form-label small fw-semibold">
-                      <i class="bi bi-exclamation-triangle me-1 text-primary"></i> Priority *
+                      <i class="bi bi-exclamation-triangle me-1 text-primary"></i
+                      >{{ $t('incident.assign.new.priority') }} *
                     </label>
                     <select
                       id="new-task-priority"
                       v-model.number="newTaskPriority"
                       class="form-select"
                     >
-                      <option :value="TaskPriority.High">High</option>
-                      <option :value="TaskPriority.Medium">Medium</option>
-                      <option :value="TaskPriority.Low">Low</option>
+                      <option
+                        v-for="priority in [
+                          TaskPriority.High,
+                          TaskPriority.Medium,
+                          TaskPriority.Low,
+                        ]"
+                        :key="priority"
+                        :value="priority"
+                      >
+                        {{ $t(tasksStore.getTaskPriorityLabel(priority)) }}
+                      </option>
                     </select>
                   </div>
                   <div class="col-md-6">
                     <label for="new-task-estimate" class="form-label small fw-semibold">
-                      <i class="bi bi-clock-history me-1 text-primary"></i> Estimate
+                      <i class="bi bi-clock-history me-1 text-primary"></i
+                      >{{ $t('incident.assign.new.estimate.title') }}
                     </label>
                     <input
                       id="new-task-estimate"
                       v-model="newTaskEstimate"
                       type="text"
                       class="form-control"
-                      placeholder="e.g., 2h, 1d"
+                      :placeholder="$t('incident.assign.new.estimate.placeholder')"
                     />
                   </div>
                 </div>
 
                 <div class="mb-4">
                   <label for="task-assignee" class="form-label small fw-semibold">
-                    <i class="bi bi-person-check me-1 text-primary"></i> Assignee *
+                    <i class="bi bi-person-check me-1 text-primary"></i
+                    >{{ $t('incident.assign.new.assignee.title') }}
                   </label>
                   <select id="task-assignee" v-model.number="newTaskAssigneeId" class="form-select">
-                    <option :value="null" disabled>Select assignee...</option>
+                    <option :value="null" disabled>
+                      {{ $t('incident.assign.new.assignee.select') }}
+                    </option>
                     <option v-for="user in users" :key="user.id" :value="user.id">
                       {{ user.firstName }}
                       {{ user.secondName }}
@@ -226,14 +243,14 @@ defineExpose({ openDialog })
 
                 <div class="d-flex justify-content-end gap-2 pt-3 border-top">
                   <button type="button" class="btn btn-outline-secondary" @click="closeDialog">
-                    <i class="bi bi-x-lg me-1"></i> Cancel
+                    <i class="bi bi-x-lg me-1"></i>{{ $t('cancel') }}
                   </button>
                   <button
                     type="submit"
                     class="btn btn-primary shadow-sm"
                     :disabled="isCreateDisabled"
                   >
-                    <i class="bi bi-plus-circle me-1"></i> Create & Assign Task
+                    <i class="bi bi-plus-circle me-1"></i>{{ $t('incident.assign.new.create') }}
                   </button>
                 </div>
               </form>
@@ -246,8 +263,10 @@ defineExpose({ openDialog })
                 <div class="empty-icon mx-auto mb-3">
                   <i class="bi bi-inbox"></i>
                 </div>
-                <h6 class="text-muted fw-semibold">No tasks available</h6>
-                <p class="text-muted small mb-0">Create a new task instead.</p>
+                <h6 class="text-muted fw-semibold">
+                  {{ $t('incident.assign.select.empty.title') }}
+                </h6>
+                <p class="text-muted small mb-0">{{ $t('incident.assign.select.empty.text') }}</p>
               </div>
 
               <!-- Tasks list -->
@@ -301,13 +320,15 @@ defineExpose({ openDialog })
                               </div>
                             </div>
                           </div>
-                          <span v-else class="text-muted fst-italic">Не назначен</span>
+                          <span v-else class="text-muted fst-italic">{{
+                            $t('incident.assign.select.assigneeEmpty')
+                          }}</span>
                         </span>
                         <span
                           class="badge"
                           :class="tasksStore.getTaskStatusBadgeClass(task.status)"
                         >
-                          {{ tasksStore.getTaskStatusLabel(task.status) }}
+                          {{ $t(tasksStore.getTaskStatusLabel(task.status)) }}
                         </span>
                       </div>
                     </div>
@@ -321,7 +342,7 @@ defineExpose({ openDialog })
                 class="d-flex justify-content-end gap-2 mt-4 pt-3 border-top"
               >
                 <button type="button" class="btn btn-outline-secondary" @click="closeDialog">
-                  <i class="bi bi-x-lg me-1"></i> Cancel
+                  <i class="bi bi-x-lg me-1"></i>{{ $t('cancel') }}
                 </button>
                 <button
                   type="button"
@@ -329,7 +350,7 @@ defineExpose({ openDialog })
                   :disabled="!selectedExistingTaskId"
                   @click="handleAssignExisting"
                 >
-                  <i class="bi bi-link-45deg me-1"></i> Assign Selected Task
+                  <i class="bi bi-link-45deg me-1"></i>{{ $t('incident.assign.select.assign') }}
                 </button>
               </div>
             </div>

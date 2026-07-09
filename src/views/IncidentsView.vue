@@ -36,12 +36,12 @@ onMounted(() => {
     <div class="d-flex justify-content-between align-items-center mb-4">
       <div>
         <h3 class="fw-bold mb-1">
-          <i class="bi bi-exclamation-octagon me-2 text-danger"></i>Incidents Management
+          <i class="bi bi-exclamation-octagon me-2 text-danger"></i>{{ $t('incident.title') }}
         </h3>
-        <p class="text-muted mb-0">Monitor active alerts and assign tasks for resolution.</p>
+        <p class="text-muted mb-0">{{ $t('incident.description') }}</p>
       </div>
       <button class="btn btn-outline-success shadow-sm" @click="exportIncidents">
-        <i class="bi bi-download me-2"></i> Export CSV
+        <i class="bi bi-download me-2"></i> {{ $t('exportCSV') }}
       </button>
     </div>
 
@@ -54,7 +54,9 @@ onMounted(() => {
               <i class="bi bi-list-task"></i>
             </div>
             <div>
-              <p class="text-muted mb-1 small fw-semibold text-uppercase">Total Incidents</p>
+              <p class="text-muted mb-1 small fw-semibold text-uppercase">
+                {{ $t('incident.total') }}
+              </p>
               <h3 class="fw-bold mb-0">{{ incidents.length }}</h3>
             </div>
           </div>
@@ -67,7 +69,9 @@ onMounted(() => {
               <i class="bi bi-fire"></i>
             </div>
             <div>
-              <p class="text-muted mb-1 small fw-semibold text-uppercase">Active</p>
+              <p class="text-muted mb-1 small fw-semibold text-uppercase">
+                {{ $t('incident.active') }}
+              </p>
               <h3 class="fw-bold mb-0 text-danger">{{ activeIncidents.length }}</h3>
             </div>
           </div>
@@ -80,7 +84,9 @@ onMounted(() => {
               <i class="bi bi-check-circle"></i>
             </div>
             <div>
-              <p class="text-muted mb-1 small fw-semibold text-uppercase">Closed</p>
+              <p class="text-muted mb-1 small fw-semibold text-uppercase">
+                {{ $t('incident.active') }}
+              </p>
               <h3 class="fw-bold mb-0 text-success">{{ closedIncidents.length }}</h3>
             </div>
           </div>
@@ -93,29 +99,31 @@ onMounted(() => {
       <div
         class="card-header bg-white border-0 py-3 d-flex justify-content-between align-items-center"
       >
-        <h6 class="mb-0 fw-bold"><i class="bi bi-inbox me-2 text-primary"></i>All Incidents</h6>
+        <h6 class="mb-0 fw-bold">
+          <i class="bi bi-inbox me-2 text-primary"></i>{{ $t('incident.all') }}
+        </h6>
         <button class="btn btn-sm btn-outline-secondary shadow-sm" @click="fetchIncidents">
-          <i class="bi bi-arrow-clockwise me-1"></i> Refresh
+          <i class="bi bi-arrow-clockwise me-1"></i>{{ $t('incident.refresh') }}
         </button>
       </div>
       <div class="card-body p-0">
         <div v-if="incidents.length === 0" class="text-center py-5">
           <i class="bi bi-shield-check display-1 text-muted d-block mb-3"></i>
-          <h5 class="text-muted">No incidents found</h5>
-          <p class="text-muted">System is running smoothly. All clear!</p>
+          <h5 class="text-muted">{{ $t('incident.empty.title') }}</h5>
+          <p class="text-muted">{{ $t('incident.empty.text') }}</p>
         </div>
 
         <div v-else class="table-responsive">
           <table class="table table-hover align-middle mb-0">
             <thead class="table-light">
               <tr>
-                <th class="ps-4">Key</th>
-                <th>Alert Name</th>
-                <th>Status</th>
-                <th>Created</th>
-                <th>Updated</th>
-                <th>Linked Task</th>
-                <th class="text-end pe-4">Actions</th>
+                <th class="ps-4">{{ $t('incident.table.key') }}</th>
+                <th>{{ $t('incident.table.alertName') }}</th>
+                <th>{{ $t('incident.table.status') }}</th>
+                <th>{{ $t('incident.table.created') }}</th>
+                <th>{{ $t('incident.table.updated') }}</th>
+                <th>{{ $t('incident.table.linkedTask') }}</th>
+                <th class="text-end pe-4">{{ $t('incident.table.actions') }}</th>
               </tr>
             </thead>
             <tbody>
@@ -140,7 +148,9 @@ onMounted(() => {
                       class="me-1"
                       style="font-size: 0.5rem; vertical-align: middle"
                     ></i>
-                    {{ incident.fired ? 'Active' : 'Closed' }}
+                    {{
+                      incident.fired ? $t('incident.status.active') : $t('incident.status.closed')
+                    }}
                   </span>
                 </td>
                 <td class="text-muted small">{{ formatDate(incident.createDt) }}</td>
@@ -160,7 +170,7 @@ onMounted(() => {
                     class="btn btn-sm btn-outline-primary shadow-sm"
                     @click="openAssignDialog(incident.id)"
                   >
-                    <i class="bi bi-plus-lg me-1"></i> Assign Task
+                    <i class="bi bi-plus-lg me-1"></i>{{ $t('incident.assignTask') }}
                   </button>
                 </td>
               </tr>

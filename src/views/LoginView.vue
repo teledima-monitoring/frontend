@@ -25,15 +25,17 @@ async function handleLogin() {
     <div class="auth-card">
       <!-- Header -->
       <div class="text-center mb-4">
-        <h3 class="fw-bold mb-1">Welcome Back</h3>
-        <p class="text-muted small mb-0">Please enter your details to sign in.</p>
+        <h3 class="fw-bold mb-1">{{ $t('login.title') }}</h3>
+        <p class="text-muted small mb-0">{{ $t('login.description') }}</p>
       </div>
 
       <!-- Form -->
       <form @submit.prevent="handleLogin">
         <!-- Username -->
         <div class="mb-3">
-          <label for="login" class="form-label small fw-semibold">Username</label>
+          <label for="login" class="form-label small fw-semibold">{{
+            $t('login.username.title')
+          }}</label>
           <div class="input-group">
             <span class="input-group-text bg-light border-end-0">
               <i class="bi bi-person text-muted"></i>
@@ -43,7 +45,7 @@ async function handleLogin() {
               v-model="login"
               type="text"
               class="form-control bg-light border-start-0"
-              placeholder="Enter your username"
+              :placeholder="$t('login.username.placeholder')"
               autocomplete="username"
             />
           </div>
@@ -51,7 +53,9 @@ async function handleLogin() {
 
         <!-- Password -->
         <div class="mb-4">
-          <label for="password" class="form-label small fw-semibold">Password</label>
+          <label for="password" class="form-label small fw-semibold">{{
+            $t('login.password.title')
+          }}</label>
           <div class="input-group">
             <span class="input-group-text bg-light border-end-0">
               <i class="bi bi-lock text-muted"></i>
@@ -61,7 +65,7 @@ async function handleLogin() {
               v-model="password"
               type="password"
               class="form-control bg-light border-start-0"
-              placeholder="Enter your password"
+              :placeholder="$t('login.password.placeholder')"
               autocomplete="current-password"
             />
           </div>
@@ -83,17 +87,17 @@ async function handleLogin() {
           :disabled="loading"
         >
           <span v-if="loading" class="spinner-border spinner-border-sm me-2" role="status"></span>
-          {{ loading ? 'Signing in...' : 'Sign In' }}
+          {{ loading ? $t('login.signinProcess') : $t('login.signin') }}
         </button>
       </form>
 
       <!-- Footer -->
       <div class="text-center mt-4 pt-4 border-top">
         <p class="text-muted small mb-0">
-          Don't have an account?
-          <router-link to="/signup" class="fw-semibold text-decoration-none text-primary"
-            >Sign up</router-link
-          >
+          {{ $t('login.dontHave') }}
+          <router-link to="/signup" class="fw-semibold text-decoration-none text-primary">{{
+            $t('login.signup')
+          }}</router-link>
         </p>
       </div>
     </div>

@@ -15,7 +15,7 @@
             <i class="bi bi-bell-fill"></i>
           </div>
           <div class="flex-grow-1">
-            <div class="fw-semibold small text-danger mb-1">Новое уведомление</div>
+            <div class="fw-semibold small text-danger mb-1">{{ $t('newToast') }}</div>
             <div class="text-dark">{{ toast.text }}</div>
           </div>
           <button
@@ -31,7 +31,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, watch } from 'vue'
+import { onMounted, ref, watch } from 'vue'
 import { useIncidentsStore } from '@/stores/incident'
 import { useAuthStore } from '@/stores/auth'
 import { useNotificationsStore } from '@/stores/notifications'
@@ -39,12 +39,15 @@ import { storeToRefs } from 'pinia'
 import { api } from '@/services/api'
 import { SSESource, type SSEEvent } from '@/types/sse'
 import AppLayout from '@/components/AppLayout.vue'
+import { useSettingsStore } from './stores/settings'
 
 const authStore = useAuthStore()
 const { isLoggedIn } = storeToRefs(authStore)
 
 const incidentsStore = useIncidentsStore()
 const notificationsStore = useNotificationsStore()
+
+const settingsStore = useSettingsStore()
 
 const connected = ref<boolean>(false)
 const eventSource = ref<EventSource | null>(null)
@@ -81,6 +84,10 @@ watch(
   },
   { immediate: true },
 )
+
+onMounted(async () => {
+  await settingsStore.load()
+})
 
 function connect() {
   if (eventSource.value) {

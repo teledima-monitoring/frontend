@@ -30,7 +30,7 @@ const isAllSelected = computed(() => {
     <div class="list-header d-flex justify-content-between align-items-center p-4 border-bottom">
       <div>
         <h6 class="mb-0 fw-bold">
-          <i class="bi bi-list-check me-2 text-primary"></i>All Tasks
+          <i class="bi bi-list-check me-2 text-primary"></i>{{ $t('task.list.title') }}
           <span class="badge bg-primary bg-opacity-10 text-primary ms-2">{{
             props.tasks.length
           }}</span>
@@ -45,8 +45,8 @@ const isAllSelected = computed(() => {
         <div class="empty-icon mx-auto mb-3">
           <i class="bi bi-inbox"></i>
         </div>
-        <h5 class="text-muted fw-semibold">No tasks found</h5>
-        <p class="text-muted small mb-0">Create your first task to get started.</p>
+        <h5 class="text-muted fw-semibold">{{ $t('task.list.noTasks.title') }}</h5>
+        <p class="text-muted small mb-0">{{ $t('task.list.noTasks.text') }}</p>
       </div>
 
       <!-- Table -->
@@ -61,15 +61,31 @@ const isAllSelected = computed(() => {
                   class="form-check-input task-checkbox"
                   :checked="isAllSelected"
                   @change="emit('toggle-select-all')"
-                  title="Select / Unselect all"
+                  :title="$t('task.list.table.select')"
                 />
               </th>
-              <th><i class="bi bi-hash me-1 text-muted small"></i>Key</th>
-              <th><i class="bi bi-card-heading me-1 text-muted small"></i>Name</th>
-              <th><i class="bi bi-person me-1 text-muted small"></i>Assignee</th>
-              <th><i class="bi bi-flag me-1 text-muted small"></i>Status</th>
-              <th><i class="bi bi-calendar-plus me-1 text-muted small"></i>Created</th>
-              <th><i class="bi bi-calendar-check me-1 text-muted small"></i>Updated</th>
+              <th>
+                <i class="bi bi-hash me-1 text-muted small"></i>{{ $t('task.list.table.key') }}
+              </th>
+              <th>
+                <i class="bi bi-card-heading me-1 text-muted small"></i
+                >{{ $t('task.list.table.name') }}
+              </th>
+              <th>
+                <i class="bi bi-person me-1 text-muted small"></i
+                >{{ $t('task.list.table.assignee') }}
+              </th>
+              <th>
+                <i class="bi bi-flag me-1 text-muted small"></i>{{ $t('task.list.table.status') }}
+              </th>
+              <th>
+                <i class="bi bi-calendar-plus me-1 text-muted small"></i
+                >{{ $t('task.list.table.created') }}
+              </th>
+              <th>
+                <i class="bi bi-calendar-check me-1 text-muted small"></i
+                >{{ $t('task.list.table.updated') }}
+              </th>
             </tr>
           </thead>
           <tbody>
@@ -125,19 +141,21 @@ const isAllSelected = computed(() => {
                     </div>
                     <div class="small text-muted mb-1">
                       <i class="bi bi-briefcase me-1"></i>
-                      {{ getUserById(task.assigneeId)?.jobTitle || 'Должность не указана' }}
+                      {{ getUserById(task.assigneeId)?.jobTitle || $t('task.list.jobEmpty') }}
                     </div>
                     <div class="small text-muted">
                       <i class="bi bi-envelope me-1"></i>
-                      {{ getUserById(task.assigneeId)?.email || 'Email не указан' }}
+                      {{ getUserById(task.assigneeId)?.email || $t('task.list.emailEmpty') }}
                     </div>
                   </div>
                 </div>
-                <span v-else class="text-muted fst-italic">Не назначен</span>
+                <span v-else class="text-muted fst-italic">{{
+                  $t('task.list.assigneeEmpty')
+                }}</span>
               </td>
               <td>
                 <span class="badge status-pill" :class="props.taskStatusBadgeClass(task.status)">
-                  {{ props.taskStatusLabel(task.status) }}
+                  {{ $t(props.taskStatusLabel(task.status)) }}
                 </span>
               </td>
               <td class="text-muted small">{{ formatDate(task.createDt) }}</td>

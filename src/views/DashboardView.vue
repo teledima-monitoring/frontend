@@ -52,8 +52,10 @@ onMounted(async () => {
   <div class="container-fluid py-4">
     <!-- Page Header -->
     <div class="mb-4">
-      <h3 class="fw-bold mb-1"><i class="bi bi-graph-up-arrow me-2 text-primary"></i>Dashboard</h3>
-      <p class="text-muted mb-0">Monitor metrics and visualize system performance.</p>
+      <h3 class="fw-bold mb-1">
+        <i class="bi bi-graph-up-arrow me-2 text-primary"></i>{{ $t('dashboard.title') }}
+      </h3>
+      <p class="text-muted mb-0">{{ $t('dashboard.description') }}</p>
     </div>
 
     <div v-if="error" class="alert alert-danger d-flex align-items-center shadow-sm">
@@ -76,14 +78,11 @@ onMounted(async () => {
       <div class="col-12">
         <div class="card border-0 shadow-sm">
           <div class="card-body p-4">
-            <h6 class="fw-bold text-uppercase text-muted small mb-3">
-              <i class="bi bi-collection me-2"></i>Dashboards
-            </h6>
-
             <!-- Inline Form -->
             <div v-if="showForm" class="mb-4 p-3 bg-light border rounded-3">
               <h6 class="fw-bold mb-3">
-                <i class="bi bi-pencil-square me-2"></i>{{ editingId ? 'Edit' : 'New' }} Dashboard
+                <i class="bi bi-pencil-square me-2"></i
+                >{{ editingId ? $t('dashboard.edit') : $t('dashboard.new') }}
               </h6>
               <DashboardForm
                 :initial="editingId ? userDashboards.find((d) => d.id === editingId) : undefined"

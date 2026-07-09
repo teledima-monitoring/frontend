@@ -104,13 +104,15 @@ watch(
     <!-- Page Header -->
     <div class="d-flex justify-content-between align-items-center mb-4">
       <div>
-        <h3 class="fw-bold mb-1"><i class="bi bi-kanban me-2 text-primary"></i>Tasks Management</h3>
-        <p class="text-muted mb-0">Track, manage, and update your project tasks.</p>
+        <h3 class="fw-bold mb-1">
+          <i class="bi bi-kanban me-2 text-primary"></i>{{ $t('task.title') }}
+        </h3>
+        <p class="text-muted mb-0">{{ $t('task.description') }}</p>
       </div>
       <!-- Кнопка экспорта -->
       <button class="btn btn-outline-primary shadow-sm" @click="exportTasks" :disabled="loading">
         <i class="bi bi-download me-2"></i>
-        {{ isExportSelected ? 'Export Selected Tasks' : 'Export Tasks' }}
+        {{ isExportSelected ? $t('task.export.selected') : $t('task.export.all') }}
       </button>
     </div>
 
@@ -119,18 +121,26 @@ watch(
       <div class="card-body p-3">
         <div class="row g-3 align-items-end">
           <div class="col-md-4">
-            <label class="form-label small fw-semibold text-muted mb-1">Status</label>
+            <label class="form-label small fw-semibold text-muted mb-1">{{
+              $t('task.filters.status.title')
+            }}</label>
             <select v-model="statusFilter" class="form-select">
-              <option :value="''">All Statuses</option>
-              <option :value="TaskStatus.Open">Open</option>
-              <option :value="TaskStatus.InProgress">In Progress</option>
-              <option :value="TaskStatus.Closed">Closed</option>
+              <option :value="''">{{ $t('task.filters.status.all') }}</option>
+              <option
+                v-for="status in [TaskStatus.Open, TaskStatus.InProgress, TaskStatus.Closed]"
+                :key="status"
+                :value="status"
+              >
+                {{ $t(getTaskStatusLabel(status)) }}
+              </option>
             </select>
           </div>
           <div class="col-md-4">
-            <label class="form-label small fw-semibold text-muted mb-1">Assignee</label>
+            <label class="form-label small fw-semibold text-muted mb-1">{{
+              $t('task.filters.assignee.title')
+            }}</label>
             <select v-model.number="assigneeFilter" class="form-select">
-              <option :value="''">All Assignees</option>
+              <option :value="''">{{ $t('task.filters.assignee.all') }}</option>
               <option v-for="user in users" :key="user.id" :value="user.id">
                 {{ user.login }}
               </option>
@@ -143,7 +153,7 @@ watch(
               @click="clearFiltersAndSelection"
               :disabled="!hasFilters && selectedTaskIds.size === 0"
             >
-              <i class="bi bi-x-circle me-1"></i> Clear filters & selection
+              <i class="bi bi-x-circle me-1"></i>{{ $t('task.filters.clear') }}
             </button>
           </div>
         </div>
@@ -155,7 +165,7 @@ watch(
       <div class="spinner-border text-primary" role="status">
         <span class="visually-hidden">Loading...</span>
       </div>
-      <p class="text-muted mt-3">Fetching your tasks...</p>
+      <p class="text-muted mt-3">{{ $t('task.load') }}</p>
     </div>
 
     <!-- Task List -->

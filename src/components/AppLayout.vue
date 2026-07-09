@@ -3,10 +3,14 @@ import { useAuthStore } from '@/stores/auth'
 import { storeToRefs } from 'pinia'
 import { useRoute, useRouter } from 'vue-router'
 import NotificationsDropdown from '@/components/NotificationsDropdown.vue'
+import { useSettingsStore } from '@/stores/settings'
 
 const authStore = useAuthStore()
 const { isLoggedIn, user } = storeToRefs(authStore)
 const { logout } = authStore
+
+const settingsStore = useSettingsStore()
+const { settings } = storeToRefs(settingsStore)
 
 const route = useRoute()
 const router = useRouter()
@@ -14,6 +18,10 @@ const router = useRouter()
 const handleLogout = async () => {
   await logout()
   await router.push({ name: 'Login', query: { redirect: route.fullPath } })
+}
+
+const changeLanguage = (locale: string) => {
+  settingsStore.setLanguage(locale)
 }
 </script>
 
@@ -29,7 +37,7 @@ const handleLogout = async () => {
           <div class="brand-icon me-2">
             <i class="bi bi-activity"></i>
           </div>
-          <span class="fw-bold">Monitoring</span>
+          <span class="fw-bold">{{ $t('app.title') }}</span>
         </router-link>
 
         <button
@@ -48,7 +56,7 @@ const handleLogout = async () => {
           <ul class="navbar-nav me-auto mb-2 mb-lg-0">
             <li class="nav-item">
               <router-link class="nav-link" :class="{ active: route.path === '/' }" to="/">
-                <i class="bi bi-graph-up me-1"></i> Dashboard
+                <i class="bi bi-graph-up me-1"></i>{{ $t('app.nav.dashboard') }}
               </router-link>
             </li>
             <li class="nav-item">
@@ -57,7 +65,7 @@ const handleLogout = async () => {
                 :class="{ active: route.path === '/alerts' }"
                 to="/alerts"
               >
-                <i class="bi bi-bell me-1"></i> Alerts
+                <i class="bi bi-bell me-1"></i>{{ $t('app.nav.alerts') }}
               </router-link>
             </li>
             <li class="nav-item">
@@ -66,7 +74,7 @@ const handleLogout = async () => {
                 :class="{ active: route.path === '/incidents' }"
                 to="/incidents"
               >
-                <i class="bi bi-exclamation-triangle me-1"></i> Incidents
+                <i class="bi bi-exclamation-triangle me-1"></i>{{ $t('app.nav.incidents') }}
               </router-link>
             </li>
             <li class="nav-item">
@@ -75,12 +83,35 @@ const handleLogout = async () => {
                 :class="{ active: route.path.startsWith('/tasks') }"
                 to="/tasks"
               >
-                <i class="bi bi-kanban me-1"></i> Tasks
+                <i class="bi bi-kanban me-1"></i>{{ $t('app.nav.tasks') }}
               </router-link>
             </li>
           </ul>
 
           <div class="d-flex align-items-center gap-3 user-section">
+            <div class="dropdown">
+              <button
+                class="btn btn-outline-light btn-sm dropdown-toggle d-flex align-items-center"
+                type="button"
+                data-bs-toggle="dropdown"
+                aria-expanded="false"
+              >
+                <i class="bi bi-translate me-1"></i>
+                {{ settings.locale }}
+              </button>
+              <ul class="dropdown-menu dropdown-menu-end shadow-sm">
+                <li>
+                  <a
+                    class="dropdown-item d-flex align-items-center"
+                    href="#"
+                    @click.prevent="changeLanguage('en')"
+                  >
+                    <span class="me-2">🇬🇧</span> English
+                  </a>
+                </li>
+              </ul>
+            </div>
+
             <NotificationsDropdown />
 
             <!-- User Info & Logout -->
@@ -95,16 +126,17 @@ const handleLogout = async () => {
                   {{ user.firstName }} {{ user.secondName }} {{ user.thirdName }}
                 </div>
                 <div class="small text-muted mb-1">
-                  <i class="bi bi-briefcase me-1"></i>{{ user.jobTitle || 'Должность не указана' }}
+                  <i class="bi bi-briefcase me-1"></i
+                  >{{ user.jobTitle || $t('app.user.jobTitleEmpty') }}
                 </div>
                 <div class="small text-muted">
-                  <i class="bi bi-envelope me-1"></i>{{ user.email || 'Email не указан' }}
+                  <i class="bi bi-envelope me-1"></i>{{ user.email || $t('app.user.emailEmpty') }}
                 </div>
               </div>
             </div>
 
             <button class="btn btn-outline-light btn-sm logout-btn" @click="handleLogout">
-              <i class="bi bi-box-arrow-right me-1"></i> Logout
+              <i class="bi bi-box-arrow-right me-1"></i>{{ $t('app.logout') }}
             </button>
           </div>
         </div>

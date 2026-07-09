@@ -13,7 +13,8 @@ const router = useRouter()
 
 const tasksStore = useTasksStore()
 const { selectedTask, loading, error } = storeToRefs(tasksStore)
-const { fetchTaskById, updateTask, clearSelectedTask } = tasksStore
+const { fetchTaskById, updateTask, getTaskPriorityLabel, getTaskStatusLabel, clearSelectedTask } =
+  tasksStore
 
 const usersStore = useUsersStore()
 const { users } = storeToRefs(usersStore)
@@ -151,7 +152,7 @@ watch(
   <div class="container py-4">
     <!-- Back Button -->
     <button class="btn btn-link text-decoration-none text-muted mb-3 p-0 back-btn" @click="goBack">
-      <i class="bi bi-arrow-left me-2"></i> Back to Tasks
+      <i class="bi bi-arrow-left me-2"></i>{{ $t('task.detail.back') }}
     </button>
 
     <!-- Loading State -->
@@ -159,7 +160,7 @@ watch(
       <div class="spinner-border text-primary" role="status">
         <span class="visually-hidden">Loading...</span>
       </div>
-      <p class="text-muted mt-3">Loading task details...</p>
+      <p class="text-muted mt-3">{{ $t('task.detail.load') }}</p>
     </div>
 
     <!-- Error State -->
@@ -188,7 +189,7 @@ watch(
         </div>
         <div v-if="!editMode">
           <button class="btn btn-sm btn-primary shadow-sm" @click="startEdit">
-            <i class="bi bi-pencil-fill me-1"></i> Edit
+            <i class="bi bi-pencil-fill me-1"></i>{{ $t('edit') }}
           </button>
         </div>
       </div>
@@ -200,19 +201,23 @@ watch(
           <div class="row g-4 mb-4">
             <div class="col-md-6">
               <div class="detail-box">
-                <div class="detail-label"><i class="bi bi-hash me-2 text-primary"></i>Key</div>
+                <div class="detail-label">
+                  <i class="bi bi-hash me-2 text-primary"></i>{{ $t('task.detail.key') }}
+                </div>
                 <div class="detail-value">{{ selectedTask.key }}</div>
               </div>
             </div>
             <div class="col-md-6">
               <div class="detail-box">
-                <div class="detail-label"><i class="bi bi-flag me-2 text-primary"></i>Status</div>
+                <div class="detail-label">
+                  <i class="bi bi-flag me-2 text-primary"></i>{{ $t('task.detail.status') }}
+                </div>
                 <div class="detail-value">
                   <span
                     class="badge status-badge"
                     :class="tasksStore.getTaskStatusBadgeClass(selectedTask.status)"
                   >
-                    {{ tasksStore.getTaskStatusLabel(selectedTask.status) }}
+                    {{ $t(tasksStore.getTaskStatusLabel(selectedTask.status)) }}
                   </span>
                 </div>
               </div>
@@ -222,14 +227,15 @@ watch(
               <div class="col-md-6">
                 <div class="detail-box">
                   <div class="detail-label">
-                    <i class="bi bi-exclamation-triangle me-2 text-primary"></i>Priority
+                    <i class="bi bi-exclamation-triangle me-2 text-primary"></i
+                    >{{ $t('task.detail.priority') }}
                   </div>
                   <div class="detail-value">
                     <span
                       class="badge status-badge"
                       :class="tasksStore.getTaskPriorityBadgeClass(selectedTask.priority)"
                     >
-                      {{ tasksStore.getTaskPriorityLabel(selectedTask.priority) }}
+                      {{ $t(tasksStore.getTaskPriorityLabel(selectedTask.priority)) }}
                     </span>
                   </div>
                 </div>
@@ -237,9 +243,12 @@ watch(
               <div class="col-md-6">
                 <div class="detail-box">
                   <div class="detail-label">
-                    <i class="bi bi-clock-history me-2 text-primary"></i>Estimate
+                    <i class="bi bi-clock-history me-2 text-primary"></i
+                    >{{ $t('task.detail.estimate.title') }}
                   </div>
-                  <div class="detail-value">{{ selectedTask.estimate || 'Not estimated' }}</div>
+                  <div class="detail-value">
+                    {{ selectedTask.estimate || $t('task.detail.estimate.empty') }}
+                  </div>
                 </div>
               </div>
             </div>
@@ -248,10 +257,11 @@ watch(
           <!-- Description -->
           <div class="detail-box mb-4">
             <div class="detail-label">
-              <i class="bi bi-text-paragraph me-2 text-primary"></i>Description
+              <i class="bi bi-text-paragraph me-2 text-primary"></i
+              >{{ $t('task.detail.description.title') }}
             </div>
             <div class="detail-value text-break">
-              {{ selectedTask.description || 'No description provided.' }}
+              {{ selectedTask.description || $t('task.detail.description.empty') }}
             </div>
           </div>
 
@@ -260,7 +270,7 @@ watch(
             <div class="col-md-6">
               <div class="detail-box">
                 <div class="detail-label">
-                  <i class="bi bi-person-badge me-2 text-primary"></i>Author
+                  <i class="bi bi-person-badge me-2 text-primary"></i>{{ $t('task.detail.author') }}
                 </div>
                 <div
                   v-if="author"
@@ -293,7 +303,8 @@ watch(
             <div class="col-md-6">
               <div class="detail-box">
                 <div class="detail-label">
-                  <i class="bi bi-person-check me-2 text-primary"></i>Assignee
+                  <i class="bi bi-person-check me-2 text-primary"></i
+                  >{{ $t('task.detail.assignee.title') }}
                 </div>
                 <div
                   v-if="assignee"
@@ -321,7 +332,9 @@ watch(
                     </div>
                   </div>
                 </div>
-                <span v-else class="text-muted fst-italic">Не назначен</span>
+                <span v-else class="text-muted fst-italic">{{
+                  $t('task.detail.assignee.empty')
+                }}</span>
               </div>
             </div>
           </div>
@@ -330,7 +343,8 @@ watch(
           <div class="detail-box mb-4">
             <div class="detail-label mb-3 d-flex justify-content-between align-items-center">
               <div>
-                <i class="bi bi-exclamation-octagon me-2 text-primary"></i>Related Incidents
+                <i class="bi bi-exclamation-octagon me-2 text-primary"></i
+                >{{ $t('task.detail.incident.related') }}
                 <span
                   v-if="relatedIncidents.length > 0"
                   class="badge bg-primary bg-opacity-10 text-primary ms-2"
@@ -344,7 +358,7 @@ watch(
               v-if="relatedIncidents.length === 0"
               class="text-muted small d-flex align-items-center"
             >
-              <i class="bi bi-info-circle me-2"></i>No incidents linked to this task.
+              <i class="bi bi-info-circle me-2"></i>{{ $t('task.detail.incident.empty') }}
             </div>
 
             <div v-else>
@@ -392,7 +406,11 @@ watch(
                             class="me-1"
                             style="font-size: 0.5rem; vertical-align: middle"
                           ></i>
-                          {{ incident.fired ? 'Active' : 'Closed' }}
+                          {{
+                            incident.fired
+                              ? $t('incident.status.active')
+                              : $t('incident.status.closed')
+                          }}
                         </span>
                       </div>
                     </div>
@@ -409,10 +427,14 @@ watch(
                     :class="showAllIncidents ? 'bi bi-chevron-up' : 'bi bi-chevron-down'"
                     class="me-1"
                   ></i>
-                  <span v-if="showAllIncidents"> Show less </span>
+                  <span v-if="showAllIncidents">{{ $t('task.detail.incident.showLess') }}</span>
                   <span v-else>
-                    Show all {{ relatedIncidents.length }} incidents
-                    <span class="text-muted small">({{ hiddenIncidentsCount }} more)</span>
+                    {{ $t('task.detail.incident.showAll') }}
+                    <span class="text-muted small"
+                      >({{
+                        $t('task.detail.incident.remains', { cnt: hiddenIncidentsCount })
+                      }})</span
+                    >
                   </span>
                 </button>
               </div>
@@ -424,7 +446,8 @@ watch(
             <div class="col-md-6">
               <div class="detail-box">
                 <div class="detail-label">
-                  <i class="bi bi-calendar-plus me-2 text-primary"></i>Created
+                  <i class="bi bi-calendar-plus me-2 text-primary"></i
+                  >{{ $t('task.detail.created') }}
                 </div>
                 <div class="detail-value">{{ formatDate(selectedTask.createDt) }}</div>
               </div>
@@ -432,7 +455,8 @@ watch(
             <div class="col-md-6">
               <div class="detail-box">
                 <div class="detail-label">
-                  <i class="bi bi-calendar-check me-2 text-primary"></i>Updated
+                  <i class="bi bi-calendar-check me-2 text-primary"></i
+                  >{{ $t('task.detail.updated') }}
                 </div>
                 <div class="detail-value">{{ formatDate(selectedTask.updateDt) }}</div>
               </div>
@@ -442,11 +466,12 @@ watch(
           <!-- Comments placeholder -->
           <div class="detail-box comments-section">
             <div class="detail-label mb-3">
-              <i class="bi bi-chat-dots me-2 text-primary"></i>Comments
+              <i class="bi bi-chat-dots me-2 text-primary"></i
+              >{{ $t('task.detail.comments.title') }}
             </div>
             <div class="comments-placeholder text-center py-4">
               <i class="bi bi-chat-square-text fs-1 text-muted d-block mb-2"></i>
-              <p class="text-muted mb-0">No comments yet. Be the first to start the discussion!</p>
+              <p class="text-muted mb-0">{{ $t('task.detail.comments.empty') }}</p>
             </div>
           </div>
         </div>
@@ -455,55 +480,63 @@ watch(
         <form v-else @submit.prevent="saveChanges" class="needs-validation edit-form">
           <div class="mb-4">
             <label for="task-name" class="form-label fw-semibold"
-              ><i class="bi bi-card-heading me-2 text-primary"></i>Name</label
+              ><i class="bi bi-card-heading me-2 text-primary"></i
+              >{{ $t('task.detail.name.title') }}</label
             >
             <input
               id="task-name"
               v-model="formData.name"
               type="text"
               class="form-control form-control-lg"
-              placeholder="Enter task name"
+              :placeholder="$t('task.detail.name.placeholder')"
               required
             />
           </div>
           <div class="mb-4">
             <label for="task-desc" class="form-label fw-semibold"
-              ><i class="bi bi-text-paragraph me-2 text-primary"></i>Description</label
-            >
+              ><i class="bi bi-text-paragraph me-2 text-primary"></i
+              >{{ $t('task.detail.description.title') }}
+            </label>
             <textarea
               id="task-desc"
               v-model="formData.description"
               class="form-control"
               rows="5"
-              placeholder="Enter task description"
+              :placeholder="$t('task.detail.description.placeholder')"
             ></textarea>
           </div>
 
           <div class="row g-4 mb-4">
             <div class="col-md-6">
               <label for="task-priority" class="form-label fw-semibold"
-                ><i class="bi bi-exclamation-triangle me-2 text-primary"></i>Priority</label
-              >
+                ><i class="bi bi-exclamation-triangle me-2 text-primary"></i
+                >{{ $t('task.detail.priority') }}
+              </label>
               <select
                 id="task-priority"
                 v-model.number="formData.priority"
                 class="form-select form-select-lg"
               >
-                <option :value="TaskPriority.High">High</option>
-                <option :value="TaskPriority.Medium">Medium</option>
-                <option :value="TaskPriority.Low">Low</option>
+                <option
+                  v-for="priority in [TaskPriority.High, TaskPriority.Medium, TaskPriority.Low]"
+                  :key="priority"
+                  :value="priority"
+                >
+                  {{ $t(getTaskPriorityLabel(priority)) }}
+                </option>
               </select>
             </div>
             <div class="col-md-6">
               <label for="task-estimate" class="form-label fw-semibold"
-                ><i class="bi bi-clock-history me-2 text-primary"></i>Estimate</label
-              >
+                ><i class="bi bi-clock-history me-2 text-primary"></i
+                >{{ $t('task.detail.estimate.title') }}
+              </label>
               <input
                 id="task-estimate"
                 v-model="formData.estimate"
                 type="text"
                 class="form-control form-control-lg"
-                placeholder="e.g., 2h, 1d"
+                :placeholder="$t('task.detail.estimate.placeholder')"
               />
             </div>
           </div>
@@ -511,28 +544,33 @@ watch(
           <div class="row g-4 mb-4">
             <div class="col-md-6">
               <label for="task-status" class="form-label fw-semibold"
-                ><i class="bi bi-flag me-2 text-primary"></i>Status</label
-              >
+                ><i class="bi bi-flag me-2 text-primary"></i>{{ $t('task.detail.status') }}
+              </label>
               <select
                 id="task-status"
                 v-model.number="formData.status"
                 class="form-select form-select-lg"
               >
-                <option :value="TaskStatus.Open">Open</option>
-                <option :value="TaskStatus.InProgress">In Progress</option>
-                <option :value="TaskStatus.Closed">Closed</option>
+                <option
+                  v-for="status in [TaskStatus.Open, TaskStatus.InProgress, TaskStatus.Closed]"
+                  :key="status"
+                  :value="status"
+                >
+                  {{ $t(getTaskStatusLabel(status)) }}
+                </option>
               </select>
             </div>
             <div class="col-md-6">
               <label for="task-assignee" class="form-label fw-semibold"
-                ><i class="bi bi-person-check me-2 text-primary"></i>Assignee</label
-              >
+                ><i class="bi bi-person-check me-2 text-primary"></i
+                >{{ $t('task.detail.assignee.title') }}
+              </label>
               <select
                 id="task-assignee"
                 v-model.number="formData.assigneeId"
                 class="form-select form-select-lg"
               >
-                <option :value="undefined" disabled>Select assignee</option>
+                <option :value="undefined" disabled>{{ $t('task.detail.assignee.select') }}</option>
                 <option v-for="user in users" :key="user.id" :value="user.id">
                   {{ user.firstName }}
                   {{ user.secondName }}
@@ -544,10 +582,10 @@ watch(
           </div>
           <div class="d-flex gap-2 mt-4 pt-3 border-top">
             <button type="submit" class="btn btn-primary px-4 shadow-sm" :disabled="!formData.name">
-              <i class="bi bi-check-lg me-1"></i> Save Changes
+              <i class="bi bi-check-lg me-1"></i>{{ $t('save') }}
             </button>
             <button type="button" class="btn btn-outline-secondary px-4" @click="cancelEdit">
-              <i class="bi bi-x-lg me-1"></i> Cancel
+              <i class="bi bi-x-lg me-1"></i>{{ $t('cancel') }}
             </button>
           </div>
         </form>
@@ -557,7 +595,7 @@ watch(
     <!-- Not found -->
     <div v-else class="alert alert-warning d-flex align-items-center mt-3 shadow-sm" role="alert">
       <i class="bi bi-question-circle-fill me-3 fs-4"></i>
-      <div>Task not found.</div>
+      <div>{{ $t('task.detail.notFound') }}</div>
     </div>
   </div>
 </template>

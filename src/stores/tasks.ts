@@ -17,9 +17,9 @@ export const useTasksStore = defineStore('tasks', () => {
   const error = shallowRef<string | null>(null)
 
   const taskStatusLabels: Record<TaskStatus, string> = {
-    [TaskStatus.Open]: 'Open',
-    [TaskStatus.InProgress]: 'In Progress',
-    [TaskStatus.Closed]: 'Closed',
+    [TaskStatus.Open]: 'task.status.open',
+    [TaskStatus.InProgress]: 'task.status.inProgress',
+    [TaskStatus.Closed]: 'task.status.closed',
   }
 
   const taskStatusBadgeClasses: Record<TaskStatus, string> = {
@@ -29,9 +29,9 @@ export const useTasksStore = defineStore('tasks', () => {
   }
 
   const taskPriorityLabels: Record<TaskPriority, string> = {
-    [TaskPriority.High]: 'High',
-    [TaskPriority.Medium]: 'Medium',
-    [TaskPriority.Low]: 'Low',
+    [TaskPriority.High]: 'task.priority.high',
+    [TaskPriority.Medium]: 'task.priority.medium',
+    [TaskPriority.Low]: 'task.priority.low',
   }
   const taskPriorityBadgeClasses: Record<TaskPriority, string> = {
     [TaskPriority.High]: 'bg-danger',
@@ -40,7 +40,7 @@ export const useTasksStore = defineStore('tasks', () => {
   }
 
   function getTaskStatusLabel(status: TaskStatus): string {
-    return taskStatusLabels[status] ?? 'Unknown'
+    return taskStatusLabels[status] ?? 'task.statusMap.unknown'
   }
 
   function getTaskStatusBadgeClass(status: TaskStatus): string {

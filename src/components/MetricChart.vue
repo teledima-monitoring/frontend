@@ -177,7 +177,11 @@ const hasData = computed(
             role="status"
           ></span>
           <i v-else class="bi bi-arrow-clockwise me-1"></i>
-          {{ loadingMetrics ? 'Fetching...' : 'Fetch Metrics' }}
+          {{
+            loadingMetrics
+              ? $t('dashboard.metrics.fetch.loading')
+              : $t('dashboard.metrics.fetch.initial')
+          }}
         </button>
       </div>
     </div>
@@ -187,9 +191,9 @@ const hasData = computed(
       <div class="empty-icon mx-auto mb-3">
         <i class="bi bi-graph-up"></i>
       </div>
-      <h5 class="text-muted fw-semibold mb-1">No metrics data</h5>
+      <h5 class="text-muted fw-semibold mb-1">{{ $t('dashboard.metrics.noData.title') }}</h5>
       <p class="text-muted small mb-0">
-        Select a dashboard and time range, then click "Fetch Metrics".
+        {{ $t('dashboard.metrics.noData.text') }}
       </p>
     </div>
     <div v-else class="chart-container">

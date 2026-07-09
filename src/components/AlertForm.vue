@@ -109,7 +109,7 @@ function handleSubmit() {
     <div class="row g-3 mb-4">
       <div class="col-md-4">
         <label class="form-label small fw-semibold">
-          <i class="bi bi-tag me-1 text-primary"></i> Alert Name *
+          <i class="bi bi-tag me-1 text-primary"></i>{{ $t('alert.form.name.title') }} *
         </label>
         <div class="input-group">
           <span class="input-group-text bg-light border-end-0">
@@ -119,13 +119,14 @@ function handleSubmit() {
             v-model="name"
             type="text"
             class="form-control bg-light border-start-0"
-            placeholder="My Alert"
+            :placeholder="$t('alert.form.name.placeholder')"
           />
         </div>
       </div>
       <div class="col-md-4">
         <label class="form-label small fw-semibold">
-          <i class="bi bi-hdd-network me-1 text-primary"></i> Collector Kind *
+          <i class="bi bi-hdd-network me-1 text-primary"></i
+          >{{ $t('alert.form.collectoKind.title') }} *
         </label>
         <div class="input-group">
           <span class="input-group-text bg-light border-end-0">
@@ -135,13 +136,13 @@ function handleSubmit() {
             v-model="collectorKind"
             type="text"
             class="form-control bg-light border-start-0"
-            placeholder="e.g. nginx, redis"
+            :placeholder="$t('alert.form.collectoKind.placeholder')"
           />
         </div>
       </div>
       <div class="col-md-4">
         <label class="form-label small fw-semibold">
-          <i class="bi bi-clock me-1 text-primary"></i> Data Period (seconds)
+          <i class="bi bi-clock me-1 text-primary"></i>{{ $t('alert.form.dataPeriod') }}
         </label>
         <div class="input-group">
           <span class="input-group-text bg-light border-end-0">
@@ -160,13 +161,23 @@ function handleSubmit() {
     <!-- Filters Section -->
     <div class="form-section mb-4">
       <label class="form-label fw-semibold">
-        <i class="bi bi-funnel me-1 text-primary"></i> Filters
+        <i class="bi bi-funnel me-1 text-primary"></i>{{ $t('alert.form.filter.title') }}
       </label>
       <div class="d-flex gap-2 mb-3">
-        <input v-model="filterKey" type="text" class="form-control" placeholder="Key" />
-        <input v-model="filterValue" type="text" class="form-control" placeholder="Value" />
+        <input
+          v-model="filterKey"
+          type="text"
+          class="form-control"
+          :placeholder="$t('alert.form.filter.key')"
+        />
+        <input
+          v-model="filterValue"
+          type="text"
+          class="form-control"
+          :placeholder="$t('alert.form.filter.value')"
+        />
         <button type="button" class="btn btn-outline-primary" @click="addFilter">
-          <i class="bi bi-plus-lg me-1"></i> Add
+          <i class="bi bi-plus-lg me-1"></i>{{ $t('alert.form.filter.add') }}
         </button>
       </div>
       <div v-if="Object.keys(filters).length > 0" class="d-flex flex-wrap gap-2">
@@ -178,33 +189,33 @@ function handleSubmit() {
             type="button"
             class="btn-close btn-close-sm ms-2"
             @click="removeFilter(key)"
-            aria-label="Remove"
+            :aria-label="$t('alert.form.filter.remove')"
           ></button>
         </span>
       </div>
       <div v-else class="text-muted small">
-        <i class="bi bi-info-circle me-1"></i> No filters added. Leave empty to match all sources.
+        <i class="bi bi-info-circle me-1"></i>{{ $t('alert.form.filter.empty') }}
       </div>
     </div>
 
     <!-- Rules Section -->
     <div class="form-section mb-4">
       <label class="form-label fw-semibold">
-        <i class="bi bi-shield-check me-1 text-primary"></i> Rules *
+        <i class="bi bi-shield-check me-1 text-primary"></i>{{ $t('alert.form.rule.title') }} *
       </label>
       <div class="rule-builder p-3 bg-light rounded-3 mb-3">
         <div class="row g-2 align-items-end">
           <div class="col-md-3">
-            <small class="text-muted d-block mb-1">Field</small>
+            <small class="text-muted d-block mb-1">{{ $t('alert.form.rule.field.title') }}</small>
             <input
               v-model="field"
               type="text"
               class="form-control form-control-sm"
-              placeholder="metric_name"
+              :placeholder="$t('alert.form.rule.field.placeholder')"
             />
           </div>
           <div class="col-md-3">
-            <small class="text-muted d-block mb-1">Constraint</small>
+            <small class="text-muted d-block mb-1">{{ $t('alert.form.rule.constraint') }}</small>
             <select v-model.number="constraint" class="form-select form-select-sm">
               <option v-for="c in constraintValues" :key="c" :value="c">
                 {{ getConstraintName(c) }}
@@ -212,12 +223,12 @@ function handleSubmit() {
             </select>
           </div>
           <div class="col-md-3">
-            <small class="text-muted d-block mb-1">Value</small>
+            <small class="text-muted d-block mb-1">{{ $t('alert.form.rule.value') }}</small>
             <input v-model.number="ruleValue" type="number" class="form-control form-control-sm" />
           </div>
           <div class="col-md-3">
             <button type="button" class="btn btn-primary btn-sm w-100" @click="addRule">
-              <i class="bi bi-plus-lg me-1"></i> Add Rule
+              <i class="bi bi-plus-lg me-1"></i>{{ $t('alert.form.rule.add') }}
             </button>
           </div>
         </div>
@@ -239,13 +250,13 @@ function handleSubmit() {
             </div>
           </div>
           <button type="button" class="btn btn-sm btn-outline-danger" @click="removeRule(idx)">
-            <i class="bi bi-trash me-1"></i> Remove
+            <i class="bi bi-trash me-1"></i>{{ $t('alert.form.rule.remove') }}
           </button>
         </div>
       </div>
       <div v-else class="text-muted small text-center py-3">
         <i class="bi bi-list-ul d-block mb-1" style="font-size: 1.5rem"></i>
-        No rules defined. Add at least one rule to create the alert.
+        {{ $t('alert.form.rule.empty') }}
       </div>
     </div>
 
@@ -257,10 +268,11 @@ function handleSubmit() {
         class="btn btn-outline-secondary px-4"
         @click="emit('cancel')"
       >
-        <i class="bi bi-x-lg me-1"></i> Cancel
+        <i class="bi bi-x-lg me-1"></i>{{ $t('cancel') }}
       </button>
       <button type="submit" class="btn btn-success px-4 shadow-sm" :disabled="!isValid">
-        <i class="bi bi-check-circle me-1"></i> {{ isEditing ? 'Update Alert' : 'Create Alert' }}
+        <i class="bi bi-check-circle me-1"></i>
+        {{ isEditing ? $t('alert.form.update') : $t('alert.form.create') }}
       </button>
     </div>
   </form>

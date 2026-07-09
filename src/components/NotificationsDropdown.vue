@@ -39,7 +39,7 @@ onMounted(() => {
       data-bs-toggle="dropdown"
       aria-expanded="false"
       @click="fetchNotifications"
-      title="Уведомления"
+      :title="$t('notification.title')"
     >
       <i class="bi bi-bell-fill"></i>
       <!-- Бейдж с количеством непрочитанных -->
@@ -58,14 +58,14 @@ onMounted(() => {
       <li
         class="dropdown-header d-flex justify-content-between align-items-center border-bottom pb-2 mb-2"
       >
-        <span class="fw-bold text-dark">Уведомления</span>
+        <span class="fw-bold text-dark">{{ $t('notification.title') }}</span>
         <button
           v-if="unreadCount > 0"
           class="btn btn-link btn-sm text-decoration-none p-0 text-primary fw-semibold"
           @click="handleMarkAllAsRead"
           :disabled="loading"
         >
-          Прочитать все
+          {{ $t('notification.readAll') }}
         </button>
       </li>
 
@@ -73,14 +73,14 @@ onMounted(() => {
       <div class="notification-list" style="max-height: 320px; overflow-y: auto">
         <li v-if="loading && notifications.length === 0" class="text-center text-muted py-3">
           <div class="spinner-border spinner-border-sm text-primary" role="status"></div>
-          <span class="ms-2 small">Загрузка...</span>
+          <span class="ms-2 small">{{ $t('load') }}</span>
         </li>
         <li v-else-if="error" class="text-center text-danger py-3 px-2 small">
-          Ошибка: {{ error }}
+          {{ $t('notification.error', { err: error }) }}
         </li>
         <li v-else-if="notifications.length === 0" class="text-center text-muted py-3 small">
           <i class="bi bi-inbox d-block mb-1" style="font-size: 1.5rem"></i>
-          Нет новых уведомлений
+          {{ $t('notification.noNew') }}
         </li>
         <li v-else v-for="notif in notifications" :key="notif.id">
           <a

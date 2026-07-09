@@ -31,10 +31,10 @@ const groupByLabel = (groupBy: string) => {
     <!-- Header -->
     <div class="d-flex justify-content-between align-items-center mb-3">
       <h6 class="mb-0 fw-bold">
-        <i class="bi bi-grid-3x3-gap me-2 text-primary"></i>Saved Dashboards
+        <i class="bi bi-grid-3x3-gap me-2 text-primary"></i>{{ $t('dashboard.list.title') }}
       </h6>
       <button class="btn btn-sm btn-primary shadow-sm" @click="emit('create')">
-        <i class="bi bi-plus-lg me-1"></i> New
+        <i class="bi bi-plus-lg me-1"></i>{{ $t('dashboard.list.new') }}
       </button>
     </div>
 
@@ -43,7 +43,7 @@ const groupByLabel = (groupBy: string) => {
       <div class="empty-icon mx-auto mb-2">
         <i class="bi bi-inbox"></i>
       </div>
-      <p class="text-muted small mb-0">No dashboards yet. Create one to get started.</p>
+      <p class="text-muted small mb-0">{{ $t('dashboard.list.empty') }}</p>
     </div>
 
     <!-- Dashboard Cards -->

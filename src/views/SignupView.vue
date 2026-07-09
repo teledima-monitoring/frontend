@@ -38,7 +38,7 @@ async function handleSignup() {
     email: email.value,
     login: login.value,
     password: password.value,
-    jobTitle: jobTitle.value, // <-- Передаем выбранную должность
+    jobTitle: jobTitle.value,
   })
 
   await router.push('/')
@@ -50,8 +50,8 @@ async function handleSignup() {
     <div class="auth-card">
       <!-- Header -->
       <div class="text-center mb-4">
-        <h3 class="fw-bold mb-1">Создание аккаунта</h3>
-        <p class="text-muted small mb-0">Заполните данные для регистрации в системе.</p>
+        <h3 class="fw-bold mb-1">{{ $t('signup.title') }}</h3>
+        <p class="text-muted small mb-0">{{ $t('signup.description') }}</p>
       </div>
 
       <!-- Form -->
@@ -59,7 +59,7 @@ async function handleSignup() {
         <!-- Имя -->
         <div class="mb-3">
           <label for="signup-first-name" class="form-label small fw-semibold">
-            Имя <span class="text-danger">*</span>
+            {{ $t('signup.firstName.title') }} <span class="text-danger">*</span>
           </label>
           <div class="input-group">
             <span class="input-group-text bg-light border-end-0">
@@ -70,7 +70,7 @@ async function handleSignup() {
               v-model="firstName"
               type="text"
               class="form-control bg-light border-start-0"
-              placeholder="Введите имя"
+              :placeholder="$t('signup.firstName.placeholder')"
               autocomplete="given-name"
               required
             />
@@ -80,7 +80,7 @@ async function handleSignup() {
         <!-- Фамилия -->
         <div class="mb-3">
           <label for="signup-last-name" class="form-label small fw-semibold">
-            Фамилия <span class="text-danger">*</span>
+            {{ $t('signup.secondName.title') }} <span class="text-danger">*</span>
           </label>
           <div class="input-group">
             <span class="input-group-text bg-light border-end-0">
@@ -91,7 +91,7 @@ async function handleSignup() {
               v-model="secondName"
               type="text"
               class="form-control bg-light border-start-0"
-              placeholder="Введите фамилию"
+              :placeholder="$t('signup.secondName.placeholder')"
               autocomplete="family-name"
               required
             />
@@ -101,7 +101,8 @@ async function handleSignup() {
         <!-- Отчество -->
         <div class="mb-3">
           <label for="signup-middle-name" class="form-label small fw-semibold">
-            Отчество <span class="text-muted small fw-normal">(если есть)</span>
+            {{ $t('signup.thirdName.title') }}
+            <span class="text-muted small fw-normal">({{ $t('signup.thirdName.optional') }})</span>
           </label>
           <div class="input-group">
             <span class="input-group-text bg-light border-end-0">
@@ -112,7 +113,7 @@ async function handleSignup() {
               v-model="thirdName"
               type="text"
               class="form-control bg-light border-start-0"
-              placeholder="Введите отчество"
+              :placeholder="$t('signup.thirdName.placeholder')"
               autocomplete="additional-name"
             />
           </div>
@@ -121,7 +122,7 @@ async function handleSignup() {
         <!-- Электронная почта -->
         <div class="mb-3">
           <label for="signup-email" class="form-label small fw-semibold">
-            Электронная почта <span class="text-danger">*</span>
+            {{ $t('signup.email') }} <span class="text-danger">*</span>
           </label>
           <div class="input-group">
             <span class="input-group-text bg-light border-end-0">
@@ -141,7 +142,7 @@ async function handleSignup() {
 
         <div class="mb-3">
           <label for="signup-position" class="form-label small fw-semibold">
-            Должность <span class="text-danger">*</span>
+            {{ $t('signup.job.title') }} <span class="text-danger">*</span>
           </label>
           <div class="input-group">
             <span class="input-group-text bg-light border-end-0">
@@ -153,11 +154,11 @@ async function handleSignup() {
               class="form-select bg-light border-start-0"
               required
             >
-              <option value="" disabled>Выберите должность</option>
-              <option value="Разработчик">Разработчик</option>
-              <option value="Аналитик">Аналитик</option>
-              <option value="Тестировщик">Тестировщик</option>
-              <option value="Дизайнер">Дизайнер</option>
+              <option value="" disabled>{{ $t('signup.job.default') }}</option>
+              <option value="Разработчик">{{ $t('signup.job.engineer') }}</option>
+              <option value="Аналитик">{{ $t('signup.job.analytic') }}</option>
+              <option value="Тестировщик">{{ $t('signup.job.qa') }}</option>
+              <option value="Дизайнер">{{ $t('signup.job.designer') }}</option>
             </select>
           </div>
         </div>
@@ -167,7 +168,7 @@ async function handleSignup() {
         <!-- Username -->
         <div class="mb-3">
           <label for="signup-login" class="form-label small fw-semibold">
-            Имя пользователя <span class="text-danger">*</span>
+            {{ $t('signup.username.title') }} <span class="text-danger">*</span>
           </label>
           <div class="input-group">
             <span class="input-group-text bg-light border-end-0">
@@ -178,7 +179,7 @@ async function handleSignup() {
               v-model="login"
               type="text"
               class="form-control bg-light border-start-0"
-              placeholder="Придумайте логин"
+              :placeholder="$t('signup.username.placeholder')"
               autocomplete="username"
               required
             />
@@ -188,7 +189,7 @@ async function handleSignup() {
         <!-- Password -->
         <div class="mb-4">
           <label for="signup-password" class="form-label small fw-semibold">
-            Пароль <span class="text-danger">*</span>
+            {{ $t('signup.password.title') }} <span class="text-danger">*</span>
           </label>
           <div class="input-group">
             <span class="input-group-text bg-light border-end-0">
@@ -199,7 +200,7 @@ async function handleSignup() {
               v-model="password"
               type="password"
               class="form-control bg-light border-start-0"
-              placeholder="Придумайте пароль"
+              :placeholder="$t('signup.password.placeholder')"
               autocomplete="new-password"
               required
             />
@@ -222,16 +223,16 @@ async function handleSignup() {
           :disabled="loading"
         >
           <span v-if="loading" class="spinner-border spinner-border-sm me-2" role="status"></span>
-          {{ loading ? 'Создание аккаунта...' : 'Зарегистрироваться' }}
+          {{ loading ? $t('signup.signupProccess') : $t('signup.signup') }}
         </button>
       </form>
 
       <!-- Footer -->
       <div class="text-center mt-4 pt-4 border-top">
         <p class="text-muted small mb-0">
-          Уже есть аккаунт?
+          {{ $t('signup.alreadyHave') }}
           <router-link to="/login" class="fw-semibold text-decoration-none text-primary">
-            Войти
+            {{ $t('signup.login') }}
           </router-link>
         </p>
       </div>

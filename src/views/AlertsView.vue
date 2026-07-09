@@ -67,9 +67,9 @@ function cancelEdit() {
     <!-- Page Header -->
     <div class="mb-4">
       <h3 class="fw-bold mb-1">
-        <i class="bi bi-bell-fill me-2 text-warning"></i>Alerts Management
+        <i class="bi bi-bell-fill me-2 text-warning"></i>{{ $t('alert.title') }}
       </h3>
-      <p class="text-muted mb-0">Configure thresholds and notifications for system metrics.</p>
+      <p class="text-muted mb-0">{{ $t('alert.description') }}</p>
     </div>
 
     <!-- Create / Edit Alert Form -->
@@ -85,10 +85,15 @@ function cancelEdit() {
                 : 'bi bi-plus-circle me-2 text-primary'
             "
           ></i>
-          {{ editingAlert ? `Edit Alert: ${editingAlert.name}` : 'Create New Alert' }}
+          <template v-if="editingAlert">
+            {{ $t('alert.edit') }} : {{ editingAlert.name }}
+          </template>
+          <template v-else>
+            {{ $t('alert.create') }}
+          </template>
         </h6>
         <button v-if="editingAlert" class="btn btn-sm btn-outline-secondary" @click="cancelEdit">
-          <i class="bi bi-x-lg me-1"></i> Cancel
+          <i class="bi bi-x-lg me-1"></i> {{ $t('cancel') }}
         </button>
       </div>
       <div class="card-body p-4">
@@ -112,7 +117,7 @@ function cancelEdit() {
         class="card-header bg-white border-0 py-3 d-flex justify-content-between align-items-center"
       >
         <h6 class="mb-0 fw-bold">
-          <i class="bi bi-list-ul me-2 text-primary"></i>Alert Configurations
+          <i class="bi bi-list-ul me-2 text-primary"></i>{{ $t('alert.configurations.title') }}
           <span class="badge bg-primary bg-opacity-10 text-primary ms-2">{{ alerts.length }}</span>
         </h6>
       </div>
@@ -123,20 +128,20 @@ function cancelEdit() {
 
         <div v-else-if="alerts.length === 0" class="text-center py-5">
           <i class="bi bi-bell-slash display-1 text-muted d-block mb-3"></i>
-          <h5 class="text-muted">No alerts configured</h5>
-          <p class="text-muted">Create your first alert to start monitoring.</p>
+          <h5 class="text-muted">{{ $t('alert.noConfigurations.title') }}</h5>
+          <p class="text-muted">{{ $t('alert.noConfigurations.placeholder') }}</p>
         </div>
 
         <div v-else class="table-responsive">
           <table class="table table-hover align-middle mb-0">
             <thead class="table-light">
               <tr>
-                <th class="ps-4">ID</th>
-                <th>Name</th>
-                <th>Collector</th>
-                <th>Period</th>
-                <th>Rules</th>
-                <th class="text-end pe-4">Actions</th>
+                <th class="ps-4">{{ $t('alert.configurations.table.id') }}</th>
+                <th>{{ $t('alert.configurations.table.name') }}</th>
+                <th>{{ $t('alert.configurations.table.collector') }}</th>
+                <th>{{ $t('alert.configurations.table.period') }}</th>
+                <th>{{ $t('alert.configurations.table.rules') }}</th>
+                <th class="text-end pe-4">{{ $t('alert.configurations.table.actions') }}</th>
               </tr>
             </thead>
             <tbody>
@@ -164,13 +169,17 @@ function cancelEdit() {
                       @click="toggleSubscribe(alert)"
                       :title="
                         isSubscribed(alert)
-                          ? 'Unsubscribe from this alert'
-                          : 'Subscribe to this alert'
+                          ? $t('alert.unsubscribe.tooltip')
+                          : $t('alert.subscribe.tooltip')
                       "
                     >
                       <i :class="isSubscribed(alert) ? 'bi bi-bell-slash' : 'bi bi-bell-fill'"></i>
                       <span class="d-none d-xl-inline ms-1">
-                        {{ isSubscribed(alert) ? 'Unsubscribe' : 'Subscribe' }}
+                        {{
+                          isSubscribed(alert)
+                            ? $t('alert.unsubscribe.text')
+                            : $t('alert.subscribe.text')
+                        }}
                       </span>
                     </button>
 
@@ -178,13 +187,13 @@ function cancelEdit() {
                       class="btn btn-sm btn-outline-primary shadow-sm"
                       @click="startEdit(alert)"
                     >
-                      <i class="bi bi-pencil me-1"></i> Edit
+                      <i class="bi bi-pencil me-1"></i>{{ $t('edit') }}
                     </button>
                     <button
                       class="btn btn-sm btn-outline-danger shadow-sm"
                       @click="deleteAlert(alert.id)"
                     >
-                      <i class="bi bi-trash me-1"></i> Delete
+                      <i class="bi bi-trash me-1"></i>{{ $t('delete') }}
                     </button>
                   </div>
                 </td>

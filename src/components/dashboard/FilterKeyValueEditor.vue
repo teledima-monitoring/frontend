@@ -50,13 +50,13 @@ watch(
     <!-- Readonly Mode -->
     <div v-if="props.readonly" class="readonly-filters">
       <div v-if="Object.keys(model).length === 0" class="text-muted small">
-        <i class="bi bi-info-circle me-1"></i>No filters configured
+        <i class="bi bi-info-circle me-1"></i>{{ $t('filterKeyValue.empty') }}
       </div>
       <div v-else class="d-flex flex-wrap gap-2">
         <span v-for="[key, value] in Object.entries(model)" :key="key" class="filter-badge">
           <code class="filter-key">{{ key }}</code>
           <span class="text-muted mx-1">=</span>
-          <code class="filter-value">{{ value || '(empty)' }}</code>
+          <code class="filter-value">{{ value || $t('filterKeyValue.emptyValue') }}</code>
         </span>
       </div>
     </div>
@@ -75,7 +75,7 @@ watch(
                   v-model="entry.key"
                   type="text"
                   class="form-control bg-light border-start-0"
-                  placeholder="Key"
+                  :placeholder="$t('filterKeyValue.key')"
                 />
               </div>
             </div>
@@ -88,7 +88,7 @@ watch(
                   v-model="entry.value"
                   type="text"
                   class="form-control bg-light border-start-0"
-                  placeholder="Value"
+                  :placeholder="$t('filterKeyValue.value')"
                 />
               </div>
             </div>
@@ -106,7 +106,7 @@ watch(
       </div>
 
       <button type="button" class="btn btn-outline-primary btn-sm mt-2" @click="addEntry">
-        <i class="bi bi-plus-lg me-1"></i> Add Filter
+        <i class="bi bi-plus-lg me-1"></i>{{ $t('filterKeyValue.add') }}
       </button>
     </div>
   </div>
