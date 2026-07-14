@@ -151,7 +151,7 @@ function cancelEdit() {
                 <td>
                   <span class="badge bg-light text-dark border">{{ alert.collectorKind }}</span>
                 </td>
-                <td>{{ alert.dataPeriod }}s</td>
+                <td>{{ alert.dataPeriod }}{{ $t("alert.configurations.second") }}</td>
                 <td>
                   <div class="d-flex flex-wrap gap-1">
                     <span v-for="(rule, idx) in alert.rules" :key="idx" class="rule-badge">

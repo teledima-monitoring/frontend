@@ -107,7 +107,11 @@
         "title": "Metric Name",
         "placeholder": "e.g. cpu_idle"
       },
-      "groupBy": "Group By",
+      "groupBy": {
+        "title": "Group By",
+        "none": "None (aggregate all)",
+        "collector": "Collector name"
+      },
       "filter": "Filters",
       "edit": "Edit Dashboard",
       "create": "Create Dashboard"
@@ -125,6 +129,7 @@
     "create": "Create New Alert",
     "configurations": {
       "title": "Alert Configurations",
+      "second": "s",
       "table": {
         "id": "ID",
         "name": "Name",
@@ -228,7 +233,7 @@
           "title": "Description",
           "placeholder": "Enter task description (optional)"
         },
-        "priority": "Priority *",
+        "priority": "Priority",
         "estimate": {
           "title": "Estimate",
           "placeholder": "e.g., 2h, 1d"

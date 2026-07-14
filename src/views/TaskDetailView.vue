@@ -223,7 +223,7 @@ watch(
               </div>
             </div>
 
-            <div class="row g-4 mb-4">
+            <div class="row g-2">
               <div class="col-md-6">
                 <div class="detail-box">
                   <div class="detail-label">
@@ -266,7 +266,7 @@ watch(
           </div>
 
           <!-- Author and Assignee -->
-          <div class="row g-4 mb-4">
+          <div class="row g-2 mb-4">
             <div class="col-md-6">
               <div class="detail-box">
                 <div class="detail-label">

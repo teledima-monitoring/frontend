@@ -110,7 +110,7 @@ watch(
         <p class="text-muted mb-0">{{ $t('task.description') }}</p>
       </div>
       <!-- Кнопка экспорта -->
-      <button class="btn btn-outline-primary shadow-sm" @click="exportTasks" :disabled="loading">
+      <button class="btn btn-outline-success shadow-sm" @click="exportTasks" :disabled="loading">
         <i class="bi bi-download me-2"></i>
         {{ isExportSelected ? $t('task.export.selected') : $t('task.export.all') }}
       </button>

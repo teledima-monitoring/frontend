@@ -131,11 +131,11 @@ const hasData = computed(
   <div class="chart-wrapper">
     <!-- Header & Controls -->
     <div
-      class="chart-header p-4 border-bottom d-flex flex-wrap justify-content-between align-items-center gap-3"
+      class="chart-header p-3 border-bottom d-flex flex-wrap justify-content-between align-items-center gap-3"
     >
       <div>
         <h6 class="mb-0 fw-bold">
-          <i class="bi bi-bar-chart-line me-2 text-primary"></i>Metrics Visualization
+          <i class="bi bi-bar-chart-line me-2 text-primary"></i>{{ $t("dashboard.metrics.title") }}
         </h6>
       </div>
 
@@ -143,7 +143,7 @@ const hasData = computed(
       <div class="d-flex flex-wrap align-items-end gap-2">
         <div>
           <label class="form-label small fw-semibold mb-1 text-muted">
-            <i class="bi bi-calendar-event me-1"></i> Start
+            <i class="bi bi-calendar-event me-1"></i>{{ $t("dashboard.metrics.timeRange.start") }}
           </label>
           <input
             v-model="startTimeInput"
@@ -155,7 +155,7 @@ const hasData = computed(
         </div>
         <div>
           <label class="form-label small fw-semibold mb-1 text-muted">
-            <i class="bi bi-calendar-check me-1"></i> End
+            <i class="bi bi-calendar-check me-1"></i>{{ $t("dashboard.metrics.timeRange.end") }}
           </label>
           <input
             v-model="endTimeInput"

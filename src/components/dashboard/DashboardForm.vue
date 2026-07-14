@@ -3,6 +3,7 @@ import { reactive, computed, watch } from 'vue'
 import FilterKeyValueEditor from './FilterKeyValueEditor.vue'
 import { useMetricsStore } from '@/stores/metrics.ts'
 import { storeToRefs } from 'pinia'
+import { useI18n } from 'vue-i18n';
 
 const props = defineProps<{
   initial?: {
@@ -23,6 +24,8 @@ const isEditing = computed(() => !!props.initial)
 
 const metricsStore = useMetricsStore()
 const { availableLabelKeys } = storeToRefs(metricsStore)
+
+const { t } = useI18n()
 
 const form = reactive({
   name: props.initial?.name ?? '',
@@ -45,8 +48,8 @@ watch(
 )
 
 const groupByOptions = computed(() => [
-  { value: 'none', label: 'None (aggregate all)' },
-  { value: 'collector', label: 'Collector name' },
+  { value: 'none', label: `${t('dashboard.form.groupBy.none')}` },
+  { value: 'collector', label: `${t('dashboard.form.groupBy.collector')}` },
   ...availableLabelKeys.value.map((key) => ({ value: key, label: `Label: ${key}` })),
 ])
 
@@ -125,7 +128,7 @@ function handleSubmit() {
       <!-- Group By -->
       <div class="col-md-6">
         <label for="dash-group-by" class="form-label small fw-semibold">
-          <i class="bi bi-diagram-3 me-1 text-primary"></i>{{ $t('dashboard.form.groupBy') }}
+          <i class="bi bi-diagram-3 me-1 text-primary"></i>{{ $t('dashboard.form.groupBy.title') }}
         </label>
         <div class="input-group">
           <span class="input-group-text bg-light border-end-0">
