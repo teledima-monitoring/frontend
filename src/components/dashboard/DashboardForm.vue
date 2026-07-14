@@ -3,7 +3,7 @@ import { reactive, computed, watch } from 'vue'
 import FilterKeyValueEditor from './FilterKeyValueEditor.vue'
 import { useMetricsStore } from '@/stores/metrics.ts'
 import { storeToRefs } from 'pinia'
-import { useI18n } from 'vue-i18n';
+import { useI18n } from 'vue-i18n'
 
 const props = defineProps<{
   initial?: {

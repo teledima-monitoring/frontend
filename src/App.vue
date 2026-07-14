@@ -8,6 +8,7 @@ import { api } from '@/services/api'
 import { SSESource, type SSEEvent } from '@/types/sse'
 import { useSettingsStore } from './stores/settings'
 import { useRoute, useRouter } from 'vue-router'
+import SelectLanguage from './components/SelectLanguage.vue'
 
 const authStore = useAuthStore()
 const { isLoggedIn, user } = storeToRefs(authStore)
@@ -29,8 +30,8 @@ const handleLogout = async () => {
   await router.push({ name: 'Login', query: { redirect: route.fullPath } })
 }
 
-const changeLanguage = (locale: string) => {
-  settingsStore.setLanguage(locale)
+const handleNewLanguage = (newLocale: string) => {
+  settingsStore.setLanguage(newLocale)
 }
 
 // --- Логика всплывающих уведомлений (Toast) ---
@@ -195,37 +196,7 @@ function disconnect() {
           </ul>
 
           <div class="d-flex align-items-center gap-3 user-section">
-            <div class="dropdown">
-              <button
-                class="btn btn-outline-light btn-sm dropdown-toggle d-flex align-items-center"
-                type="button"
-                data-bs-toggle="dropdown"
-                aria-expanded="false"
-              >
-                <i class="bi bi-translate me-1"></i>
-                {{ settings.locale }}
-              </button>
-              <ul class="dropdown-menu dropdown-menu-end shadow-sm">
-                <li>
-                  <a
-                    class="dropdown-item d-flex align-items-center"
-                    href="#"
-                    @click.prevent="changeLanguage('en')"
-                  >
-                    <span class="me-2">🇬🇧</span>English
-                  </a>
-                </li>
-                <li>
-                  <a
-                    class="dropdown-item d-flex align-items-center"
-                    href="#"
-                    @click.prevent="changeLanguage('ru')"
-                  >
-                    <span class="me-2">🇷🇺</span>Русский
-                  </a>
-                </li>
-              </ul>
-            </div>
+            <SelectLanguage :locale="settings.locale" @changed="handleNewLanguage" />
 
             <NotificationsDropdown />
 

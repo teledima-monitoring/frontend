@@ -12,7 +12,6 @@ export {}
 declare module 'vue' {
   export interface GlobalComponents {
     AlertForm: typeof import('./src/components/AlertForm.vue')['default']
-    AppLayout: typeof import('./src/components/AppLayout.vue')['default']
     DashboardForm: typeof import('./src/components/dashboard/DashboardForm.vue')['default']
     DashboardList: typeof import('./src/components/dashboard/DashboardList.vue')['default']
     FilterKeyValueEditor: typeof import('./src/components/dashboard/FilterKeyValueEditor.vue')['default']
@@ -20,6 +19,7 @@ declare module 'vue' {
     NotificationsDropdown: typeof import('./src/components/NotificationsDropdown.vue')['default']
     RouterLink: typeof import('vue-router')['RouterLink']
     RouterView: typeof import('vue-router')['RouterView']
+    SelectLanguage: typeof import('./src/components/SelectLanguage.vue')['default']
     TaskAssignDialog: typeof import('./src/components/tasks/TaskAssignDialog.vue')['default']
     TaskListView: typeof import('./src/components/tasks/TaskListView.vue')['default']
   }
