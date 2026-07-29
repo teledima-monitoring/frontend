@@ -1,6 +1,6 @@
 import { defineStore } from 'pinia'
 import { ref, shallowRef } from 'vue'
-import { api } from '@/services/api'
+import api from '@/api/incidents'
 import type { IncidentView, IncidentSetTask } from '@/types/incident'
 import { formatError } from '@/utils/format'
 

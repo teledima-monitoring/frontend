@@ -1,4 +1,4 @@
-import { APIError } from '@/services/error'
+import { APIError } from '@/api/core'
 
 export function formatDate(dt: Date | string): string {
   if (!dt) return '—'

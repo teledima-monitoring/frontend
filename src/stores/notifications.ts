@@ -1,6 +1,6 @@
 import { defineStore } from 'pinia'
 import { ref } from 'vue'
-import { api } from '@/services/api'
+import api from '@/api/notifications'
 import type { NotificationView } from '@/types/notification'
 import { formatError } from '@/utils/format'
 

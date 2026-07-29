@@ -5,7 +5,7 @@ import { storeToRefs } from 'pinia'
 import { useTasksStore } from '@/stores/tasks'
 import { useUsersStore } from '@/stores/user'
 import TaskListView from '@/components/tasks/TaskListView.vue'
-import { api } from '@/services/api'
+import api from '@/api/tasks'
 import { TaskStatus } from '@/types/task'
 
 const route = useRoute()

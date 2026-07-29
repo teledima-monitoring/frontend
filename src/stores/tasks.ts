@@ -1,6 +1,6 @@
 import { defineStore } from 'pinia'
 import { ref, shallowRef } from 'vue'
-import { api } from '@/services/api'
+import api from '@/api/tasks'
 import {
   type TaskView,
   type TaskCreate,
@@ -89,7 +89,7 @@ export const useTasksStore = defineStore('tasks', () => {
     error.value = null
 
     try {
-      await api.createTask(data)
+      await createTask(data)
       await fetchTasks()
     } catch (e) {
       error.value = formatError(e as Error, 'Failed to create task')
@@ -104,7 +104,7 @@ export const useTasksStore = defineStore('tasks', () => {
     error.value = null
 
     try {
-      await api.updateTask(id, data)
+      await updateTask(id, data)
       await fetchTasks()
       if (selectedTask.value?.id === id) {
         selectedTask.value = await api.getTaskById(id)

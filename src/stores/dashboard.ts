@@ -1,6 +1,6 @@
 import { defineStore } from 'pinia'
 import { ref, computed, shallowRef } from 'vue'
-import { api } from '@/services/api'
+import api from '@/api/dashboard'
 import type { DashboardView, DashboardCreate, DashboardUpdate } from '@/types/dashboard'
 import { formatError } from '@/utils/format'
 

@@ -22,5 +22,6 @@ declare module 'vue' {
     SelectLanguage: typeof import('./src/components/SelectLanguage.vue')['default']
     TaskAssignDialog: typeof import('./src/components/tasks/TaskAssignDialog.vue')['default']
     TaskListView: typeof import('./src/components/tasks/TaskListView.vue')['default']
+    ToastsList: typeof import('./src/components/ToastsList.vue')['default']
   }
 }

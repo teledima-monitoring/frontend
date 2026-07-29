@@ -1,6 +1,6 @@
 import { defineStore } from 'pinia'
 import { ref, shallowRef } from 'vue'
-import { api } from '@/services/api'
+import api from '@/api/auth'
 import type { UserView } from '@/types/auth'
 import { formatError } from '@/utils/format'
 

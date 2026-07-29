@@ -1,14 +1,15 @@
 <script setup lang="ts">
-import { onMounted, ref, watch } from 'vue'
+import { onMounted, ref, useTemplateRef, watch } from 'vue'
 import { useIncidentsStore } from '@/stores/incident'
 import { useAuthStore } from '@/stores/auth'
+import { listenEvents } from '@/api/events.ts'
 import { useNotificationsStore } from '@/stores/notifications'
 import { storeToRefs } from 'pinia'
-import { api } from '@/services/api'
 import { SSESource, type SSEEvent } from '@/types/sse'
 import { useSettingsStore } from './stores/settings'
 import { useRoute, useRouter } from 'vue-router'
 import SelectLanguage from './components/SelectLanguage.vue'
+import type ToastsList from './components/ToastsList.vue'
 
 const authStore = useAuthStore()
 const { isLoggedIn, user } = storeToRefs(authStore)
@@ -34,25 +35,10 @@ const handleNewLanguage = (newLocale: string) => {
   settingsStore.setLanguage(newLocale)
 }
 
+const toastsRef = useTemplateRef<InstanceType<typeof ToastsList>>('toasts')
+
 // --- Логика всплывающих уведомлений (Toast) ---
-const toasts = ref<Array<{ id: number; text: string }>>([])
-let toastIdCounter = 0
 const lastShownNotificationId = ref<number | null>(null)
-
-function showToast(text: string) {
-  const id = ++toastIdCounter
-  toasts.value.push({ id, text })
-
-  // Автоматически скрываем уведомление через 4 секунды
-  setTimeout(() => {
-    removeToast(id)
-  }, 4000)
-}
-
-function removeToast(id: number) {
-  toasts.value = toasts.value.filter((t) => t.id !== id)
-}
-// ----------------------------------------------
 
 // Следим за состоянием авторизации
 watch(
@@ -75,7 +61,7 @@ function connect() {
   if (eventSource.value) {
     disconnect()
   }
-  eventSource.value = api.listenEvents()
+  eventSource.value = listenEvents()
 
   eventSource.value.onmessage = async (event) => {
     try {
@@ -106,7 +92,7 @@ function connect() {
 
       if (latestNotification && latestNotification.id !== lastShownNotificationId.value) {
         lastShownNotificationId.value = latestNotification.id
-        showToast(latestNotification.text)
+        toastsRef.value?.show(latestNotification.text)
       }
     } catch (err) {
       console.error('Failed to parse SSE event:', event.data, err)
@@ -245,33 +231,7 @@ function disconnect() {
     </footer>
   </div>
 
-  <!-- Контейнер для всплывающих уведомлений (справа внизу) -->
-  <div class="toast-container position-fixed bottom-0 end-0 p-3" style="z-index: 1080">
-    <transition-group name="toast-fade">
-      <div
-        v-for="toast in toasts"
-        :key="toast.id"
-        class="toast show custom-toast mb-2"
-        role="alert"
-      >
-        <div class="toast-body d-flex align-items-center">
-          <div class="toast-icon me-3">
-            <i class="bi bi-bell-fill"></i>
-          </div>
-          <div class="flex-grow-1">
-            <div class="fw-semibold small text-danger mb-1">{{ $t('newNotification') }}</div>
-            <div class="text-dark">{{ toast.text }}</div>
-          </div>
-          <button
-            type="button"
-            class="btn-close ms-2"
-            aria-label="Close"
-            @click="removeToast(toast.id)"
-          ></button>
-        </div>
-      </div>
-    </transition-group>
-  </div>
+  <ToastsList ref="toasts" />
 </template>
 
 <style scoped>
@@ -378,59 +338,6 @@ function disconnect() {
 .logout-btn:hover {
   background-color: rgba(255, 255, 255, 0.15);
   transform: translateY(-1px);
-}
-
-/* Стили для кастомного тоста */
-.custom-toast {
-  background: #fff;
-  border: none;
-  border-radius: 12px;
-  box-shadow:
-    0 10px 30px rgba(0, 0, 0, 0.1),
-    0 1px 4px rgba(0, 0, 0, 0.05);
-  border-left: 4px solid #dc3545;
-  overflow: hidden;
-  min-width: 320px;
-  max-width: 400px;
-  backdrop-filter: blur(10px);
-}
-
-.custom-toast .toast-body {
-  padding: 1rem 1.25rem;
-  font-size: 0.9rem;
-}
-
-.toast-icon {
-  width: 36px;
-  height: 36px;
-  background: rgba(220, 53, 59, 0.1);
-  border-radius: 8px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 1.1rem;
-  color: #dc3545;
-  flex-shrink: 0;
-}
-
-/* Анимация появления и исчезновения тостов (адаптирована для нижнего правого угла) */
-.toast-fade-enter-active,
-.toast-fade-leave-active {
-  transition: all 0.35s cubic-bezier(0.25, 0.8, 0.25, 1);
-}
-
-.toast-fade-enter-from {
-  opacity: 0;
-  transform: translateY(20px) translateX(20px) scale(0.95);
-}
-
-.toast-fade-leave-to {
-  opacity: 0;
-  transform: translateY(20px) translateX(20px) scale(0.95);
-}
-
-.toast-fade-move {
-  transition: transform 0.3s ease;
 }
 
 /* Адаптив для мобильных устройств */
