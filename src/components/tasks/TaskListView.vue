@@ -2,7 +2,6 @@
 import { computed } from 'vue'
 import type { TaskView, TaskStatus } from '@/types/task'
 import type { UserView } from '@/types/auth'
-import { formatDate } from '@/utils/format'
 
 const props = defineProps<{
   tasks: TaskView[]
@@ -158,8 +157,8 @@ const isAllSelected = computed(() => {
                   {{ $t(props.taskStatusLabel(task.status)) }}
                 </span>
               </td>
-              <td class="text-muted small">{{ formatDate(task.createDt) }}</td>
-              <td class="text-muted small">{{ formatDate(task.updateDt) }}</td>
+              <td class="text-muted small">{{ $d(task.createDt, 'long') }}</td>
+              <td class="text-muted small">{{ $d(task.updateDt, 'long') }}</td>
             </tr>
           </tbody>
         </table>

@@ -3,7 +3,6 @@ import { onMounted, shallowRef, computed, useTemplateRef } from 'vue'
 import { storeToRefs } from 'pinia'
 import { useIncidentsStore } from '@/stores/incident'
 import TaskAssignDialog from '@/components/tasks/TaskAssignDialog.vue'
-import { formatDate } from '@/utils/format'
 
 const selectedIncidentId = shallowRef<number>(-1)
 
@@ -153,8 +152,8 @@ onMounted(() => {
                     }}
                   </span>
                 </td>
-                <td class="text-muted small">{{ formatDate(incident.createDt) }}</td>
-                <td class="text-muted small">{{ formatDate(incident.updateDt) }}</td>
+                <td class="text-muted small">{{ $d(incident.createDt, 'long') }}</td>
+                <td class="text-muted small">{{ $d(incident.updateDt, 'long') }}</td>
                 <td>
                   <router-link
                     v-if="incident.taskId"

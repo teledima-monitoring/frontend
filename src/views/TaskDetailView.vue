@@ -6,7 +6,6 @@ import { useTasksStore } from '@/stores/tasks'
 import { useUsersStore } from '@/stores/user'
 import { useIncidentsStore } from '@/stores/incident'
 import { TaskPriority, TaskStatus } from '@/types/task'
-import { formatDate } from '@/utils/format'
 
 const route = useRoute()
 const router = useRouter()
@@ -388,9 +387,9 @@ watch(
                         </div>
                       </div>
                       <div class="d-flex align-items-center gap-3">
-                        <span class="text-muted small d-none d-md-inline">{{
-                          formatDate(incident.createDt)
-                        }}</span>
+                        <span class="text-muted small d-none d-md-inline">
+                          {{ $d(incident.createDt, 'long') }}
+                        </span>
                         <span
                           class="badge status-pill"
                           :class="
@@ -449,7 +448,7 @@ watch(
                   <i class="bi bi-calendar-plus me-2 text-primary"></i
                   >{{ $t('task.detail.created') }}
                 </div>
-                <div class="detail-value">{{ formatDate(selectedTask.createDt) }}</div>
+                <div class="detail-value">{{ $d(selectedTask.createDt, 'long') }}</div>
               </div>
             </div>
             <div class="col-md-6">
@@ -458,7 +457,7 @@ watch(
                   <i class="bi bi-calendar-check me-2 text-primary"></i
                   >{{ $t('task.detail.updated') }}
                 </div>
-                <div class="detail-value">{{ formatDate(selectedTask.updateDt) }}</div>
+                <div class="detail-value">{{ $d(selectedTask.updateDt, 'long') }}</div>
               </div>
             </div>
           </div>
